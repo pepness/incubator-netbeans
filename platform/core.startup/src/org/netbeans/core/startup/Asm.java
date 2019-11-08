@@ -291,20 +291,65 @@ final class Asm {
 
     }
     
+    /**
+     * @@author Svatopluk Dedic
+     */
     private static class CtorDelVisitor extends AnnotationVisitor {
-        int[]   indices;
-       
-        public CtorDelVisitor(int i) {
-            super(i);
+        
+        int[] indices;
+        int pos;
+        int level;
+
+        /**
+         * Constructs a new {@link AnnotationVisitor}.
+         *
+         * @param api the ASM API version implemented by this visitor. Must be one of {@link
+         *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+         */
+        public CtorDelVisitor(int api) {
+            super(api);
         }
 
         @Override
         public void visit(String string, Object o) {
+            if (level > 0) {
+                if (pos >= indices.length) {
+                    indices = Arrays.copyOf(indices, indices.length * 2);
+                }
+                indices[pos++] = (Integer)o;
+                super.visit(string, o);
+                return;
+            }
             if ("delegateParams".equals(string)) {  // NOI18N
                 indices = (int[])o;
             }
             super.visit(string, o);
         }
+
+        @Override
+        public void visitEnd() {
+            if (level > 0) {
+                if (--level == 0) {
+                    if (pos < indices.length) {
+                        indices = Arrays.copyOf(indices, pos);
+                    }
+                }
+            }
+            super.visitEnd();
+        }
+        
+        @Override
+        public AnnotationVisitor visitArray(String string) {
+            if ("delegateParams".equals(string)) { // NOI18N
+                indices = new int[4];
+                pos = 0;
+                level++;
+                return this;
+            } else {
+                return super.visitArray(string);
+            }
+        }
+
     }
     
     private static String[] splitDescriptor(String desc) {
