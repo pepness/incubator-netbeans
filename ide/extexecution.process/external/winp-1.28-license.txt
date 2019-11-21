@@ -1,5 +1,5 @@
 Name: winp
-Version: 1.26
+Version: 1.28
 License: MIT-winp
 Origin: https://github.com/kohsuke/winp
 Source: https://github.com/kohsuke/winp
