@@ -16,6 +16,6 @@
 # under the License.
 #
 4E84CDA13657513FAE498C45D77075B38CF6EE21 org.jvnet.winp:winp:1.26
-2E07375E5CA3A452472F0E87FB33F243F7A5C08C org.jvnet.libpam4j:libpam4j:1.1
+2FB612B999B637BE9F11313CB04F456D54FFE350 org.jvnet.libpam4j:libpam4j:1.4
 # processtreekiller is not available in Maven, and its web page was hosted in Kenai, now extinct.
 6819C79348FCF4F5125C834E7D3B742582DCA34D processtreekiller-1.0.7.jar
