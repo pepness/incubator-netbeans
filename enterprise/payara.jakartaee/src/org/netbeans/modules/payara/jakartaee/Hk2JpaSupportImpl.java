@@ -47,23 +47,28 @@ public class Hk2JpaSupportImpl implements JpaSupportImplementation {
          * Creates an instance of individual JPA specifications support class.
          * <p/>
          * @param jpa_1_0 JPA 1.0 supported.
-         * @param jpa_2_0 JPA 1.0 supported.
+         * @param jpa_2_0 JPA 2.0 supported.
          * @param jpa_2_1 JPA 2.1 supported.
+         * @param jpa_2_2 JPA 2.2 supported.
          */
-        JpaSupportVector(boolean jpa_1_0, boolean jpa_2_0, boolean jpa_2_1) {
+        JpaSupportVector(boolean jpa_1_0, boolean jpa_2_0, boolean jpa_2_1, boolean jpa_2_2) {
             _1_0 = jpa_1_0;
             _2_0 = jpa_2_0;
             _2_1 = jpa_2_1;
+            _2_2 = jpa_2_2;
         }
 
         /** JPA 1.0 supported. */
         boolean _1_0;
 
-        /** JPA 1.0 supported. */
+        /** JPA 2.0 supported. */
         boolean _2_0;
 
         /** JPA 2.1 supported. */
         boolean _2_1;
+
+        /** JPA 2.2 supported. */
+        boolean _2_2;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -81,7 +86,8 @@ public class Hk2JpaSupportImpl implements JpaSupportImplementation {
     static {
         for (PayaraVersion version : PayaraVersion.values()) {
             jpaSupport[version.ordinal()] = new JpaSupportVector(
-                    true, true, version.ordinal() >= PayaraVersion.PF_4_1_144.ordinal()
+                    true, true, version.ordinal() >= PayaraVersion.PF_4_1_144.ordinal(),
+                    version.ordinal() >= PayaraVersion.PF_5_181.ordinal()
             );
         }
     }
@@ -154,7 +160,8 @@ public class Hk2JpaSupportImpl implements JpaSupportImplementation {
                         : PayaraVersion.PF_4_1_144.ordinal()];
                 defaultProvider = JpaProviderFactory.createJpaProvider(
                         JPA_PROVIDER, true, instanceJpaSupport._1_0,
-                        instanceJpaSupport._2_0, instanceJpaSupport._2_1);
+                        instanceJpaSupport._2_0, instanceJpaSupport._2_1,
+                        instanceJpaSupport._2_2);
             }
         }
         return defaultProvider;
