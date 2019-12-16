@@ -32,7 +32,8 @@ public final class JpaProviderFactory {
     }
     
     public static JpaProvider createJpaProvider(final String className, final boolean isDefault,
-            final boolean isJpa1Supported, final boolean isJpa2Supported, final boolean isJpa21Supported) {
+            final boolean isJpa1Supported, final boolean isJpa2Supported, final boolean isJpa21Supported,
+            final boolean isJpa22Supported) {
         return Accessor.getDefault().createJpaProvider(new JpaProviderImplementation() {
 
             @Override
@@ -48,6 +49,11 @@ public final class JpaProviderFactory {
             @Override
             public boolean isJpa21Supported() {
                 return isJpa21Supported;
+            }
+
+            @Override
+            public boolean isJpa22Supported() {
+                return isJpa22Supported;
             }
 
             @Override
