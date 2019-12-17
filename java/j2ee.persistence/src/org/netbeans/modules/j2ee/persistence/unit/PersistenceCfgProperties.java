@@ -52,7 +52,9 @@ public class PersistenceCfgProperties {
     private final static String[] EL_TARGET_DATABASE = new String[]{"Attunity", "Auto", "Cloudscape", "Database", "DB2", "DB2Mainframe", "DBase", "Derby", "HSQL", "Informix", "JavaDB", "MySQL", "Oracle", "PointBase", "PostgreSQL", "SQLAnywhere", "SQLServer", "Sybase", "TimesTen"};//NOI18N
     private final static String[] EL_TARGET_SERVER = new String[]{"None", "WebLogic", "Note", "WebLogic_9", "WebLogic_10", "OC4J", "SunAS9", "Note", "WebSphere", "WebSphere_6_1", "JBoss", "NetWeaver_7_1"};//NOI18N
     private final static String[] EL_DDL_GEN_MODE = new String[]{"both", "database", "sql-script"};//NOI18N
-    
+    //eclipselink 2.2
+    private final static String[] EL_SHARED_CACHE_MODE = new String[]{"ALL", "NONE", "ENABLE_SELECTIVE", "DISABLE_SELECTIVE", "UNSPECIFIED"};
+
     private static final Map<Provider, Map<String, String[]>> possiblePropertyValues = new HashMap<Provider, Map<String, String[]>>();
 
     static {
@@ -140,9 +142,15 @@ public class PersistenceCfgProperties {
         possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0).put(ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationPropertyName()
                 ,new String[] {ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationCreateValue(),ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationDropCreateValue(), PersistenceUnitProperties.CREATE_OR_EXTEND, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION });
         //ECLIPSELINK 2.1 (initially just copy of 2.0)
-        possiblePropertyValues.put(ProviderUtil.ECLIPSELINK_PROVIDER, new HashMap<String, String[]>());
-        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER).putAll(possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0));
-        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER).put(ProviderUtil.ECLIPSELINK_PROVIDER.getTableGenerationPropertyName(),possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0).get(ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationPropertyName()));
+        possiblePropertyValues.put(ProviderUtil.ECLIPSELINK_PROVIDER2_1, new HashMap<String, String[]>());
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_1).putAll(possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0));
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_1).put(ProviderUtil.ECLIPSELINK_PROVIDER2_1.getTableGenerationPropertyName(),possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0).get(ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationPropertyName()));
+        //ECLIPSELINK 2.2 (initially just copy of 2.0)
+        possiblePropertyValues.put(ProviderUtil.ECLIPSELINK_PROVIDER2_2, new HashMap<String, String[]>());
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_2).putAll(possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0));
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_2).put(PersistenceUnitProperties.SHARED_CACHE_MODE, EL_SHARED_CACHE_MODE);
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_2).put(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, TRUE_FALSE);
+        possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_2).put(ProviderUtil.ECLIPSELINK_PROVIDER2_2.getTableGenerationPropertyName(),possiblePropertyValues.get(ProviderUtil.ECLIPSELINK_PROVIDER2_0).get(ProviderUtil.ECLIPSELINK_PROVIDER2_0.getTableGenerationPropertyName()));
         //hibernate //TODO? reuse hibernate module?
         possiblePropertyValues.put(ProviderUtil.HIBERNATE_PROVIDER2_0, new HashMap<String, String[]>());
         possiblePropertyValues.get(ProviderUtil.HIBERNATE_PROVIDER2_0).put(ProviderUtil.HIBERNATE_PROVIDER2_0.getTableGenerationPropertyName(), null);
@@ -205,7 +213,7 @@ public class PersistenceCfgProperties {
     
     public static Object  getPossiblePropertyValue( Provider provider, String propName ) {
         if(provider == null) {
-            provider = ProviderUtil.ECLIPSELINK_PROVIDER2_0;
+            provider = ProviderUtil.ECLIPSELINK_PROVIDER2_2;
         }//TODO, some logic to add, either search for all providers or some other
         Map<String, String[]> firstMap = possiblePropertyValues.get(provider);
         return firstMap != null ? firstMap.get(propName) : null;
@@ -243,7 +251,7 @@ public class PersistenceCfgProperties {
      */
     public static List<Provider> getProviders(){
         ArrayList<Provider> ret = new ArrayList<Provider>();
-        ret.add(ProviderUtil.ECLIPSELINK_PROVIDER2_0);
+        ret.add(ProviderUtil.ECLIPSELINK_PROVIDER2_2);
         ret.add(ProviderUtil.HIBERNATE_PROVIDER2_0);
         return ret;
     }
