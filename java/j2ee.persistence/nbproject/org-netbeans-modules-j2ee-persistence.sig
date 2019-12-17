@@ -1146,6 +1146,7 @@ fld public final static java.lang.String VERSION = "Version"
 fld public final static java.lang.String VERSION_1_0 = "1.0"
 fld public final static java.lang.String VERSION_2_0 = "2.0"
 fld public final static java.lang.String VERSION_2_1 = "2.1"
+fld public final static java.lang.String VERSION_2_2 = "2.2"
 meth public abstract int addPersistenceUnit(org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit)
 meth public abstract int removePersistenceUnit(org.netbeans.modules.j2ee.persistence.dd.common.PersistenceUnit)
 meth public abstract int sizePersistenceUnit()
@@ -1468,9 +1469,11 @@ fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider 
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider DEFAULT_PROVIDER
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider DEFAULT_PROVIDER2_0
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider DEFAULT_PROVIDER2_1
-fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider ECLIPSELINK_PROVIDER
+fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider DEFAULT_PROVIDER2_2
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider ECLIPSELINK_PROVIDER1_0
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider ECLIPSELINK_PROVIDER2_0
+fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider ECLIPSELINK_PROVIDER2_1
+fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider ECLIPSELINK_PROVIDER2_2
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider HIBERNATE_PROVIDER
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider HIBERNATE_PROVIDER2_0
 fld public final static org.netbeans.modules.j2ee.persistence.provider.Provider HIBERNATE_PROVIDER2_1
