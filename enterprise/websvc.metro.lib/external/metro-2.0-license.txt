@@ -3,7 +3,7 @@ Version: 2.0
 Description: METRO
 License: CDDL-1.1
 Origin: Oracle (https://javaee.github.io/metro/)
-Files: webservices-api-2.3.1.jar, webservices-extra-2.3.1.jar, webservices-extra-api-2.3.1.jar, webservices-rt-2.3.1.jar, webservices-tools-2.3.1.jar, webservices-api-2.3.1-javadoc.jar, webservices-extra-2.3.1-javadoc.jar, webservices-extra-api-2.3.1-javadoc.jar, webservices-rt-2.3.1-javadoc.jar, webservices-tools-2.3.1-javadoc.jar
+Files: webservices-api-2.4.3.jar, webservices-extra-2.4.3.jar, webservices-extra-api-2.4.3.jar, webservices-rt-2.4.3.jar, webservices-tools-2.4.3.jar, webservices-api-2.4.3-javadoc.jar, webservices-extra-2.4.3-javadoc.jar, webservices-extra-api-2.4.3-javadoc.jar, webservices-rt-2.4.3-javadoc.jar, webservices-tools-2.4.3-javadoc.jar
 
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1
 
