@@ -38,7 +38,7 @@ public class JpaSupportImpl implements JpaSupportImplementation {
 
     @Override
     public JpaProvider getDefaultProvider() {
-        return JpaProviderFactory.createJpaProvider(OPENJPA_JPA_PROVIDER, true, true, true, false);
+        return JpaProviderFactory.createJpaProvider(OPENJPA_JPA_PROVIDER, true, true, true, false, false);
     }
 
     @Override
