@@ -34,6 +34,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Catalog for persistence related schemas.
@@ -50,6 +52,8 @@ public class PersistenceCatalog implements CatalogReader, CatalogDescriptor2, or
     
     private List<SchemaInfo> schemas = new ArrayList<SchemaInfo>();
 
+    private static final Logger LOG = Logger.getLogger(PersistenceCatalog.class.getName());
+
     public PersistenceCatalog() {
         initialize();
     }
@@ -59,10 +63,13 @@ public class PersistenceCatalog implements CatalogReader, CatalogDescriptor2, or
         schemas.add(new SchemaInfo("persistence_1_0.xsd", RESOURCE_PATH, PERSISTENCE_OLD_NS));
         schemas.add(new SchemaInfo("persistence_2_0.xsd", RESOURCE_PATH, PERSISTENCE_OLD_NS));
         schemas.add(new SchemaInfo("persistence_2_1.xsd", RESOURCE_PATH, PERSISTENCE_NS));
+        schemas.add(new SchemaInfo("persistence_2_2.xsd", RESOURCE_PATH, PERSISTENCE_NS));
         // orm
         schemas.add(new SchemaInfo("orm_1_0.xsd", RESOURCE_PATH, ORM_OLD_NS));
         schemas.add(new SchemaInfo("orm_2_0.xsd", RESOURCE_PATH, ORM_OLD_NS));
         schemas.add(new SchemaInfo("orm_2_1.xsd", RESOURCE_PATH, ORM_NS));
+        schemas.add(new SchemaInfo("orm_2_2.xsd", RESOURCE_PATH, ORM_NS));
+        LOG.log(Level.INFO, "(72) ==== isInitialized?: {0}", true);
     }
     
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
