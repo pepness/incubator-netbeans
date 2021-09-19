@@ -270,7 +270,7 @@ public abstract class MicronautConfigCompletionItem implements CompletionItem {
                         for (int i = 0; i < parts.length; i++) {
                             String part = parts[i];
                             if ("*".equals(part)) {
-                                sb.append("${PAR#" + num++ + " default=\"\"}");
+                                sb.append("${PAR#").append(num++).append(" default=\"\"}");
                             } else {
                                 sb.append(part);
                             }
@@ -289,7 +289,7 @@ public abstract class MicronautConfigCompletionItem implements CompletionItem {
                         for (int i = 0; i < parts.length; i++) {
                             String part = parts[i];
                             if ("*".equals(part)) {
-                                sb.append("${PAR#" + num++ + " default=\"\"}");
+                                sb.append("${PAR#").append(num++).append(" default=\"\"}");
                             } else {
                                 sb.append(part);
                             }

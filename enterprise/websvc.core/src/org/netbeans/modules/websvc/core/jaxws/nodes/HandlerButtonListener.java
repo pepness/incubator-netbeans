@@ -281,7 +281,7 @@ public class HandlerButtonListener implements ActionListener{
     
     private static String readResource(InputStream is) throws IOException {
         // read the config from resource first
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NOI18N
         BufferedReader br = null;
         try {
