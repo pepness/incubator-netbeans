@@ -273,28 +273,21 @@ public class CreateDomain extends Thread {
      * or null if for some reason, this file cannot be created.
      */
     private static File createTempPasswordFile(String password, String masterPassword) {
-        OutputStream output;
-        PrintWriter p = null;
         File retVal = null;
         try {
             retVal = File.createTempFile("admin", null);//NOI18N
-
             retVal.deleteOnExit();
-            output = new FileOutputStream(retVal);
-            p = new PrintWriter(output);
-            p.println("AS_ADMIN_ADMINPASSWORD=" + password);//NOI18N for create domains
+            try (OutputStream output = new FileOutputStream(retVal);
+                    PrintWriter p = new PrintWriter(output)) {
+                p.println("AS_ADMIN_ADMINPASSWORD=" + password);//NOI18N for create domains
 
-            p.println("AS_ADMIN_PASSWORD=" + password);//NOI18N for start domains
+                p.println("AS_ADMIN_PASSWORD=" + password);//NOI18N for start domains
 
-            p.println("AS_ADMIN_MASTERPASSWORD=" + masterPassword);//NOI18N
-
+                p.println("AS_ADMIN_MASTERPASSWORD=" + masterPassword);//NOI18N
+            }
         } catch (IOException e) {
             // this should not happen... If it does we should at least log it
             ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, e);
-        } finally {
-            if (p != null) {
-                p.close();
-            }
         }
         return retVal;
     }

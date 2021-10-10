@@ -81,14 +81,14 @@ public class RunnerRestCloudDeploy extends RunnerRestCloud {
             throw new PayaraIdeException("The path attribute of deploy command"
                     + " has to be non-empty!");
         }
-        OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream());
-        writeParam(wr, "file", command.path.getAbsolutePath());
-        if (command.account != null) {
-            writeParam(wr, "account", command.account);
+        try (OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream())) {
+            writeParam(wr, "file", command.path.getAbsolutePath());
+            if (command.account != null) {
+                writeParam(wr, "account", command.account);
+            }
+            writeBinaryFile(wr, hconn.getOutputStream(), command.path);
+            wr.append("--" + multipartBoundary + "--").append(NEWLINE);
         }
-        writeBinaryFile(wr, hconn.getOutputStream(), command.path);
-        wr.append("--" + multipartBoundary + "--").append(NEWLINE);
-        wr.close();
     }
     
     private void writeParam(OutputStreamWriter writer, String paramName,
@@ -111,21 +111,12 @@ public class RunnerRestCloudDeploy extends RunnerRestCloud {
         writer.append("Content-Transfer-Encoding: binary").append(NEWLINE);
         writer.append(NEWLINE).flush();
 
-        InputStream input = null;
-        try {
-            input = new FileInputStream(file);
+        try (InputStream input = new FileInputStream(file)) {
             byte[] buffer = new byte[1024 * 1024];
             for (int length = 0 ; (length = input.read(buffer)) > 0 ;) {
                 output.write(buffer, 0, length);
             }
             output.flush(); // Important! Output cannot be closed. Close of writer will close output as well.
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException ex) {
-                }
-            }
         }
         writer.append(NEWLINE).flush();
     }

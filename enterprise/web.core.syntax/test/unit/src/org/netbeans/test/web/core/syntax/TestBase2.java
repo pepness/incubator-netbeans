@@ -124,12 +124,8 @@ public class TestBase2 extends CslTestBase {
             if (!goldenFile.createNewFile()) {
                 NbTestCase.fail("Cannot create file " + goldenFile);
             }
-            FileWriter fw = new FileWriter(goldenFile);
-            try {
+            try (FileWriter fw = new FileWriter(goldenFile)) {
                 fw.write(content);
-            }
-            finally{
-                fw.close();
             }
             NbTestCase.fail("Created generated golden file " + goldenFile + "\nPlease re-run the test.");
         }

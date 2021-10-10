@@ -133,10 +133,8 @@ public class Util {
         String adminPort = null;
         String buffer = null;
         
-        try {
-            FileReader reader = new FileReader(domainXml);
-            BufferedReader br = new BufferedReader(reader);
-            
+        try (FileReader reader = new FileReader(domainXml);
+                BufferedReader br = new BufferedReader(reader)) {    
             while((buffer = br.readLine()) != null) {
                 if(buffer.indexOf("admin-listener") > -1) {
                     int x = buffer.indexOf(34, buffer.indexOf("port"));
@@ -145,9 +143,6 @@ public class Util {
                     break;
                 }
             }
-            
-            br.close();
-            reader.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -239,9 +234,9 @@ public class Util {
         
         Runnable undeployCondition = new Runnable() {
             public void run() {
-                    try {
-                        Thread.sleep(250);
-                    } catch(Exception e) {}
+                try {
+                    Thread.sleep(250);
+                } catch(Exception e) {}
                 System.out.println("undeployCond deployModule "+new java.util.Date());
                 while(getModuleID(moduleType, moduleName, si, false) != null) {
                     try {
@@ -347,19 +342,9 @@ public class Util {
     public static String readFile(File target) throws IOException {
         char [] buffer = new char[100000];
         int filelength = 0;
-        Reader reader = null;
         
-        try {
-            reader = new BufferedReader(new FileReader(target));
+        try (Reader reader = new BufferedReader(new FileReader(target))) {
             filelength = reader.read(buffer, 0, buffer.length);
-        } finally {
-            if(reader != null) {
-                try {
-                    reader.close();
-                } catch(IOException ex) {
-                    System.out.println("IOException on closing file: " + target.getName());
-                }
-            }
         }
         
         return new String(buffer, 0, filelength);

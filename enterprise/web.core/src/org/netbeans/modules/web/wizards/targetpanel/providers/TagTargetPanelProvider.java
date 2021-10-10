@@ -566,12 +566,10 @@ class TagUIManager extends XmlOptionPanelManager {
             myTldTextField.setText( FileUtil.getRelativePath( 
                     (wm==null? panel.getProject().getProjectDirectory():
                         wm.getDocumentBase()), fo ) );
-            try {
-                java.io.InputStream is = myTldFileObject.getInputStream();
+            // get existing tag names for testing duplicity
+            try (java.io.InputStream is = myTldFileObject.getInputStream()) {
                 // get existing tag names for testing duplicity
-                myTagValues = Util.getTagValues(is, new String[]{"tag","tag-file"},
-                        "name"); //NOI18N
-                is.close();
+                myTagValues = Util.getTagValues(is, new String[]{"tag","tag-file"}, "name"); //NOI18N
             }
             catch (java.io.IOException ex) {
                 LOG.log(Level.FINE, "error", ex);

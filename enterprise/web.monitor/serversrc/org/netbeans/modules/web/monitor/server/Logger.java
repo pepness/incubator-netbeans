@@ -31,12 +31,9 @@ abstract class Logger {
 
 	String stackTrace = null;
 	
-	try {
-	    StringWriter sw = new StringWriter();
-	    PrintWriter pw = new PrintWriter(sw);
+	try (StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw)) {
 	    t.printStackTrace(pw);
-	    pw.close();
-	    sw.close();
 	    stackTrace = sw.getBuffer().toString();
 	}
 	catch(Exception ex) {}

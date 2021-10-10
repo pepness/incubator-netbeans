@@ -136,25 +136,12 @@ public class WSUtils {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             @Override
             public void run() throws IOException {
-                FileObject sunJaxwsFo = FileUtil.createData(targetDir, "sun-jaxws.xml");//NOI18N
-                FileLock lock = sunJaxwsFo.lock();
-                BufferedWriter bw = null;
-                OutputStream os = null;
-                OutputStreamWriter osw = null;
-                try {
-                    os = sunJaxwsFo.getOutputStream(lock);
-                    osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));     // NOI18N
-                    bw = new BufferedWriter(osw);
+                FileObject sunJaxwsFo = FileUtil.createData(targetDir, "sun-jaxws.xml");    //NOI18N
+                try (FileLock lock = sunJaxwsFo.lock();
+                        OutputStream os = sunJaxwsFo.getOutputStream(lock);
+                        OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                        BufferedWriter bw = new BufferedWriter(osw)) {  //NOI18N
                     bw.write(sunJaxwsContent);
-                } finally {
-                    if(bw != null)
-                        bw.close();
-                    if(os != null)
-                        os.close();
-                    if(osw != null)
-                        osw.close();
-                    if(lock != null)
-                        lock.releaseLock();
                 }
             }
         });
@@ -207,24 +194,18 @@ public class WSUtils {
     }
     
     private static void deleteFile(FileObject f) {
-        FileLock lock = null;
-        try {
+        try (FileLock lock = f.lock()) {
             DataObject dObj = DataObject.find(f);
             if (dObj != null) {
                 SaveCookie save = dObj.getCookie(SaveCookie.class);
                 if (save!=null) save.save();
             }
-            lock = f.lock();
             f.delete(lock);
         } catch(java.io.IOException e) {
             NotifyDescriptor ndd =
                     new NotifyDescriptor.Message(NbBundle.getMessage(WSUtils.class, "MSG_Unable_Delete_File", f.getNameExt()),
                     NotifyDescriptor.ERROR_MESSAGE);
             DialogDisplayer.getDefault().notify(ndd);
-        } finally {
-            if(lock != null) {
-                lock.releaseLock();
-            }
         }
     }
     
@@ -533,19 +514,10 @@ public class WSUtils {
                 endpoints.findEndpointByImplementation(service.getImplementationClass());
         if (oldEndpoint == null) {
             Endpoint newEndpoint = addService(endpoints, service);
-            FileLock lock = null;
-            OutputStream os = null;
             synchronized (sunjaxwsFile) {
-                try {
-                    lock = sunjaxwsFile.lock();
-                    os = sunjaxwsFile.getOutputStream(lock);
+                try (FileLock lock = sunjaxwsFile.lock();
+                        OutputStream os = sunjaxwsFile.getOutputStream(lock)) {
                     endpoints.write(os);
-                } finally{
-                    if (lock != null)
-                        lock.releaseLock();
-
-                    if(os != null)
-                        os.close();
                 }
             }
             return newEndpoint;
@@ -565,19 +537,10 @@ public class WSUtils {
                 addService(endpoints, service);
             }
         }
-        FileLock lock = null;
-        OutputStream os = null;
         synchronized (sunjaxwsFile) {
-            try {
-                lock = sunjaxwsFile.lock();
-                os = sunjaxwsFile.getOutputStream(lock);
+            try (FileLock lock = sunjaxwsFile.lock();
+                    OutputStream os = sunjaxwsFile.getOutputStream(lock);) {
                 endpoints.write(os);
-            } finally{
-                if (lock != null)
-                    lock.releaseLock();
-
-                if(os != null)
-                    os.close();
             }
         }
     }
@@ -599,20 +562,10 @@ public class WSUtils {
             Endpoint endpoint = endpoints.findEndpointByName(service.getServiceName());
             if (endpoint != null) {
                 endpoints.removeEndpoint(endpoint);
-                FileLock lock = null;
-                OutputStream os = null;
                 synchronized (sunjaxwsFile) {
-                    try {
-                        lock = sunjaxwsFile.lock();
-                        os = sunjaxwsFile.getOutputStream(lock);
+                    try (FileLock lock = sunjaxwsFile.lock();
+                            OutputStream os = sunjaxwsFile.getOutputStream(lock)) {
                         endpoints.write(os);
-                    } finally {
-                        if (lock != null) {
-                            lock.releaseLock();
-                        }
-                        if (os != null) {
-                            os.close();
-                        }
                     }
                 }
             }
@@ -637,20 +590,10 @@ public class WSUtils {
             if (endpoint != null) {
                 endpoint.setEndpointName(newServiceName);
                 endpoint.setUrlPattern("/" + newServiceName);
-                FileLock lock = null;
-                OutputStream os = null;
                 synchronized (sunjaxwsFile) {
-                    try {
-                        lock = sunjaxwsFile.lock();
-                        os = sunjaxwsFile.getOutputStream(lock);
+                    try (FileLock lock = sunjaxwsFile.lock();
+                            OutputStream os = sunjaxwsFile.getOutputStream(lock)) {
                         endpoints.write(os);
-                    } finally {
-                        if (lock != null) {
-                            lock.releaseLock();
-                        }
-                        if (os != null) {
-                            os.close();
-                        }
                     }
                 }
             }

@@ -1252,11 +1252,8 @@ public class HintTestBase {
         Properties result = new Properties();
         try {
             File propFile = getPreferencesFile();
-            FileInputStream is = new FileInputStream(propFile);
-            try {
+            try (FileInputStream is = new FileInputStream(propFile)) {
                 result.load(is);
-            } finally {
-                is.close();
             }
         }  catch (IOException e) {
         }
@@ -1308,9 +1305,9 @@ public class HintTestBase {
     }
 
     private static FileObject copyStringToFile (FileObject f, String content) throws Exception {
-        OutputStream os = f.getOutputStream();
-        os.write(content.getBytes("UTF-8"));
-        os.close ();
+        try (OutputStream os = f.getOutputStream()) {
+            os.write(content.getBytes("UTF-8"));
+        }
 
         return f;
     }

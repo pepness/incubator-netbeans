@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -941,21 +943,11 @@ public class TomcatManager implements DeploymentManager {
                         LOGGER.log(Level.INFO, "Cannot copy file " + fileToCopy.getAbsolutePath() + " to the Tomcat base dir, since it does not exist.");
                         continue;
                     }
-                    FileInputStream is = new FileInputStream(fileToCopy);
-                    FileOutputStream os = new FileOutputStream(targetFile);
-                    try {
+                    try (FileInputStream is = new FileInputStream(fileToCopy);
+                            FileOutputStream os = new FileOutputStream(targetFile)) {
                         FileUtil.copy(is, os);
                     } catch (IOException ioe) {
                         LOGGER.log(Level.INFO, null, ioe);
-                    } finally {
-                        try {
-                            if (os != null)
-                                os.close();
-                        } catch (IOException ioe) { } // ignored
-                        try {
-                            if (is != null)
-                                is.close();
-                        } catch (IOException ioe) { } // ignored
                     }
                 } else {
                     // use patched version
@@ -1024,12 +1016,8 @@ public class TomcatManager implements DeploymentManager {
      * Create a file and fill it with the data.
      */
     private void writeToFile(File file, String data) throws IOException {
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(file));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write(data);
-        } finally {
-            if (bw != null) bw.close();
         }
     }
 
@@ -1038,12 +1026,11 @@ public class TomcatManager implements DeploymentManager {
      * @return success status.
      */
     private boolean copyAndPatch (File src, File dst, String from, String to) {
-        java.io.Reader r = null;
-        java.io.Writer out = null;
+
         if (!src.exists())
             return false;
-        try {
-            r = new BufferedReader (new InputStreamReader (new FileInputStream (src), "utf-8")); // NOI18N
+        try (Reader r = new BufferedReader (new InputStreamReader(new FileInputStream (src), "utf-8"));    // NOI18N
+                Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (dst), "utf-8"))) { // NOI18N
             StringBuilder sb = new StringBuilder();
             final char[] BUFFER = new char[4096];
             int len;
@@ -1061,23 +1048,11 @@ public class TomcatManager implements DeploymentManager {
                 // Something unexpected
                 LOGGER.log(Level.INFO, "Pattern " + from + " not found in " + src.getPath()); // NOI18N
             }
-            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (dst), "utf-8")); // NOI18N
-            out.write (sb.toString ());
+            out.write (sb.toString());
 
-        } catch (java.io.IOException ioe) {
+        } catch (IOException ioe) {
             LOGGER.log(Level.INFO, null, ioe);
             return false;
-        } finally {
-            try {
-                if (out != null)
-                    out.close ();
-            } catch (java.io.IOException ioe) { // ignore this
-            }
-            try {
-                if (r != null)
-                    r.close ();
-            } catch (java.io.IOException ioe) { // ignore this
-            }
         }
         return true;
     }

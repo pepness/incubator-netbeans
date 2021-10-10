@@ -101,11 +101,8 @@ public class HttpMonitorHelper {
             ErrorManager.getDefault().notify(ErrorManager.ERROR, cnfe);
         }
         if (needsSave) {
-            OutputStream os = new FileOutputStream(webXML);
-            try {
+            try (OutputStream os = new FileOutputStream(webXML)) {
                 webApp.write(os);
-            } finally {
-                os.close();
             }
         }
         return needRestart;
@@ -146,12 +143,9 @@ public class HttpMonitorHelper {
     // visible for unit testing only
     //
     static void createCopyAndUpgrade(File webXML, File newWebXML) {
-        BufferedReader fr= null;
-        BufferedWriter fw= null;
         boolean deleteNew = true;
-        try {
-            fr = new BufferedReader(new InputStreamReader(new FileInputStream(webXML),"ISO-8859-1"));
-            fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newWebXML),"ISO-8859-1"));
+        try (BufferedReader fr = new BufferedReader(new InputStreamReader(new FileInputStream(webXML),"ISO-8859-1"));
+                BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newWebXML),"ISO-8859-1"))) {
             while (true) {
                 String line = fr.readLine();
                 if (line == null)
@@ -169,33 +163,15 @@ public class HttpMonitorHelper {
                 }
             }
             deleteNew = false;
-            fw.close();
-            fw = null;
-            fr.close();
-            fr = null;
         } catch (FileNotFoundException fnfe) {
             Logger.getLogger("glassfish-eecommon").log(Level.WARNING, "This file existed a few milliseconds ago: "+ webXML.getAbsolutePath());
         } catch (Exception e) {
-            if (null != fw && deleteNew) {
+            if (deleteNew) {
                 if (!newWebXML.delete()) {
                     Logger.getLogger("glassfish-eecommon").log(Level.WARNING, "hack to eliminate GF bug 8609 failed and left bogus file: {0}", newWebXML.getAbsolutePath());
                 }
             }
             Logger.getLogger("glassfish-eecommon").log(Level.WARNING, "hack to eliminate GF bug 8609 failed", e);
-        } finally {
-            if (null != fw) {
-                try {
-                    fw.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger("glassfish-eecommon").log(Level.INFO, "close of fw failed: "+ newWebXML.getAbsolutePath(), ioe);
-                }
-            }
-            if (null != fr) {
-                try {
-                    fr.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger("glassfish-eecommon").log(Level.INFO, "close of fr failed: "+ webXML.getAbsolutePath(), ioe);                }
-            }
         }
     }
 
@@ -314,27 +290,11 @@ public class HttpMonitorHelper {
     }
     
     private static void copy(File file1, File file2)  throws FileNotFoundException, IOException {
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-             bis = new BufferedInputStream(new FileInputStream(file1));
-             bos = new BufferedOutputStream(new FileOutputStream(file2));
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file1));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file2));){
             int b;
-            while((b=bis.read())!=-1)bos.write(b);
-        } finally {
-            if (null != bis) {
-                try { 
-                    bis.close(); 
-                } catch (IOException ioe) {
-                    Logger.getLogger("glassfish-eecommon").log(Level.FINEST,"bis", ioe);
-                }
-            }
-            if (null != bos) {
-                try { 
-                    bos.close(); 
-                } catch (IOException ioe) {
-                    Logger.getLogger("glassfish-eecommon").log(Level.FINEST,"bos", ioe);
-                }
+            while((b=bis.read())!=-1) {
+                bos.write(b);
             }
         }
     }

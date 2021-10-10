@@ -329,22 +329,11 @@ public abstract class ProjectJAXWSSupport implements JAXWSSupportImpl {
             if (jaxWsFo != null) {
                 jaxWsFo.getFileSystem().runAtomicAction(new AtomicAction() {
                     public void run() {
-                        FileLock lock=null;
-                        OutputStream os=null;
-                        try {
-                            lock = jaxWsFo.lock();
-                            os = jaxWsFo.getOutputStream(lock);
+                        try (FileLock lock = jaxWsFo.lock();
+                                OutputStream os = jaxWsFo.getOutputStream(lock);) {
                             jaxWsModel.write(os);
-                            os.close();
                         } catch (java.io.IOException ex) {
                             ErrorManager.getDefault().notify(ex);
-                        } finally {
-                            if (os!=null) {
-                                try {
-                                    os.close();
-                                } catch (IOException ex) {}
-                            }
-                            if (lock!=null) lock.releaseLock();
                         }
                     }
                 });
@@ -412,11 +401,8 @@ public abstract class ProjectJAXWSSupport implements JAXWSSupportImpl {
         FileObject globalWsdlFolder = getWsdlFolder(true);
         FileObject oldWsdlFolder = globalWsdlFolder.getFileObject(name);
         if (oldWsdlFolder!=null) {
-            FileLock lock = oldWsdlFolder.lock();
-            try {
+            try (FileLock lock = oldWsdlFolder.lock();) {
                 oldWsdlFolder.delete(lock);
-            } finally {
-                lock.releaseLock();
             }
         }
         return globalWsdlFolder.createFolder(name);

@@ -74,16 +74,9 @@ public abstract class SunBaseBean extends BaseBean implements CommonDDBean {
     
     public void write(FileObject fo) throws IOException {
         // TODO: need to be implemented with Dialog opened when the file object is locked
-        FileLock lock = fo.lock();
-        try {
-            OutputStream os = fo.getOutputStream(lock);
-            try {
-                write(os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock);) {
+            write(os);
         }
     }
 

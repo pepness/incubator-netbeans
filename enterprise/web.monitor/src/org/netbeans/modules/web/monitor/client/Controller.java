@@ -263,8 +263,6 @@ class Controller  {
 		rootF.getAbsolutePath());
 	}
 
-	FileLock lock = null;
-
 	if(monDir == null || !monDir.isFolder()) {
 	    try {
 		monDir = rootdir.getFileObject(monDirStr);
@@ -274,8 +272,7 @@ class Controller  {
 	    
 	    if(monDir == null || !monDir.isFolder()) {
 		if(monDir != null) {
-		    try {
-			lock = monDir.lock();
+		    try (FileLock lock = monDir.lock()) {
 			monDir.delete(lock);
 		    }
 		    catch(FileAlreadyLockedException falex) {
@@ -283,9 +280,6 @@ class Controller  {
 		    }
 		    catch(IOException ex) {
 			throw new FileNotFoundException();
-		    }
-		    finally { 
-			if(lock != null) lock.releaseLock();
 		    }
 		}
 		try {
@@ -312,10 +306,8 @@ class Controller  {
 	    catch(Exception ex) { }
 	    
 	    if(currDir == null || !currDir.isFolder()) {
-		lock = null;
 		if(currDir != null) {
-		    try {
-			lock = currDir.lock();
+		    try (FileLock lock = currDir.lock()) {
 			currDir.delete(lock);
 		    }
 		    catch(FileAlreadyLockedException falex) {
@@ -323,9 +315,6 @@ class Controller  {
 		    }
 		    catch(IOException ex) {
 			throw new FileNotFoundException();
-		    }
-		    finally { 
-			if(lock != null) lock.releaseLock();
 		    }
 		}
 		try {
@@ -350,9 +339,7 @@ class Controller  {
 	    
 	    if(saveDir == null || !saveDir.isFolder()) {
 		if(saveDir != null) {
-		    lock = null;
-		    try {
-			lock = saveDir.lock();
+                    try (FileLock lock = saveDir.lock()) {
 			saveDir.delete(lock);
 		    }
 		    catch(FileAlreadyLockedException falex) {
@@ -360,9 +347,6 @@ class Controller  {
 		    }
 		    catch(IOException ex) {
 			throw new FileNotFoundException();
-		    }
-		    finally { 
-			if(lock != null) lock.releaseLock();
 		    }
 		}
 		try {
@@ -390,9 +374,7 @@ class Controller  {
 	    
 	    if(replayDir == null || !replayDir.isFolder()) {
 		if(replayDir != null) {
-		    lock = null;
-		    try {
-			lock = replayDir.lock();
+		    try (FileLock lock = replayDir.lock()) {
 			replayDir.delete(lock);
 		    }
 		    catch(FileAlreadyLockedException falex) {
@@ -400,9 +382,6 @@ class Controller  {
 		    }
 		    catch(IOException ex) {
 			throw new FileNotFoundException();
-		    }
-		    finally { 
-			if(lock != null) lock.releaseLock();
 		    }
 		}
 		try {
@@ -529,8 +508,6 @@ class Controller  {
 
 	FileObject fo; 	
 	FileLock lock = null;
-	OutputStream out = null;
-	PrintWriter pw = null;
 
 	if(debug) log("Creating record for replay"); //NOI18N
 
@@ -583,43 +560,31 @@ class Controller  {
 		if(debug) log(" Couldn't create file for replay data"); 
 		throw ioex2;
 	    }
-	} 
+	}
 
-	try { 
+	try {
 	    lock = fo.lock();
-	} 
-	catch(FileAlreadyLockedException fale) { 
+	}
+	catch(FileAlreadyLockedException fale) {
 	    if(debug) log("Can't get a file lock for the replay file");
-	    throw new IOException(); 
-	} 
+	    throw new IOException();
+	}
 
-	try { 
-	    out = fo.getOutputStream(lock);
-	    pw = new PrintWriter(out);
-	    md.write(pw);	    
-	    if(debug) log("...record complete"); //NOI18N
-
+	try (OutputStream out = fo.getOutputStream(lock);
+                PrintWriter pw = new PrintWriter(out)) {
+	    md.write(pw);
 	    if(debug) {
-		String fname = 
+                log("...record complete");      //NOI18N
+                String fname = 
 		    md.createTempFile("control-record.xml"); // NOI18N
 		log("Wrote replay data to " + fname); // NOI18N
-	    }
+            }
 	}
 	catch(IOException ioex) {
 	    throw ioex;
 	}
 	finally {
-	    if(lock != null) lock.releaseLock(); 
-	    try {
-		pw.close();
-	    }
-	    catch(Throwable t) {
-	    }  
-	    try {
-		out.close();
-	    }
-	    catch(Throwable t) {
-	    }  
+	    if(lock != null) lock.releaseLock();  
 	}
 	
 	try {
@@ -729,11 +694,9 @@ class Controller  {
 	    // Note I didn't load the bean here yet. Will only do that 
 	    // if the data is displayed. 
 		
-	    FileLock lock = null; 
-	    try {
-		FileObject fold = 
+            FileObject fold = 
 		    currDir.getFileObject(id, "xml"); //NOI18N
-		lock = fold.lock();
+	    try (FileLock lock = fold.lock()) {
 		fold.copy(saveDir, id, "xml"); //NOI18N
 		if(debug) log(fold.getName());
 		fold.delete(lock);
@@ -751,11 +714,7 @@ class Controller  {
 	    catch(Exception ex) {
 		error = true; 
 		// PENDING report properly
-	    }
-	    finally { 
-		if(lock != null) lock.releaseLock(); 
-	    }
-	    
+	    }	    
 	}
 	if(!error) currTrans.remove(nodes);
 	savedTrans.add(newNodes);
@@ -802,18 +761,12 @@ class Controller  {
                     }
                     if (fileObject != null) {
                         // delete the file
-                        FileLock lock = null;
-                        try {
-                            lock = fileObject.lock();
+                        try (FileLock lock = fileObject.lock()) {
                             fileObject.delete(lock);
                         } catch(FileAlreadyLockedException falex) {
                             Logger.getLogger("global").log(Level.INFO, null, falex);
                         } catch(IOException exception) {
                             Logger.getLogger("global").log(Level.INFO, null, exception);
-                        } finally { 
-                            if(lock != null) {
-                                lock.releaseLock();
-                            }
                         }
                     }
                     // update the progress monitor if needed
@@ -873,18 +826,12 @@ class Controller  {
                 
                 for(Enumeration e = directory.getData(false); e.hasMoreElements(); ++i) {
                     FileObject fo = (FileObject) e.nextElement();
-                    FileLock lock = null;
-                    try {
-                        lock = fo.lock();
+                    try (FileLock lock = fo.lock()) {
                         fo.delete(lock);
                     } catch(FileAlreadyLockedException falex) {
                         Logger.getLogger("global").log(Level.INFO, null, falex);
                     } catch(IOException exception) {
                         Logger.getLogger("global").log(Level.INFO, null, exception);
-                    } finally { 
-                        if(lock != null) {
-                            lock.releaseLock();
-                        }
                     }
                     // update the progress monitor if needed
                     final int newValue = 100 * i/number;
@@ -1340,18 +1287,14 @@ class Controller  {
 	}
 	
 	MonitorData md = null;
-	FileObject fo = null;
-	FileLock lock = null; 
-	InputStreamReader in = null;
+	FileObject fo = dir.getFileObject(id, "xml"); // NOI18N
 	
-	try {
-	    fo = dir.getFileObject(id, "xml"); // NOI18N
+	try (FileLock lock = fo.lock();
+                InputStreamReader in = new InputStreamReader(fo.getInputStream())) {
 	    if(debug) log("From file: " + //NOI18N 
 			  FileUtil.toFile(fo).getAbsolutePath()); 
 	    if(debug) log("Locking it..."); //NOI18N 
-	    lock = fo.lock();
 	    if(debug) log("Getting InputStreamReader"); //NOI18N 
-	    in = new InputStreamReader(fo.getInputStream()); 
 	    if(debug) log("Creating monitor data"); //NOI18N 
 	    md = MonitorData.createGraph(in);
 	    try {
@@ -1379,11 +1322,6 @@ class Controller  {
 		log("Something went wrong when retrieving record"); //NOI18N 
 		ex.printStackTrace();
 	    }
-	}
-	finally {
-	    try { in.close(); }
-	    catch(Throwable t) {}
-	    if(lock != null) lock.releaseLock();
 	}
 	if(debug) log("We're done!"); //NOI18N 
 	return md;

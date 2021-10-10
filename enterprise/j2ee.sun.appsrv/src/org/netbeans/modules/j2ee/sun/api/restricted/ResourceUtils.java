@@ -1913,19 +1913,12 @@ public class ResourceUtils implements WizardConstants{
                 public void run() throws java.io.IOException {
                     resourceFile.createNewFile();
                     final FileObject resourceFileFo = FileUtil.toFileObject(resourceFile);
-                    final FileLock lock = resourceFileFo.lock();
-                    Writer out = null;
-                    try {
-                        out = new OutputStreamWriter(resourceFileFo.getOutputStream(lock), "UTF8");
+                    try (final FileLock lock = resourceFileFo.lock();
+                            Writer out = new OutputStreamWriter(resourceFileFo.getOutputStream(lock), "UTF8")) {
                         res.write(out);
                         out.flush();
                     } catch (Exception ex) {
                         LOGGER.log(Level.SEVERE, "Failed to write new server resources file", ex);
-                    } finally {
-                        if (out != null) {
-                            out.close();
-                        }
-                        lock.releaseLock();
                     }
                 }
             });

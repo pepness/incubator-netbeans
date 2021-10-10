@@ -131,16 +131,9 @@ public class CopyOnSaveSupportTest extends NbTestCase {
         destFolder = FileUtil.toFile(projectFileObject.getFileObject(metaPrefix));
         File index = new File(destFolder, "ejb-jar.xml");
         FileObject indexFileObject = FileUtil.toFileObject(index);
-        InputStream is = new BufferedInputStream(new FileInputStream(sampleXml));
-        try {
-            OutputStream os = new BufferedOutputStream(indexFileObject.getOutputStream());
-            try {
-                FileUtil.copy(is, os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            is.close();
+        try (InputStream is = new BufferedInputStream(new FileInputStream(sampleXml));
+                OutputStream os = new BufferedOutputStream(indexFileObject.getOutputStream())) {
+            FileUtil.copy(is, os);
         }
 
         toCheck = projectFileObject.getFileObject("build/jar/META-INF/ejb-jar.xml");

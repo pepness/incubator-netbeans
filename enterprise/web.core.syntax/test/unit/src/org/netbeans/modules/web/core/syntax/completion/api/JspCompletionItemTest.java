@@ -78,15 +78,12 @@ public class JspCompletionItemTest extends TestBase {
     private String readContentFromIS(InputStream is) throws IOException {
         StringBuilder content = new StringBuilder();
 
-        InputStreamReader isr = new InputStreamReader(is);
-        try {
+        try (InputStreamReader isr = new InputStreamReader(is)) {
             int data = isr.read();
             while (data != -1) {
                 content.append((char) data);
                 data = isr.read();
             }
-        } finally {
-            isr.close();
         }
         return content.toString().trim();
     }

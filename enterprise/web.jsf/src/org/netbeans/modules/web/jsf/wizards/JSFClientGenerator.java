@@ -321,20 +321,15 @@ public class JSFClientGenerator {
             
             if (pagesRootFolder.getFileObject(JSFCRUD_AJAX_BUSY_IMAGE) == null) {
                 FileObject target = FileUtil.createData(pagesRootFolder, JSFCRUD_AJAX_BUSY_IMAGE);//NOI18N
-                FileLock lock = target.lock();
-                try {
-                    InputStream is = JSFClientGenerator.class.getClassLoader().getResourceAsStream(RESOURCE_FOLDER + JSFCRUD_AJAX_BUSY_IMAGE);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    OutputStream os = target.getOutputStream(lock);
-                    BufferedOutputStream bos = new BufferedOutputStream(os);
+                try (FileLock lock = target.lock();
+                        InputStream is = JSFClientGenerator.class.getClassLoader().getResourceAsStream(RESOURCE_FOLDER + JSFCRUD_AJAX_BUSY_IMAGE);
+                        BufferedInputStream bis = new BufferedInputStream(is);
+                        OutputStream os = target.getOutputStream(lock);
+                        BufferedOutputStream bos = new BufferedOutputStream(os)) {
                     int c;
                     while ((c = bis.read()) != -1) {
                         bos.write(c);
                     }
-                    bis.close();
-                    bos.close();
-                } finally {
-                    lock.releaseLock();
                 }
             }
         }
@@ -694,14 +689,9 @@ public class JSFClientGenerator {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
                 FileObject detailForm = FileUtil.createData(jsfRoot, name);//NOI18N
-                FileLock lock = detailForm.lock();
-                try {
-                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(detailForm.getOutputStream(lock), encoding));
+                try (FileLock lock = detailForm.lock();
+                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(detailForm.getOutputStream(lock), encoding))) {
                     bw.write(content);
-                    bw.close();
-                }
-                finally {
-                    lock.releaseLock();
                 }
             }
         });

@@ -879,31 +879,21 @@ public final class ConfigSupportImpl implements J2eeModuleProvider.ConfigSupport
         if (deploymentPlanConfiguration == null) {
             return null;
         }
-        FileLock lock = null;
-        OutputStream out = null;
-        try {
-            FileObject dist = getProvider().getJ2eeModule().getContentDirectory();
-            String planName = getStandardDeploymentPlanName();
-            FileObject plan = null;
-            if (dist != null) {
-                plan = dist.getFileObject(planName);
-                if (plan == null) {
-                    plan = dist.createData(planName);
-                }
-            } else {
-                return null;
+        FileObject dist = getProvider().getJ2eeModule().getContentDirectory();
+        String planName = getStandardDeploymentPlanName();
+        FileObject plan = null;
+        if (dist != null) {
+            plan = dist.getFileObject(planName);
+            if (plan == null) {
+                plan = dist.createData(planName);
             }
-            lock = plan.lock();
-            out = plan.getOutputStream(lock);
+        } else {
+            return null;
+        }
+        try (FileLock lock = plan.lock();
+                OutputStream out = plan.getOutputStream(lock)) {
             deploymentPlanConfiguration.save(out);
             return FileUtil.toFile(plan);
-        } finally {
-            if (lock != null) lock.releaseLock();
-            try {
-                if (out != null) out.close();
-            } catch(IOException ioe) {
-                Logger.getLogger("global").log(Level.INFO, ioe.toString());
-            }
         }
     }
     

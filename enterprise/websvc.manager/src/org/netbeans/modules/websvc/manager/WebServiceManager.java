@@ -397,16 +397,10 @@ public final class WebServiceManager {
 
         FileObject fo = FileUtil.toFileObject(dir);
         if (fo != null) {
-            FileLock lock = null;
-            try {
-                lock = fo.lock();
+            try (FileLock lock = fo.lock()) {
                 fo.delete(lock);
             } catch (IOException ex) {
                 Exceptions.printStackTrace(ex);
-            } finally {
-                if (lock != null) {
-                    lock.releaseLock();
-                }
             }
         }
     }

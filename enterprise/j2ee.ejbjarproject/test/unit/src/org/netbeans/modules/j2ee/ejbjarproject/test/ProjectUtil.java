@@ -86,14 +86,13 @@ public final class ProjectUtil {
                 }
             }
         }
-        FileOutputStream os = new FileOutputStream(destination.getAbsolutePath() + "/" + zipName);
-        InputStream is = zipFile.getInputStream(e);
-        int n = 0;
-        byte[] buff = new byte[8192];
-        while ((n = is.read(buff)) > 0) {
-            os.write(buff, 0, n);
+        try (FileOutputStream os = new FileOutputStream(destination.getAbsolutePath() + "/" + zipName);
+                InputStream is = zipFile.getInputStream(e)) {
+            int n = 0;
+            byte[] buff = new byte[8192];
+            while ((n = is.read(buff)) > 0) {
+                os.write(buff, 0, n);
+            }
         }
-        is.close();
-        os.close();
     }    
 }

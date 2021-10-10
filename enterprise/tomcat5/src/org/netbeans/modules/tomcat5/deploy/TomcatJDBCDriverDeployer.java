@@ -104,20 +104,11 @@ public class TomcatJDBCDriverDeployer implements JDBCDriverDeployer {
                 for (FileObject file : jdbcDriverFiles) {
                     File libsDir = tp.getLibsDir();
                     File toJar = new File(libsDir, file.getNameExt());
-                    try {
-                        BufferedInputStream is = new BufferedInputStream(file.getInputStream());
-                        try {
-                            String msg = NbBundle.getMessage(TomcatJDBCDriverDeployer.class, "MSG_DeployingJDBCDrivers", toJar.getPath());
-                            eventSupport.fireHandleProgressEvent(null, new Status(ActionType.EXECUTE, CommandType.DISTRIBUTE, msg, StateType.RUNNING));
-                            BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar));
-                            try {
-                                FileUtil.copy(is, os);
-                            } finally {
-                                os.close();
-                            }
-                        } finally {
-                            is.close();
-                        }
+                    try (BufferedInputStream is = new BufferedInputStream(file.getInputStream());
+                            BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar))) {
+                        String msg = NbBundle.getMessage(TomcatJDBCDriverDeployer.class, "MSG_DeployingJDBCDrivers", toJar.getPath());
+                        eventSupport.fireHandleProgressEvent(null, new Status(ActionType.EXECUTE, CommandType.DISTRIBUTE, msg, StateType.RUNNING));
+                        FileUtil.copy(is, os);
                     } catch (IOException e) {
                         LOG.log(Level.INFO, null, e);
                         String msg = NbBundle.getMessage(TomcatJDBCDriverDeployer.class, "MSG_DeployingJDBCDriversFailed", toJar.getPath(), libsDir.getPath());

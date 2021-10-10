@@ -22,6 +22,7 @@ package org.netbeans.modules.payara.spi;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -73,9 +74,9 @@ public class Utils {
                     }
                 }
             } else {
-                java.io.FileOutputStream fos = null;
+                FileOutputStream fos = null;
                 try {
-                    fos = new java.io.FileOutputStream(f, true);
+                    fos = new FileOutputStream(f, true);
                 }
                 catch (FileNotFoundException ex) {
                     // I hate using exceptions for flow of control
@@ -193,15 +194,11 @@ public class Utils {
      * @return true, if the local port is in use.
      */
     public static boolean isLocalPortOccupied(int port) {
-        ServerSocket ss = null;
         boolean retVal = true;
-        try {
-            ss = new ServerSocket(port);
+        try (ServerSocket ss = new ServerSocket(port)) {
             retVal = false;
         } catch (IOException ioe) {
             // do nothing
-        } finally {
-            if (null != ss) {try { ss.close(); } catch (IOException ioe) {} }
         }
         return retVal;
     }
@@ -267,13 +264,32 @@ public class Utils {
 
     private static boolean isSecurePort(String hostname, int port, int depth) 
             throws IOException, ConnectException, SocketTimeoutException {
-        // Open the socket with a short timeout for connects and reads.
-        Socket socket = new Socket();
-        try {
+        boolean isSecure;
+        try (Socket socket = new Socket();
+                InputStream is = socket.getInputStream();
+                PrintWriter pw = new PrintWriter(socket.getOutputStream())) {    // Open the socket with a short timeout for connects and reads.
             Logger.getLogger("payara-socket-connect-diagnostic").log(Level.FINE, "Using socket.connect", new Exception());
             socket.connect(new InetSocketAddress(hostname, port), PORT_CHECK_TIMEOUT);
             socket.setSoTimeout(PORT_CHECK_TIMEOUT);
+            
+            //This is the test query used to ping the server in an attempt to
+            //determine if it is secure or not.
+            String testQuery = "GET / HTTP/1.0";
+            pw.println(testQuery);
+            pw.println();
+            pw.flush();
+            byte[] respArr = new byte[1024];
+            isSecure = true;
+            while (is.read(respArr) != -1) {
+                String resp = new String(respArr);
+                if (checkHelper(resp) == false) {
+                    isSecure = false;
+                    break;
+                }
+            }
+            
         } catch(SocketException ex) { // this could be bug 70020 due to SOCKs proxy not having localhost
+            isSecure = false;
             String socksNonProxyHosts = System.getProperty("socksNonProxyHosts");
             if(socksNonProxyHosts != null && socksNonProxyHosts.indexOf("localhost") < 0) {
                 String localhost = socksNonProxyHosts.length() > 0 ? "|localhost" : "localhost";
@@ -284,25 +300,6 @@ public class Utils {
                 //next call, we'll be ok and it will really detect if we are secure or not
             }
         }
-        //This is the test query used to ping the server in an attempt to
-        //determine if it is secure or not.
-        InputStream is = socket.getInputStream();        
-        String testQuery = "GET / HTTP/1.0";
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
-        pw.println(testQuery);
-        pw.println();
-        pw.flush();
-        byte[] respArr = new byte[1024];
-        boolean isSecure = true;
-        while (is.read(respArr) != -1) {
-            String resp = new String(respArr);
-            if (checkHelper(resp) == false) {
-                isSecure = false;
-                break;
-            }
-        }
-        // Close the socket
-        socket.close();
         return isSecure;
     }
 

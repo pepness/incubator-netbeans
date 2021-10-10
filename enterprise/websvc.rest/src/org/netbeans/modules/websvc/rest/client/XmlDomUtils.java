@@ -56,61 +56,62 @@ public class XmlDomUtils {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        InputStream targetStream = buildScript.getInputStream();
-        Document targetDom = docBuilder.parse(targetStream);
-        Element rootNode = targetDom.getDocumentElement();
-        if (rootNode != null) {
-            if (!isInitTarget) {
-                rootNode.appendChild(targetDom.createComment("Target required for SAAS(REST) services: XJCTask initialization"));
+        try (InputStream targetStream = buildScript.getInputStream()) {
+            Document targetDom = docBuilder.parse(targetStream);
+            Element rootNode = targetDom.getDocumentElement();
+            if (rootNode != null) {
+                if (!isInitTarget) {
+                    rootNode.appendChild(targetDom.createComment("Target required for SAAS(REST) services: XJCTask initialization"));
+                    rootNode.appendChild(targetDom.createTextNode("\n"));
+                    Element targetEl = targetDom.createElement("target");
+                    targetEl.setAttribute("name", "saas-init-xjc");
+                    if (!isNbProject) {
+                        targetEl.setAttribute("depends", "-init-project");
+                    }
+                    Element taskdefEl = targetDom.createElement("taskdef");
+                    taskdefEl.setAttribute("name", "xjc");
+                    taskdefEl.setAttribute("classname", "com.sun.tools.xjc.XJCTask");
+                    Element classpathEl = targetDom.createElement("classpath");
+                    classpathEl.setAttribute("path", "${libs.jaxb.classpath}");
+                    taskdefEl.appendChild(classpathEl);
+                    targetEl.appendChild(taskdefEl);
+                    rootNode.appendChild(targetEl);
+                    rootNode.appendChild(targetDom.createTextNode("\n\n"));
+                }
+                rootNode.appendChild(targetDom.createComment("Target required for SAAS(REST) services: data types generation"));
                 rootNode.appendChild(targetDom.createTextNode("\n"));
                 Element targetEl = targetDom.createElement("target");
-                targetEl.setAttribute("name", "saas-init-xjc");
-                if (!isNbProject) {
-                    targetEl.setAttribute("depends", "-init-project");
+                targetEl.setAttribute("name", targetName);
+                targetEl.setAttribute("depends", "saas-init-xjc");
+                for (int i=0;i<schemaFiles.length;i++) {
+                    Element xjcEl = targetDom.createElement("xjc");
+                    xjcEl.setAttribute("schema", schemaFiles[i]);
+                    xjcEl.setAttribute("target", "2.1");
+                    xjcEl.setAttribute("package", packageNames[i]);
+                    xjcEl.setAttribute("destdir", sourceRoot);
+                    xjcEl.setAttribute("encoding", "${source.encoding}");
+                    targetEl.appendChild(xjcEl);
                 }
-                Element taskdefEl = targetDom.createElement("taskdef");
-                taskdefEl.setAttribute("name", "xjc");
-                taskdefEl.setAttribute("classname", "com.sun.tools.xjc.XJCTask");
-                Element classpathEl = targetDom.createElement("classpath");
-                classpathEl.setAttribute("path", "${libs.jaxb.classpath}");
-                taskdefEl.appendChild(classpathEl);
-                targetEl.appendChild(taskdefEl);
                 rootNode.appendChild(targetEl);
                 rootNode.appendChild(targetDom.createTextNode("\n\n"));
-            }
-            rootNode.appendChild(targetDom.createComment("Target required for SAAS(REST) services: data types generation"));
-            rootNode.appendChild(targetDom.createTextNode("\n"));
-            Element targetEl = targetDom.createElement("target");
-            targetEl.setAttribute("name", targetName);
-            targetEl.setAttribute("depends", "saas-init-xjc");
-            for (int i=0;i<schemaFiles.length;i++) {
-                Element xjcEl = targetDom.createElement("xjc");
-                xjcEl.setAttribute("schema", schemaFiles[i]);
-                xjcEl.setAttribute("target", "2.1");
-                xjcEl.setAttribute("package", packageNames[i]);
-                xjcEl.setAttribute("destdir", sourceRoot);
-                xjcEl.setAttribute("encoding", "${source.encoding}");
-                targetEl.appendChild(xjcEl);
-            }
-            rootNode.appendChild(targetEl);
-            rootNode.appendChild(targetDom.createTextNode("\n\n"));
 
-            targetStream.close();
-            
-            try {
-                Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                try {
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-                //initialize StreamResult with File object to save to file
-                OutputStream os = buildScript.getOutputStream();
-                StreamResult result = new StreamResult(os);
-                DOMSource source = new DOMSource(targetDom);
-                transformer.transform(source, result);
-                os.close();
+                    //initialize StreamResult with File object to save to file
+                    try (OutputStream os = buildScript.getOutputStream()) {
+                        StreamResult result = new StreamResult(os);
+                        DOMSource source = new DOMSource(targetDom);
+                        transformer.transform(source, result);
+                    }
 
-            } catch (TransformerException ex) {
-                Logger.getLogger(XmlDomUtils.class.getName()).log(Level.WARNING, "Can not save build.xml file", ex);
+                } catch (TransformerException ex) {
+                    Logger.getLogger(XmlDomUtils.class.getName()).log(Level.WARNING, "Can not save build.xml file", ex);
+                }
             }
+        } catch (Exception e) {
+            Logger.getLogger(XmlDomUtils.class.getName()).log(Level.WARNING, "Can not save build.xml file", e);
         }
     }
 }

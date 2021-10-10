@@ -186,11 +186,8 @@ public final class JSFPaletteUtilities {
 
     public static void expandJSFTemplate(FileObject template, Map<String, Object> values, FileObject target) throws IOException {
         Charset targetEncoding = FileEncodingQuery.getEncoding(target);
-        Writer w = new OutputStreamWriter(target.getOutputStream(), targetEncoding);
-        try {
+        try (Writer w = new OutputStreamWriter(target.getOutputStream(), targetEncoding)) {
             expandJSFTemplate(template, values, targetEncoding, w);
-        } finally {
-            w.close();
         }
         DataObject dob = DataObject.find(target);
         if (dob != null) {
@@ -204,16 +201,12 @@ public final class JSFPaletteUtilities {
         Bindings bind = eng.getContext().getBindings(ScriptContext.ENGINE_SCOPE);
         bind.putAll(values);
         bind.put(ENCODING_PROPERTY_NAME, targetEncoding.name());
-
-        Reader is = null;
-        try {
+        
+        try (Reader is = new InputStreamReader(template.getInputStream(), sourceEnc)) {
             eng.getContext().setWriter(w);
-            is = new InputStreamReader(template.getInputStream(), sourceEnc);
             eng.eval(is);
         } catch (ScriptException ex) {
             throw new IOException(ex);
-        } finally {
-            if (is != null) is.close();
         }
     }
 

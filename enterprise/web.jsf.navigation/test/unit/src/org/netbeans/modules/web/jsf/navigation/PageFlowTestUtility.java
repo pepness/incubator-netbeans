@@ -250,8 +250,7 @@ public class PageFlowTestUtility {
     }
 
     private static void unZipFile(File archiveFile, FileObject destDir) throws IOException {
-        FileInputStream fis = new FileInputStream(archiveFile);
-        try {
+        try (FileInputStream fis = new FileInputStream(archiveFile)) {
             ZipInputStream str = new ZipInputStream(fis);
             ZipEntry entry;
             while ((entry = str.getNextEntry()) != null) {
@@ -259,21 +258,12 @@ public class PageFlowTestUtility {
                     FileUtil.createFolder(destDir, entry.getName());
                 } else {
                     FileObject fo = FileUtil.createData(destDir, entry.getName());
-                    FileLock lock = fo.lock();
-                    try {
-                        OutputStream out = fo.getOutputStream(lock);
-                        try {
-                            FileUtil.copy(str, out);
-                        } finally {
-                            out.close();
-                        }
-                    } finally {
-                        lock.releaseLock();
+                    try (FileLock lock = fo.lock();
+                            OutputStream out = fo.getOutputStream(lock)) {
+                        FileUtil.copy(str, out);
                     }
                 }
             }
-        } finally {
-            fis.close();
         }
     }
 

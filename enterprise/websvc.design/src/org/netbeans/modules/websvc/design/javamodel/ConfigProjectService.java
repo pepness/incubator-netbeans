@@ -72,16 +72,9 @@ class ConfigProjectService implements ProjectService {
                     serviceName, false);
             if (localWsdlFolder != null) {
                 // removing local wsdl and xml artifacts
-                FileLock lock = null;
                 FileObject clientArtifactsFolder = localWsdlFolder.getParent();
-                try {
-                    lock = clientArtifactsFolder.lock();
+                try (FileLock lock = clientArtifactsFolder.lock()) {
                     clientArtifactsFolder.delete(lock);
-                }
-                finally {
-                    if (lock != null) {
-                        lock.releaseLock();
-                    }
                 }
                 // removing wsdl and xml artifacts from WEB-INF/wsdl
                 FileObject wsdlFolder = support.getWsdlFolder(false);
@@ -89,14 +82,8 @@ class ConfigProjectService implements ProjectService {
                     FileObject serviceWsdlFolder = wsdlFolder
                             .getFileObject(serviceName);
                     if (serviceWsdlFolder != null) {
-                        try {
-                            lock = serviceWsdlFolder.lock();
+                        try (FileLock lock = serviceWsdlFolder.lock()) {
                             serviceWsdlFolder.delete(lock);
-                        }
-                        finally {
-                            if (lock != null) {
-                                lock.releaseLock();
-                            }
                         }
                     }
                 }

@@ -339,16 +339,9 @@ public class SunCmpMappingsProxy implements SunCmpMappings, RootInterfaceImpl {
             if(dataObject instanceof DDProviderDataObject) {
                 ((DDProviderDataObject) dataObject).writeModel(cmpMappingsRoot);
             } else {
-                FileLock lock = fo.lock();
-                try {
-                    OutputStream os = fo.getOutputStream(lock);
-                    try {
-                        write(os);
-                    } finally {
-                        os.close(); 
-                    }
-                } finally {
-                    lock.releaseLock();
+                try (FileLock lock = fo.lock();
+                        OutputStream os = fo.getOutputStream(lock);) {
+                    write(os);
                 }
             }
         }

@@ -39,11 +39,8 @@ public class AntProjectUtil {
             if (oldBackup != null) {
                 oldBackup.delete();
             }
-            FileLock lock = buildImpl.lock();
-            try {
+            try (FileLock lock = buildImpl.lock()) {
                 buildImpl.rename(lock, name, backupext);
-            } finally {
-                lock.releaseLock();
             }
         }
     }

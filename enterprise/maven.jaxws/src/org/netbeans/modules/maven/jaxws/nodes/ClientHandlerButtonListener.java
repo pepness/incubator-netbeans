@@ -158,33 +158,11 @@ public class ClientHandlerButtonListener implements ActionListener {
 
                     @Override
                     public void run() throws IOException {
-                        BufferedWriter bw = null;
-                        OutputStream os = null;
-                        OutputStreamWriter osw = null;
-                        FileLock lock = bindingHandlerFO.lock();
-                        try {
-                            os = bindingHandlerFO.getOutputStream(lock);
-                            osw = new OutputStreamWriter(os, Charset.forName("UTF-8")); //  NOI18N
-                            bw = new BufferedWriter(osw);
+                        try (FileLock lock = bindingHandlerFO.lock();
+                                OutputStream os = bindingHandlerFO.getOutputStream(lock);
+                                OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                                BufferedWriter bw = new BufferedWriter(osw)) {
                             bw.write(bindingsContent);
-                        } finally {
-                            try {
-                                if (bw != null) {
-                                    bw.close();
-                                }
-                                if (os != null) {
-                                    os.close();
-                                }
-                                if (osw != null) {
-                                    osw.close();
-                                }
-                            } catch (IOException e) {
-                                ErrorManager.getDefault().notify(e);
-                            }
-
-                            if (lock != null) {
-                                lock.releaseLock();
-                            }
                         }
                     }
                 });

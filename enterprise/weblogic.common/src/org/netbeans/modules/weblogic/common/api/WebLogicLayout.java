@@ -156,36 +156,27 @@ public final class WebLogicLayout {
         // we will add weblogic.server.modules jar manually as the path is hardcoded
         // and may not be valid see #189537 and #206259
         String serverModulesJar = null;
-        try {
-            // JarInputStream cannot be used due to problem in weblogic.jar in Oracle Weblogic Server 10.3
-            JarFile jar = new JarFile(weblogicJar);
-            try {
-                Manifest manifest = jar.getManifest();
-                if (manifest != null) {
-                    String classpath = manifest.getMainAttributes()
-                            .getValue("Class-Path"); // NOI18N
-                    String[] elements = classpath.split("\\s+"); // NOI18N
-                    for (String element : elements) {
-                        if (element.contains("weblogic.server.modules")) { // NOI18N
-                            File ref = new File(weblogicJar.getParentFile(), element);
-                            if (!ref.exists()) {
-                                LOGGER.log(Level.INFO, "Broken {0} classpath file {1} for {2}",
-                                        new Object[] {weblogicJar.getAbsolutePath(), ref.getAbsolutePath(), config.getServerHome()});
-                            }
-                            serverModulesJar = element;
-                            // last element of ../../../modules/something
-                            int index = serverModulesJar.lastIndexOf("./"); // NOI18N
-                            if (index >= 0) {
-                                serverModulesJar = serverModulesJar.substring(index + 1);
-                            }
+        // JarInputStream cannot be used due to problem in weblogic.jar in Oracle Weblogic Server 10.3
+        try (JarFile jar = new JarFile(weblogicJar)) {
+            Manifest manifest = jar.getManifest();
+            if (manifest != null) {
+                String classpath = manifest.getMainAttributes()
+                        .getValue("Class-Path"); // NOI18N
+                String[] elements = classpath.split("\\s+"); // NOI18N
+                for (String element : elements) {
+                    if (element.contains("weblogic.server.modules")) { // NOI18N
+                        File ref = new File(weblogicJar.getParentFile(), element);
+                        if (!ref.exists()) {
+                            LOGGER.log(Level.INFO, "Broken {0} classpath file {1} for {2}",
+                                    new Object[] {weblogicJar.getAbsolutePath(), ref.getAbsolutePath(), config.getServerHome()});
+                        }
+                        serverModulesJar = element;
+                        // last element of ../../../modules/something
+                        int index = serverModulesJar.lastIndexOf("./"); // NOI18N
+                        if (index >= 0) {
+                            serverModulesJar = serverModulesJar.substring(index + 1);
                         }
                     }
-                }
-            } finally {
-                try {
-                    jar.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.FINEST, null, ex);
                 }
             }
         } catch (IOException e) {
@@ -247,26 +238,17 @@ public final class WebLogicLayout {
         if (!weblogicJar.exists()) {
             return null;
         }
-        try {
-            // JarInputStream cannot be used due to problem in weblogic.jar in Oracle Weblogic Server 10.3
-            JarFile jar = new JarFile(weblogicJar);
-            try {
-                Manifest manifest = jar.getManifest();
-                String implementationVersion = null;
-                if (manifest != null) {
-                    implementationVersion = manifest.getMainAttributes()
-                            .getValue("Implementation-Version"); // NOI18N
-                }
-                if (implementationVersion != null) { // NOI18N
-                    implementationVersion = implementationVersion.trim();
-                    return Version.fromJsr277OrDottedNotationWithFallback(implementationVersion);
-                }
-            } finally {
-                try {
-                    jar.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.FINEST, null, ex);
-                }
+        // JarInputStream cannot be used due to problem in weblogic.jar in Oracle Weblogic Server 10.3
+        try (JarFile jar = new JarFile(weblogicJar)) {
+            Manifest manifest = jar.getManifest();
+            String implementationVersion = null;
+            if (manifest != null) {
+                implementationVersion = manifest.getMainAttributes()
+                        .getValue("Implementation-Version"); // NOI18N
+            }
+            if (implementationVersion != null) { // NOI18N
+                implementationVersion = implementationVersion.trim();
+                return Version.fromJsr277OrDottedNotationWithFallback(implementationVersion);
             }
         } catch (IOException e) {
             LOGGER.log(Level.FINE, null, e);
@@ -288,11 +270,8 @@ public final class WebLogicLayout {
             return getMiddlewareHome(serverHome, null);
         }
         try {
-            InputStream is = new BufferedInputStream(new FileInputStream(productProps));
-            try {
+            try (InputStream is = new BufferedInputStream(new FileInputStream(productProps))) {
                 ret.load(is);
-            } finally {
-                is.close();
             }
             return getMiddlewareHome(serverHome, ret.getProperty("MW_HOME"));
         } catch (IOException ex) {

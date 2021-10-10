@@ -79,16 +79,9 @@ public abstract class EnclosingBean extends BaseBean implements CommonDDBean, Cr
      */
     public void write(org.openide.filesystems.FileObject fo) throws java.io.IOException {
         // TODO: need to be implemented with Dialog opened when the file object is locked
-        FileLock lock = fo.lock();
-        try {
-            OutputStream os = fo.getOutputStream(lock);
-            try {
-                write(os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock)) {
+            write(os);
         }
     }
     

@@ -135,11 +135,10 @@ public class Utils {
     public static void copyFile(File in, File out) {
         try {
             out.createNewFile();
-            FileChannel srcChannel = new FileInputStream(in).getChannel();
-            FileChannel dstChannel = new FileOutputStream(out).getChannel();
-            dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-            srcChannel.close();
-            dstChannel.close();
+            try (FileChannel srcChannel = new FileInputStream(in).getChannel();
+                    FileChannel dstChannel = new FileOutputStream(out).getChannel()) {
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace(System.err);
         }
@@ -153,16 +152,17 @@ public class Utils {
      */
     public static String loadFromURL(String url_string) throws IOException {
         URL url = new URL(url_string);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (sb.length() > 0) {
-                sb.append("\n");
+        StringBuilder sb;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (sb.length() > 0) {
+                    sb.append("\n");
+                }
+                sb.append(line);
             }
-            sb.append(line);
         }
-        reader.close();
         return sb.toString();
     }
 

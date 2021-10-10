@@ -49,11 +49,8 @@ public class ClientParseUtils {
     /** Parsing just for detecting the version  SAX parser used
      */
     public static String getVersion(FileObject fo) throws java.io.IOException, SAXException {
-        InputStream inputStream = fo.getInputStream();
-        try {
+        try (InputStream inputStream = fo.getInputStream()) {
             return ParseUtils.getVersion(inputStream, new VersionHandler(), DDResolver.getInstance());
-        } finally {
-            inputStream.close();
         }
     }
     
@@ -116,11 +113,8 @@ public class ClientParseUtils {
 
     public static SAXParseException parse(FileObject fo)
     throws org.xml.sax.SAXException, java.io.IOException {
-        InputStream inputStream = fo.getInputStream();
-        try {
+        try (InputStream inputStream = fo.getInputStream()) {
             return parse(new InputSource(inputStream));
-        } finally {
-            inputStream.close();
         }
     }
     

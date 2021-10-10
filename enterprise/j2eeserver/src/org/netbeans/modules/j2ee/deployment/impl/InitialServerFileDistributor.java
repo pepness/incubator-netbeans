@@ -163,7 +163,6 @@ public class InitialServerFileDistributor extends ServerProgress {
     }
 
     private void _distribute(Iterator<J2eeModule.RootedEntry> rootedEntries, File dir, Set<String> childModuleNames) {
-        FileLock lock = null;
 
         try {
             // this is just safeguard - should not happen anymore
@@ -216,13 +215,6 @@ public class InitialServerFileDistributor extends ServerProgress {
             String msg = NbBundle.getMessage(InitialServerFileDistributor.class, "MSG_IncrementalDeployFailed", e);
             setStatusDistributeFailed(msg);
             throw new RuntimeException(e);
-        } finally {
-            if (lock != null) {
-                try {
-                    lock.releaseLock();
-                } catch (Exception ex) {
-                }
-            }
         }
     }
 
@@ -247,82 +239,34 @@ public class InitialServerFileDistributor extends ServerProgress {
             return;
         }
         File destFile = new File(directory, relativePath);
-        FileOutputStream os = new FileOutputStream(destFile);
-        FileInputStream fis = null;
-        InputStream is = null;
-        FileChannel in = null;
-        FileChannel out = null;
-        try {
+        try (FileOutputStream os = new FileOutputStream(destFile)) {
             File sourceFile = FileUtil.toFile(sourceObject);
             if (null != sourceFile && sourceFile.canRead()) {
-                // we are coming from a readable file
-                fis = new FileInputStream(sourceFile);
-                in = fis.getChannel();
-                out = os.getChannel();
-
-                long fileSize = sourceFile.length();
-                long bufSize = Math.min(65536, fileSize);
-                long offset = 0;
-
-                do {
-                    offset += in.transferTo(offset, bufSize, out);
-                } while (offset < fileSize);
+                try (FileInputStream fis = new FileInputStream(sourceFile);
+                        FileChannel in = fis.getChannel();
+                        FileChannel out = os.getChannel()) {
+                    // we are coming from a readable file
+                    long fileSize = sourceFile.length();
+                    long bufSize = Math.min(65536L, fileSize);
+                    long offset = 0L;
+                    do {
+                        offset += in.transferTo(offset, bufSize, out);
+                    } while (offset < fileSize);
+                }
             } else {
-                is = sourceObject.getInputStream();
-                FileUtil.copy(is, os);
-            }
-        } finally {
-            if (null != out) {
-                try {
-                    out.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, null, ioe);
-                }
-            }
-            if (null != in) {
-                try {
-                    in.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, null, ioe);
-                }
-            }
-            if (null != is) {
-                try {
-                    is.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, null, ioe);
-                }
-            }
-            if (null != fis) {
-                try {
-                    fis.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, null, ioe);
-                }
-            }
-            if (null != os) {
-                try {
-                    os.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, null, ioe);
+                try (InputStream is = sourceObject.getInputStream()) {
+                    FileUtil.copy(is, os);
                 }
             }
         }
     }
 
     private void zeroOutArchive(FileObject garbage) throws IOException {
-        OutputStream fileToOverwrite = garbage.getOutputStream();
-        try {
-            JarOutputStream jos = new JarOutputStream(fileToOverwrite);
-            try {
-                jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF")); // NOI18N
-                // UTF-8 guaranteed on any platform
-                jos.write("Manifest-Version: 1.0\n".getBytes("UTF-8")); // NOI18N
-            } finally {
-                jos.close();
-            }
-        } finally {
-            fileToOverwrite.close();
+        try (OutputStream fileToOverwrite = garbage.getOutputStream();
+                JarOutputStream jos = new JarOutputStream(fileToOverwrite)) {
+            jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF")); // NOI18N
+            // UTF-8 guaranteed on any platform
+            jos.write("Manifest-Version: 1.0\n".getBytes("UTF-8")); // NOI18N
         }
     }
 }

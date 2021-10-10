@@ -277,12 +277,8 @@ public class JaxWsClientNode extends AbstractNode implements OpenCookie, JaxWsRe
             FileObject localWsdlFolder = support.getLocalWsdlFolderForClient(clientName,false);
             if (localWsdlFolder!=null) {
                 FileObject clientArtifactsFolder = localWsdlFolder.getParent();
-                FileLock lock=null;
-                try {
-                    lock = clientArtifactsFolder.lock();
+                try (FileLock lock = clientArtifactsFolder.lock()) {
                     clientArtifactsFolder.delete(lock);
-                } finally {
-                    if (lock!=null) lock.releaseLock();
                 }
             }
             
@@ -292,19 +288,12 @@ public class JaxWsClientNode extends AbstractNode implements OpenCookie, JaxWsRe
                 FileObject webInfClientFolder = findWsdlFolderForClient(support, clientName);
                 if (webInfClientFolder!=null) {
                     FileObject webInfClientRootFolder = webInfClientFolder.getParent();
-                    FileLock lock=null;
-                    try {
-                        lock = webInfClientFolder.lock();
+                    try (FileLock lock = webInfClientFolder.lock()) {
                         webInfClientFolder.delete(lock);
-                    } finally {
-                        if (lock!=null) lock.releaseLock();
                     }
                     if (webInfClientRootFolder.getChildren().length==0) {
-                        try {
-                            lock = webInfClientRootFolder.lock();
+                        try (FileLock lock = webInfClientRootFolder.lock()) {
                             webInfClientRootFolder.delete(lock);
-                        } finally {
-                            if (lock!=null) lock.releaseLock();
                         }
                     }
                 }
@@ -354,23 +343,14 @@ public class JaxWsClientNode extends AbstractNode implements OpenCookie, JaxWsRe
     private void removeWsdlFolderContents(){
         FileObject wsdlFolder = getJAXWSClientSupport().getLocalWsdlFolderForClient(getName(), false);
         if(wsdlFolder != null){
-            FileLock lock = null;
-            
             FileObject[] files = wsdlFolder.getChildren();
-            for(int i = 0; i < files.length; i++){
-                try{
-                    FileObject file = files[i];
-                    lock = file.lock();
+            for(int i = 0; i < files.length; i++) {
+                FileObject file = files[i];
+                try (FileLock lock = file.lock()) {
                     file.delete(lock);
                 }catch(IOException e){
                     ErrorManager.getDefault().notify(e);
                 } 
-                finally{
-                    if(lock != null){
-                        lock.releaseLock();
-                        lock = null;
-                    }
-                }
             }
         }
     }

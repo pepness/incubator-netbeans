@@ -517,9 +517,9 @@ public class SimplifiedJspServlet extends JSPProcessor {
             try {
                 FileSystem memFS = FileUtil.createMemoryFileSystem();
                 fileDummyJava = memFS.getRoot().createData("SimplifiedJSPServlet", "java"); //NOI18N
-                PrintWriter writer = new PrintWriter(fileDummyJava.getOutputStream());
-                writer.print(virtualClassBody);
-                writer.close();
+                try (PrintWriter writer = new PrintWriter(fileDummyJava.getOutputStream())) {
+                    writer.print(virtualClassBody);
+                }
 
                 Source source = Source.create(fileDummyJava);
                 process(fileDummyJava, source);

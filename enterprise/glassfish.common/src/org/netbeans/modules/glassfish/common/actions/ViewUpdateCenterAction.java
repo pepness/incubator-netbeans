@@ -180,7 +180,6 @@ public class ViewUpdateCenterAction extends NodeAction {
 
         boolean result = false;
         if(DialogDisplayer.getDefault().notify(nd) == NotifyDescriptor.YES_OPTION) {
-            PrintWriter writer = null;
             try {
                 Process process = new NbProcessDescriptor(launcher.getPath(), "").exec(null, null, launcher.getParentFile());
                 synchronized(taskMap) {
@@ -189,17 +188,16 @@ public class ViewUpdateCenterAction extends NodeAction {
 
                 SimpleIO ucIO = new SimpleIO("Update Center Installer", process);
                 ucIO.readInputStreams(process.getInputStream(), process.getErrorStream());
-                writer = new PrintWriter(new OutputStreamWriter(process.getOutputStream()), true);
-                // Answer affirmative to the "do you want to install..." question
-                writer.println("y");
-                writeProxyInfo(writer);
-                int exitCode = process.waitFor();
-                Logger.getLogger("glassfish").log(Level.FINEST, "UC exit code = " + exitCode);
-                if(exitCode == 0) {
-                    writer.close();
-                    writer = null;
-                    ucIO.closeIO();
-                    result = true;
+                try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(process.getOutputStream()), true)) {
+                    // Answer affirmative to the "do you want to install..." question
+                    writer.println("y");
+                    writeProxyInfo(writer);
+                    int exitCode = process.waitFor();
+                    Logger.getLogger("glassfish").log(Level.FINEST, "UC exit code = " + exitCode);
+                    if(exitCode == 0) {
+                        ucIO.closeIO();
+                        result = true;
+                    }
                 }
             } catch(InterruptedException ex) {
                 Logger.getLogger("glassfish").log(Level.WARNING, ex.getLocalizedMessage(), ex);
@@ -208,10 +206,6 @@ public class ViewUpdateCenterAction extends NodeAction {
             } finally {
                 synchronized (taskMap) {
                     taskMap.remove(serverUrl);
-                }
-
-                if(writer != null) {
-                    writer.close();
                 }
             }
         }

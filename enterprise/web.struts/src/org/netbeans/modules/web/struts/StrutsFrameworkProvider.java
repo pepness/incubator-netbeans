@@ -100,14 +100,14 @@ public class StrutsFrameworkProvider extends WebFrameworkProvider {
         // read the config from resource first
         StringBuilder sb = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NOI18N
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
-        String line = br.readLine();
-        while (line != null) {
-            sb.append(line);
-            sb.append(lineSep);
-            line = br.readLine();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding))) {
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                sb.append(lineSep);
+                line = br.readLine();
+            }
         }
-        br.close();
         return sb.toString();
     }
 
@@ -177,15 +177,9 @@ public class StrutsFrameworkProvider extends WebFrameworkProvider {
         }
         
         private void createFile(FileObject target, String content, String encoding) throws IOException{            
-            FileLock lock = target.lock();
-            try {
-                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(target.getOutputStream(lock), encoding));
+            try (FileLock lock = target.lock();
+                    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(target.getOutputStream(lock), encoding))) {
                 bw.write(content);
-                bw.close();
-
-            }
-            finally {
-                lock.releaseLock();
             }
         }
         

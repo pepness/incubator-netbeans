@@ -122,12 +122,12 @@ public class Reporter {
     
     public void ref(File file) {
         try {
-            BufferedReader br=new BufferedReader(new FileReader(file));
-            String line;
-            while ((line=br.readLine()) != null) {
-                ref(line);
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line=br.readLine()) != null) {
+                    ref(line);
+                }
             }
-            br.close();
         } catch (Exception ex) {
             ex.printStackTrace(getLogStream());
         }
@@ -181,12 +181,12 @@ public class Reporter {
     
     public void log(File file) {
         try {
-            BufferedReader br=new BufferedReader(new FileReader(file));
-            String line;
-            while ((line=br.readLine()) != null) {
-                log(line);
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line=br.readLine()) != null) {
+                    log(line);
+                }
             }
-            br.close();
         } catch (Exception ex) {
             ex.printStackTrace(getLogStream());
         }

@@ -246,16 +246,9 @@ public class TestBase extends NbTestCase {
             }
         } else {
             assert from.isFile();
-            InputStream is = new FileInputStream(from);
-            try {
-                OutputStream os = new FileOutputStream(to);
-                try {
-                    FileUtil.copy(is, os);
-                } finally {
-                    os.close();
-                }
-            } finally {
-                is.close();
+            try (InputStream is = new FileInputStream(from);
+                    OutputStream os = new FileOutputStream(to)) {
+                FileUtil.copy(is, os);
             }
         }
     }
@@ -333,17 +326,10 @@ public class TestBase extends NbTestCase {
     }
 
     public static final FileObject copyStringToFileObject(FileObject fo, String content) throws IOException {
-        OutputStream os = fo.getOutputStream();
-        try {
-            InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
-            try {
-                FileUtil.copy(is, os);
-                return fo;
-            } finally {
-                is.close();
-            }
-        } finally {
-            os.close();
+        try (OutputStream os = fo.getOutputStream();
+                InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"))) {
+            FileUtil.copy(is, os);
+            return fo;
         }
     }
 

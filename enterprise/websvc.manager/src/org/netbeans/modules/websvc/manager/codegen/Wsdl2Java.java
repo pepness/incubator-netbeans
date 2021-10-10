@@ -301,7 +301,6 @@ public class Wsdl2Java {
         try {
             File cf = File.createTempFile("jaxrpcconfigfile", ".xml"); // NOI81N
             cf.deleteOnExit();
-            OutputStream out = new FileOutputStream(cf);
             String packageName = webServiceData.getEffectivePackageName();
             if (packageName == null || packageName.trim().length() == 0) {
                 String msg = NbBundle.getMessage(Wsdl2Java.class, "MSG_InvalidPackageName");
@@ -310,16 +309,12 @@ public class Wsdl2Java {
             final String wsdlConfigEntry = "\t<wsdl location=\"" + wsdlFileName +
                     "\" packageName=\"" + packageName + "\"/>"; // NOI81N
             
-            PrintWriter configWriter = new PrintWriter( new OutputStreamWriter(
-                    out, Charset.forName("UTF-8")));            // NOI18N
-            
-            try {
+            try (OutputStream out = new FileOutputStream(cf);
+                    PrintWriter configWriter = new PrintWriter( new OutputStreamWriter(out, Charset.forName("UTF-8")))) {  // NOI18N
                 configWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"); // NOI18N
                 configWriter.println("<configuration xmlns=\"http://java.sun.com/xml/ns/jax-rpc/ri/config\">"); // NOI18N
                 configWriter.println(wsdlConfigEntry);
                 configWriter.println("</configuration>"); // NOI18N
-            } finally {
-                configWriter.close();
             }
             properties.put(CONFIG_FILE_PROP, cf.getAbsolutePath());
         } catch (IOException exc) {

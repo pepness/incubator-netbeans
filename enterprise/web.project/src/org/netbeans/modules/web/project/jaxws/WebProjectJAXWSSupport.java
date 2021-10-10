@@ -371,21 +371,10 @@ public class WebProjectJAXWSSupport extends ProjectJAXWSSupport /*implements JAX
             endpoint.setImplementation(serviceImpl);
             endpoint.setUrlPattern("/" + wsName);
             endpoints.addEnpoint(endpoint);
-            FileLock lock = null;
-            OutputStream os = null;
             synchronized (this) {
-                try{
-                    lock = sunjaxwsFile.lock();
-                    os = sunjaxwsFile.getOutputStream(lock);
+                try (FileLock lock = sunjaxwsFile.lock();
+                        OutputStream os = sunjaxwsFile.getOutputStream(lock)) {
                     endpoints.write(os);
-                }finally{
-                    if(lock != null) {
-                        lock.releaseLock();
-                    }
-
-                    if(os != null) {
-                        os.close();
-                    }
                 }
             }
         }else{
@@ -441,18 +430,12 @@ public class WebProjectJAXWSSupport extends ProjectJAXWSSupport /*implements JAX
         if(ddFolder != null){
             FileObject sunjaxwsFile = ddFolder.getFileObject("sun-jaxws.xml");
             if(sunjaxwsFile != null){
-                FileLock lock = null;
                 //if there are no more services, delete the file
                 JaxWsModel jaxWsModel = (JaxWsModel)project.getLookup().lookup(JaxWsModel.class);
                 if(jaxWsModel.getServices().length == 0) {
                     synchronized(this) {
-                        try{
-                            lock = sunjaxwsFile.lock();
+                        try (FileLock lock = sunjaxwsFile.lock();) {
                             sunjaxwsFile.delete(lock);
-                        } finally{
-                            if(lock != null){
-                                lock.releaseLock();
-                            }
                         }
                     }
                 } else{
@@ -461,19 +444,10 @@ public class WebProjectJAXWSSupport extends ProjectJAXWSSupport /*implements JAX
                     Endpoint endpoint = endpoints.findEndpointByName(serviceName);
                     if(endpoint != null){
                         endpoints.removeEndpoint(endpoint);
-                        OutputStream os = null;
                         synchronized(this) {
-                            try{
-                                lock = sunjaxwsFile.lock();
-                                os = sunjaxwsFile.getOutputStream(lock);
+                            try (FileLock lock = sunjaxwsFile.lock();
+                                    OutputStream os = sunjaxwsFile.getOutputStream(lock);) {
                                 endpoints.write(os);
-                            }finally{
-                                if(lock != null){
-                                    lock.releaseLock();
-                                }
-                                if(os != null){
-                                    os.close();
-                                }
                             }
                         }
                     }

@@ -330,23 +330,13 @@ public final class TestUtil {
         }
         assert fo.isData();
         if (content != null || touch) {
-            FileLock lock = fo.lock();
-            try {
-                OutputStream os = fo.getOutputStream(lock);
-                try {
-                    if (content != null) {
-                        InputStream is = content.openStream();
-                        try {
-                            FileUtil.copy(is, os);
-                        } finally {
-                            is.close();
-                        }
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
+                if (content != null) {
+                    try (InputStream is = content.openStream()) {
+                        FileUtil.copy(is, os);
                     }
-                } finally {
-                    os.close();
                 }
-            } finally {
-                lock.releaseLock();
             }
         }
         return fo;
@@ -416,16 +406,9 @@ public final class TestUtil {
             }
         } else {
             assert from.isFile();
-            InputStream is = new FileInputStream(from);
-            try {
-                OutputStream os = new FileOutputStream(to);
-                try {
-                    FileUtil.copy(is, os);
-                } finally {
-                    os.close();
-                }
-            } finally {
-                is.close();
+            try (InputStream is = new FileInputStream(from);
+                    OutputStream os = new FileOutputStream(to)) {
+                FileUtil.copy(is, os);
             }
         }
     }

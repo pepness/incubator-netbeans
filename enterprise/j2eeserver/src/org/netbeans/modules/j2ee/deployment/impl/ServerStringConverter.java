@@ -30,6 +30,7 @@ import org.netbeans.spi.settings.DOMConvertor;
 
 import org.openide.util.NbBundle;
 import org.openide.filesystems.*;
+import org.openide.util.Exceptions;
 
 /**
  * @author  nn136682
@@ -45,27 +46,18 @@ public class ServerStringConverter extends org.netbeans.spi.settings.DOMConverto
     private static final String SYSTEM_ID = "nbres:/org/netbeans/modules/j2ee/deployment/impl/server-string.dtd"; // NOI18N
     
     public static boolean writeServerInstance(ServerString instance, String destDir, String destFile) {
-        FileLock lock = null;
-        Writer writer = null;
+        
+        FileObject dir = FileUtil.getConfigFile(destDir);
         try {
-            FileObject dir = FileUtil.getConfigFile(destDir);
             FileObject fo = FileUtil.createData(dir, destFile);
-            lock = fo.lock();
-            writer = new OutputStreamWriter(fo.getOutputStream(lock), "UTF-8"); // NOI18N
-            create().write(writer, instance);
-            return true;
-            
-        } catch(Exception ioe) {
-            Logger.getLogger("global").log(Level.WARNING, null, ioe);
-            return false;
-        }
-        finally {
-            try {
-            if (lock != null) lock.releaseLock();
-            if (writer != null) writer.close();
-            } catch (Exception e) {
-                Logger.getLogger("global").log(Level.WARNING, null, e);
+            try (FileLock lock = fo.lock();
+                    Writer writer = new OutputStreamWriter(fo.getOutputStream(lock), "UTF-8")) {    // NOI18N
+                create().write(writer, instance);
+                return true;
             }
+        } catch (IOException ex) {
+            Logger.getLogger("global").log(Level.WARNING, null, ex);
+            return false;
         }
     }
 

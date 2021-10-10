@@ -383,40 +383,21 @@ public abstract class ArtifactCopyOnSaveSupport implements FileChangeListener,
     }
 
     private void copy(FileObject sourceFile, FileObject destFile) throws IOException {
-        InputStream is = null;
-        OutputStream os = null;
-        FileLock fl = null;
-        try {
-            is = sourceFile.getInputStream();
-            fl = destFile.lock();
-            os = destFile.getOutputStream(fl);
+        
+        try (InputStream is = sourceFile.getInputStream();
+                FileLock fl = destFile.lock();
+                OutputStream os = destFile.getOutputStream(fl)) {
             FileUtil.copy(is, os);
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-            if (os != null) {
-                os.close();
-            }
-            if (fl != null) {
-                fl.releaseLock();
-            }
         }
+        
     }
 
     private void zeroOutArchive(FileObject garbage) throws IOException {
-        OutputStream fileToOverwrite = garbage.getOutputStream();
-        try {
-            JarOutputStream jos = new JarOutputStream(fileToOverwrite);
-            try {
-                jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF")); // NOI18N
-                // UTF-8 guaranteed on any platform
-                jos.write("Manifest-Version: 1.0\n".getBytes("UTF-8")); // NOI18N
-            } finally {
-                jos.close();
-            }
-        } finally {
-            fileToOverwrite.close();
+        try (OutputStream fileToOverwrite = garbage.getOutputStream();
+                JarOutputStream jos = new JarOutputStream(fileToOverwrite)) {
+            jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF")); // NOI18N
+            // UTF-8 guaranteed on any platform
+            jos.write("Manifest-Version: 1.0\n".getBytes("UTF-8")); // NOI18N
         }
     }
     

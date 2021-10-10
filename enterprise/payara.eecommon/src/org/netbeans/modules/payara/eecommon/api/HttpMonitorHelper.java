@@ -101,11 +101,8 @@ public class HttpMonitorHelper {
             ErrorManager.getDefault().notify(ErrorManager.ERROR, cnfe);
         }
         if (needsSave) {
-            OutputStream os = new FileOutputStream(webXML);
-            try {
+            try (OutputStream os = new FileOutputStream(webXML)) {
                 webApp.write(os);
-            } finally {
-                os.close();
             }
         }
         return needRestart;
@@ -146,12 +143,9 @@ public class HttpMonitorHelper {
     // visible for unit testing only
     //
     static void createCopyAndUpgrade(File webXML, File newWebXML) {
-        BufferedReader fr= null;
-        BufferedWriter fw= null;
         boolean deleteNew = true;
-        try {
-            fr = new BufferedReader(new InputStreamReader(new FileInputStream(webXML),"ISO-8859-1"));
-            fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newWebXML),"ISO-8859-1"));
+        try (BufferedReader fr = new BufferedReader(new InputStreamReader(new FileInputStream(webXML),"ISO-8859-1"));
+                BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newWebXML),"ISO-8859-1"))) {
             while (true) {
                 String line = fr.readLine();
                 if (line == null)
@@ -162,40 +156,19 @@ public class HttpMonitorHelper {
                     }
                     fw.write("<web-app version=\"2.4\" xmlns=\"http://java.sun.com/xml/ns/j2ee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd\">");
                     fw.newLine();
-                }
-                else {
+                } else {
                     fw.write(line);
                     fw.newLine();
                 }
             }
             deleteNew = false;
-            fw.close();
-            fw = null;
-            fr.close();
-            fr = null;
         } catch (FileNotFoundException fnfe) {
             Logger.getLogger("payara-eecommon").log(Level.WARNING, "This file existed a few milliseconds ago: "+ webXML.getAbsolutePath());
         } catch (Exception e) {
-            if (null != fw && deleteNew) {
-                if (!newWebXML.delete()) {
-                    Logger.getLogger("payara-eecommon").log(Level.WARNING, "hack to eliminate GF bug 8609 failed and left bogus file: {0}", newWebXML.getAbsolutePath());
-                }
+            if (deleteNew && !newWebXML.delete()) {
+                Logger.getLogger("payara-eecommon").log(Level.WARNING, "hack to eliminate GF bug 8609 failed and left bogus file: {0}", newWebXML.getAbsolutePath());
             }
             Logger.getLogger("payara-eecommon").log(Level.WARNING, "hack to eliminate GF bug 8609 failed", e);
-        } finally {
-            if (null != fw) {
-                try {
-                    fw.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger("payara-eecommon").log(Level.INFO, "close of fw failed: "+ newWebXML.getAbsolutePath(), ioe);
-                }
-            }
-            if (null != fr) {
-                try {
-                    fr.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger("payara-eecommon").log(Level.INFO, "close of fr failed: "+ webXML.getAbsolutePath(), ioe);                }
-            }
         }
     }
 

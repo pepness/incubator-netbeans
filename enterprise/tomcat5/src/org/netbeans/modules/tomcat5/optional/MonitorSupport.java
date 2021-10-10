@@ -125,12 +125,8 @@ public class MonitorSupport {
             needsSave = needsSave || result; 
         }
         if (needsSave) {
-            OutputStream os = new FileOutputStream(webXML);
-            try {
+            try (OutputStream os = new FileOutputStream(webXML)) {
                 webApp.write(os);
-            }
-            finally {
-                os.close();
             }
         }
     }
@@ -255,12 +251,13 @@ public class MonitorSupport {
     }
     
     private static void copy(File file1, File file2) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file1));
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file2));
-        int b;
-        while((b=bis.read())!=-1)bos.write(b);
-        bis.close();
-        bos.close();
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file1));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file2))) {
+            int b;
+            while((b=bis.read())!=-1) {
+                bos.write(b);
+            }
+        }
     }
     
     /** Inserts or and updates in the Monitor Filter element the parameter

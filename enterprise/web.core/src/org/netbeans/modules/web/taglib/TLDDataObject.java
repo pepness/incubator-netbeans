@@ -158,25 +158,15 @@ public final class TLDDataObject extends MultiDataObject implements org.openide.
     public void write(Taglib taglib) throws java.io.IOException {
         java.io.File file = org.openide.filesystems.FileUtil.toFile(getPrimaryFile());
         org.openide.filesystems.FileObject tldFO = getPrimaryFile();
-        try {
-            org.openide.filesystems.FileLock lock = tldFO.lock();
-            try {
-                java.io.OutputStream os = tldFO.getOutputStream(lock);
-                try {
-                    String version=taglib.getAttributeValue("version"); //NOI18N
-                    if (version==null) { //JSP1.2 version
-                        taglib.changeDocType("-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN", //NOI18N
-                                             "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd"); //NOI18N
-                        taglib.setAttributeValue("xmlns",null); //NOI18N
-                    }
-                    taglib.write(os);
-                } finally {
-                    os.close();
-                }
-            } 
-            finally {
-                lock.releaseLock();
+        try (org.openide.filesystems.FileLock lock = tldFO.lock();
+                java.io.OutputStream os = tldFO.getOutputStream(lock)) {
+            String version=taglib.getAttributeValue("version"); //NOI18N
+            if (version==null) { //JSP1.2 version
+                taglib.changeDocType("-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN", //NOI18N
+                                     "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd"); //NOI18N
+                taglib.setAttributeValue("xmlns",null); //NOI18N
             }
+            taglib.write(os);
         } catch (org.openide.filesystems.FileAlreadyLockedException ex) {
             // PENDING should write a message
         }

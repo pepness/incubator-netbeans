@@ -52,13 +52,11 @@ public class ReplaySendXMLServlet extends HttpServlet {
 
 	if(debug) 
 	    System.out.println("\n\nReplaySendXMLServlet:  DoPost.\n\n"); //NOI18N
-	PrintWriter out = res.getWriter();
-	try { 
+	try (PrintWriter out = res.getWriter()){ 
 	    out.println("Shouldn't use POST for this!");  //NOI18N
 	}
 	catch (Exception e) { 
 	}
-	try { out.close(); } catch(Exception ex) {}
     }
 
     // Return the desired transaction file in the response.
@@ -101,8 +99,7 @@ public class ReplaySendXMLServlet extends HttpServlet {
 	    res.addHeader("Content-type", //NOI18N
 			  "text/plain;charset=\"UTF-8\"");  //NOI18N
 
-	    PrintWriter out = res.getWriter();
-	    try {
+	    try (PrintWriter out = res.getWriter()){
 		md.write(out);
 	    }
 	    catch(NullPointerException npe) {
@@ -114,14 +111,6 @@ public class ReplaySendXMLServlet extends HttpServlet {
 	    catch(Throwable t) {
 		if(debug) t.printStackTrace();
 	    }
-	    finally {
-		// Do we need to close out? 
-		try {
-		    out.close();
-		}
-		catch(Exception ex) {
-		}
-	    }
 	}
 	if(debug) {
 	    try {
@@ -132,11 +121,10 @@ public class ReplaySendXMLServlet extends HttpServlet {
 		File file = new File(buf.toString()); 
 		log("Writing replay data to " // NOI18N
 		    + file.getAbsolutePath()); 		
-		FileOutputStream fout = new FileOutputStream(file);
-		PrintWriter pw2 = new PrintWriter(fout);
-		md.write(pw2);
-		pw2.close();
-		fout.close();
+                try (FileOutputStream fout = new FileOutputStream(file);
+                        PrintWriter pw2 = new PrintWriter(fout)) {
+                    md.write(pw2);
+                }
 
 	    }
 	    catch(Throwable t) {

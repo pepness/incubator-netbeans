@@ -19,6 +19,8 @@
 package org.netbeans.modules.javaee.wildfly.ide.ui;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,29 +128,15 @@ public final class WildflyPluginProperties {
             outProp.setProperty(INSTALL_ROOT_KEY, installRoot);
         }
 
-        FileLock l = null;
-        java.io.OutputStream outStream = null;
-        try {
-            if (null != propertiesFile) {
-                try {
-                    l = propertiesFile.lock();
-                    outStream = propertiesFile.getOutputStream(l);
-                    if (null != outStream) {
-                        outProp.store(outStream, "");
-                    }
-                } catch (java.io.IOException e) {
-                    Logger.getLogger("global").log(Level.INFO, null, e);
-                } finally {
-                    if (null != outStream) {
-                        outStream.close();
-                    }
-                    if (null != l) {
-                        l.releaseLock();
-                    }
+        if (null != propertiesFile) {
+            try (FileLock l = propertiesFile.lock();
+                    OutputStream outStream = propertiesFile.getOutputStream(l)) {
+                if (null != outStream) {
+                    outProp.store(outStream, "");
                 }
+            } catch (IOException e) {
+                Logger.getLogger("global").log(Level.INFO, null, e);
             }
-        } catch (java.io.IOException e) {
-            Logger.getLogger("global").log(Level.INFO, null, e);
         }
     }
 

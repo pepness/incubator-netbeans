@@ -69,16 +69,13 @@ public class InvalidStatesTest extends NbTestCase {
         FileObject fo1 = dataFolder.getFileObject("web_parsable","xml");
         assertTrue("FileObject invalid/web_parsable.xml not found",null != fo1);
         
-        try {
-            FileLock lock = fo.lock();
-            OutputStream os = fo.getOutputStream(lock);
-            InputStream is = fo1.getInputStream();
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock);
+                InputStream is = fo1.getInputStream()) {
             int b;
-            while ((b = is.read())!=-1)
+            while ((b = is.read())!=-1) {
                 os.write(b);
-            is.close();
-            os.close();
-            lock.releaseLock();
+            }
         } catch (IOException ex) {
             throw new AssertionFailedErrorException("Writing data Failed ",ex);
         }

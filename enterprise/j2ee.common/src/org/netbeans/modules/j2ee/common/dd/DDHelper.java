@@ -350,11 +350,9 @@ public class DDHelper {
                 FileObject xml = FileUtil.createData(toDir, toFile);
                 String content = readResource(DDHelper.class.getResourceAsStream(fromFile));
                 if (content != null) {
-                    FileLock lock = xml.lock();
-                    try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(xml.getOutputStream(lock)))) {
+                    try (FileLock lock = xml.lock();
+                            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(xml.getOutputStream(lock)))) {
                         bw.write(content);
-                    } finally {
-                        lock.releaseLock();
                     }
                 }
                 result = xml;

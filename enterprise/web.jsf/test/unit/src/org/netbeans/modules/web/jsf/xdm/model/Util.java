@@ -85,16 +85,13 @@ public class Util {
     }
     
     public static Document setDocumentContentTo(Document doc, InputStream in) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
         StringBuilder sbuf = new StringBuilder();
-        try {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))){
             String line = null;
             while ((line = br.readLine()) != null) {
                 sbuf.append(line);
                 sbuf.append(System.getProperty("line.separator"));
             }
-        } finally {
-            br.close();
         }
         doc.remove(0, doc.getLength());
         doc.insertString(0,sbuf.toString(),null);
@@ -128,9 +125,9 @@ public class Util {
     }
 
     public static void dumpToStream(Document doc, OutputStream out) throws Exception{
-        PrintWriter w = new PrintWriter(out);
-        w.print(doc.getText(0, doc.getLength()));
-        w.close();
+        try (PrintWriter w = new PrintWriter(out)) {
+            w.print(doc.getText(0, doc.getLength()));
+        }
         out.close();
     }
     
@@ -139,11 +136,10 @@ public class Util {
     }
     
     public static void dumpToFile(Document doc, File f) throws Exception {
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-        PrintWriter w = new PrintWriter(out);
-        w.print(doc.getText(0, doc.getLength()));
-        w.close();
-        out.close();
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+                PrintWriter w = new PrintWriter(out)) {
+            w.print(doc.getText(0, doc.getLength()));
+        }
     }
     
     public static JSFConfigModel dumpAndReloadModel(JSFConfigModel sm) throws Exception {

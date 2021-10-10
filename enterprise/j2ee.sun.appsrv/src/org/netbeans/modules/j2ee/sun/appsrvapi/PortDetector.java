@@ -49,10 +49,32 @@ public class PortDetector {
     public static boolean isSecurePort(String hostname, int port) 
             throws IOException, ConnectException, SocketTimeoutException {
         // Open the socket with a short timeout for connects and reads.
-        Socket socket = new Socket();
-        try {
+        boolean isSecure = true;
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(hostname, port), PORT_CHECK_TIMEOUT);
             socket.setSoTimeout(PORT_CHECK_TIMEOUT);
+        
+            //This is the test query used to ping the server in an attempt to
+            //determine if it is secure or not.
+            String testQuery = "GET / HTTP/1.0";
+            try (PrintWriter pw = new PrintWriter(socket.getOutputStream());
+                    InputStream is = socket.getInputStream()) {
+                pw.println(testQuery);
+                pw.println();
+                pw.flush();
+                // Get the result
+                byte[] respArr = new byte[1024];
+                while (is.read(respArr) != -1) {
+                    // Determine protocol from result
+                    // Can't read https response w/ OpenSSL (or equiv), so use as
+                    // default & try to detect an http response.
+                    String resp = new String(respArr);
+                    if (checkHelper(resp) == false) {
+                        isSecure = false;
+                        break;
+                    }
+                }
+            }
         } catch(SocketException ex) { // this could be bug 70020 due to SOCKs proxy not having localhost
             String socksNonProxyHosts = System.getProperty("socksNonProxyHosts");
             if(socksNonProxyHosts != null && socksNonProxyHosts.indexOf("localhost") < 0) {
@@ -64,29 +86,6 @@ public class PortDetector {
                 //next call, we'll be ok and it will really detect if we are secure or not
             }
         }
-        
-        //This is the test query used to ping the server in an attempt to
-        //determine if it is secure or not.
-        String testQuery = "GET / HTTP/1.0";
-        PrintWriter pw = new PrintWriter(socket.getOutputStream());
-        pw.println(testQuery);
-        pw.println();
-        pw.flush();
-        // Get the result
-        InputStream is = socket.getInputStream();
-        byte[] respArr = new byte[1024];
-        boolean isSecure = true;
-        while (is.read(respArr) != -1) {
-            // Determine protocol from result
-            // Can't read https response w/ OpenSSL (or equiv), so use as
-            // default & try to detect an http response.
-            String resp = new String(respArr);
-            if (checkHelper(resp) == false) {
-                isSecure = false;
-                break;
-            }
-        }
-        socket.close();
         return isSecure;
     }
 

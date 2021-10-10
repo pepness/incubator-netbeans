@@ -26,45 +26,44 @@ public class DivideServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        String contextPath = request.getContextPath();
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Servlet DIVIDE</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<h1>Servlet DivideServlet at " + contextPath + "</h1>");
-        
-        org.netbeans.test.freeformlib.Multiplier d = new org.netbeans.test.freeformlib.Multiplier();
-        try {
-            String attributeX = request.getParameter("x");
-            if (attributeX == null) {
-                attributeX = "";
+        try (PrintWriter out = response.getWriter()) {
+            String contextPath = request.getContextPath();
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet DIVIDE</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet DivideServlet at " + contextPath + "</h1>");
+
+            org.netbeans.test.freeformlib.Multiplier d = new org.netbeans.test.freeformlib.Multiplier();
+            try {
+                String attributeX = request.getParameter("x");
+                if (attributeX == null) {
+                    attributeX = "";
+                }
+                d.setX(Double.parseDouble(attributeX));
+            } catch(NumberFormatException e) {
             }
-            d.setX(Double.parseDouble(attributeX));
-        } catch(NumberFormatException e) {
-        }
-        try {
-            String attributeY = request.getParameter("y");
-            if (attributeY == null) {
-                attributeY = "";
+            try {
+                String attributeY = request.getParameter("y");
+                if (attributeY == null) {
+                    attributeY = "";
+                }
+                d.setY(Double.parseDouble(attributeY));
+            } catch(NumberFormatException e) {
             }
-            d.setY(Double.parseDouble(attributeY));
-        } catch(NumberFormatException e) {
+
+            if (d.getY() == 0) {
+                out.println("<b>y</b> can't be 0!");
+            } else {
+                out.println("" + d.getX() + " / " + d.getY() + " = " + d.getMultiplication());
+            }
+
+            out.println("<br/>");
+            out.println("<a href=\"index.jsp\">Go back to index.jsp</a>");
+            out.println("</body>");
+            out.println("</html>");
         }
-        
-        if (d.getY() == 0) {
-            out.println("<b>y</b> can't be 0!");
-        } else {
-            out.println("" + d.getX() + " / " + d.getY() + " = " + d.getMultiplication());
-        }
-        
-        out.println("<br/>");
-        out.println("<a href=\"index.jsp\">Go back to index.jsp</a>");
-        out.println("</body>");
-        out.println("</html>");
-        
-        out.close();
     }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -416,20 +416,13 @@ public class TagHandlerPanelGUI extends javax.swing.JPanel implements ListSelect
                 
                 RequestProcessor.getDefault().post(new Runnable() {
                     public void run() {
-                        try {
-                            InputStream is = tldFo.getInputStream();
-                            try {
-                                // get existing tag names for testing duplicity
-                                tagValues = Util.getTagValues(is, new String[]{"tag", "tag-file"}, "name"); //NOI18N
-                            } catch (IOException ex) {
-                                Exceptions.printStackTrace(ex);
-                            } catch (org.xml.sax.SAXException ex) {
-                                Exceptions.printStackTrace(ex);
-                            } finally {
-                                is.close();
-                            }
-                        } catch (IOException e) {
-                             Exceptions.printStackTrace(e);
+                        try (InputStream is = tldFo.getInputStream()) {
+                            // get existing tag names for testing duplicity
+                            tagValues = Util.getTagValues(is, new String[]{"tag", "tag-file"}, "name"); //NOI18N
+                        } catch (IOException ex) {
+                            Exceptions.printStackTrace(ex);
+                        } catch (org.xml.sax.SAXException ex) {
+                            Exceptions.printStackTrace(ex);
                         }
                         panel.fireChangeEvent();
                     }

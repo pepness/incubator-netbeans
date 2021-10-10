@@ -118,22 +118,11 @@ public class NetUtils {
         if (null == host) {
             return false;
         }
-        Socket socket = null;
-        try {
-            socket = new Socket();
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), timeout);
             return true;
         } catch (IOException ex) {
             return false;
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, METHOD,
-                            "closeError", ioe.getLocalizedMessage());
-                }
-            }
         }
     }
 
@@ -227,37 +216,36 @@ public class NetUtils {
         final String METHOD = "isSecurePort";
         boolean isSecure = true;
         try (Socket socket = new Socket()) {
-            try {
-                LOGGER.log(Level.FINE, METHOD, "socket");
-                socket.connect(new InetSocketAddress(hostname, port), PORT_CHECK_TIMEOUT);
-                socket.setSoTimeout(PORT_CHECK_TIMEOUT);
-            // This could be bug 70020 due to SOCKs proxy not having localhost
-            } catch (SocketException ex) {
-                String socksNonProxyHosts = System.getProperty("socksNonProxyHosts");
-                if(socksNonProxyHosts != null && socksNonProxyHosts.indexOf("localhost") < 0) {
-                    String localhost = socksNonProxyHosts.length() > 0 ? "|localhost" : "localhost";
-                    System.setProperty("socksNonProxyHosts",  socksNonProxyHosts + localhost);
-                    ConnectException ce = new ConnectException();
-                    ce.initCause(ex);
-                    throw ce; //status unknown at this point
-                    //next call, we'll be ok and it will really detect if we are secure or not
+            LOGGER.log(Level.FINE, METHOD, "socket");
+            socket.connect(new InetSocketAddress(hostname, port), PORT_CHECK_TIMEOUT);
+            socket.setSoTimeout(PORT_CHECK_TIMEOUT);
+            try (InputStream istream = socket.getInputStream();
+                    PrintWriter pw = new PrintWriter(socket.getOutputStream())) {
+                //This is the test query used to ping the server in an attempt to
+                //determine if it is secure or not.
+                String testQuery = "GET / HTTP/1.0";
+                pw.println(testQuery);
+                pw.println();
+                pw.flush();
+                byte[] respArr = new byte[1024];
+                while (istream.read(respArr) != -1) {
+                    String resp = new String(respArr);
+                    if (checkHelper(resp) == false) {
+                        isSecure = false;
+                        break;
+                    }
                 }
             }
-            java.io.InputStream istream = socket.getInputStream();
-            //This is the test query used to ping the server in an attempt to
-            //determine if it is secure or not.
-            String testQuery = "GET / HTTP/1.0";
-            PrintWriter pw = new PrintWriter(socket.getOutputStream());
-            pw.println(testQuery);
-            pw.println();
-            pw.flush();
-            byte[] respArr = new byte[1024];
-            while (istream.read(respArr) != -1) {
-                String resp = new String(respArr);
-                if (checkHelper(resp) == false) {
-                    isSecure = false;
-                    break;
-                }
+        // This could be bug 70020 due to SOCKs proxy not having localhost
+        } catch (SocketException ex) {
+            String socksNonProxyHosts = System.getProperty("socksNonProxyHosts");
+            if(socksNonProxyHosts != null && socksNonProxyHosts.indexOf("localhost") < 0) {
+                String localhost = socksNonProxyHosts.length() > 0 ? "|localhost" : "localhost";
+                System.setProperty("socksNonProxyHosts",  socksNonProxyHosts + localhost);
+                ConnectException ce = new ConnectException();
+                ce.initCause(ex);
+                throw ce; //status unknow at this point
+                //next call, we'll be ok and it will really detect if we are secure or not
             }
         }
         return isSecure;

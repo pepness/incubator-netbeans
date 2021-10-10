@@ -62,9 +62,9 @@ public abstract class BasicTokensTest extends JellyTestCase {
                 goldenFilePath = getGoldenFile().getPath().replace("build/", "");
                 File gFile = new File(goldenFilePath);
                 gFile.createNewFile();
-                FileWriter writer = new FileWriter(gFile);
-                writer.write(result + "\n");
-                writer.close();
+                try (FileWriter writer = new FileWriter(gFile)) {
+                    writer.write(result + "\n");
+                }
             } catch (IOException ioe) {
                 ioe.printStackTrace(System.err);
                 NbTestCase.fail("IO EXCEPTION");

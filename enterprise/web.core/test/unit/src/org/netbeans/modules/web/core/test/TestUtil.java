@@ -287,11 +287,8 @@ public final class TestUtil extends ProxyLookup {
     }
 
     private static File extractAppSrv(File destDir, File archiveFile) throws IOException {
-        ZipInputStream zis = null;
-        BufferedOutputStream dest = null;
-        try {
-            FileInputStream fis = new FileInputStream(archiveFile);
-            zis = new ZipInputStream(new BufferedInputStream(fis));
+        try (FileInputStream fis = new FileInputStream(archiveFile);
+                ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis))){
             ZipEntry entry;
             while((entry = zis.getNextEntry()) != null) {
                 byte data[] = new byte[BUFFER];
@@ -300,18 +297,16 @@ public final class TestUtil extends ProxyLookup {
                     entryFile.mkdirs();
                 } else {
                     entryFile.getParentFile().mkdirs();
-                    FileOutputStream fos = new FileOutputStream(entryFile);
-                    dest = new BufferedOutputStream(fos, BUFFER);
-                    int count;
-                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                        dest.write(data, 0, count);
+                    try (FileOutputStream fos = new FileOutputStream(entryFile);
+                            BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)) {
+                        int count;
+                        while ((count = zis.read(data, 0, BUFFER)) != -1) {
+                            dest.write(data, 0, count);
+                        }
+                        dest.flush();
                     }
-                    dest.flush();
                 }
             }
-        } finally {
-            if (zis != null) { zis.close(); }
-            if (dest != null) { dest.close(); }
         }
         return new File(destDir, archiveFile.getName().substring(0, archiveFile.getName().length() - 4));
     }
@@ -319,28 +314,18 @@ public final class TestUtil extends ProxyLookup {
     public static EditableProperties loadProjectProperties(
             final FileObject projectDir) throws IOException {
         FileObject propsFO = projectDir.getFileObject(AntProjectHelper.PROJECT_PROPERTIES_PATH);
-        InputStream propsIS = propsFO.getInputStream();
         EditableProperties props = new EditableProperties(true);
-        try {
+        try (InputStream propsIS = propsFO.getInputStream()) {
             props.load(propsIS);
-        } finally {
-            propsIS.close();
         }
         return props;
     }
     
     public static void storeProjectProperties(FileObject projectDir, EditableProperties props) throws IOException {
         FileObject propsFO = projectDir.getFileObject(AntProjectHelper.PROJECT_PROPERTIES_PATH);
-        FileLock lock = propsFO.lock();
-        try {
-            OutputStream os = propsFO.getOutputStream(lock);
-            try {
-                props.store(os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = propsFO.lock();
+                OutputStream os = propsFO.getOutputStream(lock)) {
+            props.store(os);
         }
     }
     
@@ -493,23 +478,13 @@ public final class TestUtil extends ProxyLookup {
         }
         assert fo.isData();
         if (content != null || touch) {
-            FileLock lock = fo.lock();
-            try {
-                OutputStream os = fo.getOutputStream(lock);
-                try {
-                    if (content != null) {
-                        InputStream is = content.openStream();
-                        try {
-                            FileUtil.copy(is, os);
-                        } finally {
-                            is.close();
-                        }
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
+                if (content != null) {
+                    try (InputStream is = content.openStream()) {
+                        FileUtil.copy(is, os);
                     }
-                } finally {
-                    os.close();
                 }
-            } finally {
-                lock.releaseLock();
             }
         }
         return fo;

@@ -202,17 +202,11 @@ public class MavenProjectRestSupport extends RestSupport {
         if (fo == null) {
             fo = dir.createData(name);
         }
-        FileLock lock = null;
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
-        try {
-            lock = fo.lock();
-            OutputStream os = fo.getOutputStream(lock);
-            writer = new BufferedWriter(new OutputStreamWriter(os, 
-                    Charset.forName("UTF-8")));         // NOI18N
-            InputStream is = RestSupport.class.getResourceAsStream("resources/"+name);
-            reader = new BufferedReader(new InputStreamReader(is, 
-                    Charset.forName("UTF-8")));         // NOI18N
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")));
+                InputStream is = RestSupport.class.getResourceAsStream("resources/"+name);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {   // NOI18N
             String line;
             String lineSep = "\n";//Unix
             if(File.separatorChar == '\\')//Windows
@@ -230,15 +224,7 @@ public class MavenProjectRestSupport extends RestSupport {
                 line = line.replace("${BASE_URL}", baseURL);
                 writer.write(line);
                 writer.write(lineSep);
-            }
-        } finally {
-            if (writer != null) {
                 writer.flush();
-                writer.close();
-            }
-            if (lock != null) lock.releaseLock();
-            if (reader != null) {
-                reader.close();
             }
         }
         return fo;

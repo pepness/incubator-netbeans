@@ -21,7 +21,9 @@ package org.netbeans.modules.j2ee.common;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -183,9 +185,7 @@ public final class FileSearchUtility {
     }
 
     private static String guessPackageName(final FileObject f) {
-        java.io.Reader r = null;
-        try {
-            r = new BufferedReader(new InputStreamReader(f.getInputStream(), "utf-8")); // NOI18N
+        try (Reader r = new BufferedReader(new InputStreamReader(f.getInputStream(), "UTF-8"))) {// NOI18N
             StringBuilder sb = new StringBuilder();
             final char[] buffer = new char[4096];
             int len;
@@ -202,16 +202,8 @@ public final class FileSearchUtility {
                     return sb.substring(idx + "package".length(), idx2).trim();
                 }
             }
-        } catch (java.io.IOException ioe) {
+        } catch (IOException ioe) {
             Logger.getLogger("global").log(Level.INFO, null, ioe);
-        } finally {
-            try { 
-                if (r != null) {
-                    r.close();
-                }
-            } catch (java.io.IOException ioe) {
-                // ignore this
-            }
         }
         // AB: fix for #56160: assume the class is in the default package
         return ""; // NOI18N

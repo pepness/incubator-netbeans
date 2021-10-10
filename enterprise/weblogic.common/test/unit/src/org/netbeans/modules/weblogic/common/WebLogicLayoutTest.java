@@ -100,25 +100,15 @@ public class WebLogicLayoutTest extends NbTestCase {
             stringBuilder.append(line).append("\n");
         }
 
-        InputStream is = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"));
-        try {
+        try (InputStream is = new ByteArrayInputStream(stringBuilder.toString().getBytes("UTF-8"))) {
             new JarOutputStream(new FileOutputStream(file), new Manifest(is)).close();
-        } finally {
-            is.close();
         }
     }
 
     private void copyFile(File src, File dest) throws IOException {
-        InputStream is = new BufferedInputStream(new FileInputStream(src));
-        try {
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(dest));
-            try {
-                FileUtil.copy(is, os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            is.close();
+        try (InputStream is = new BufferedInputStream(new FileInputStream(src));
+                OutputStream os = new BufferedOutputStream(new FileOutputStream(dest))) {
+            FileUtil.copy(is, os);
         }
     }
 }

@@ -90,25 +90,18 @@ public class WebServiceLibReferenceHelper {
     }
     
     private static void copyJarFile(String srcPath, FileObject destJar) throws IOException {
-        FileLock fileLock = destJar.lock();
-        try {
-            OutputStream outStream = destJar.getOutputStream(fileLock);
-            DataInputStream in = new DataInputStream(new FileInputStream(new File(srcPath)));
-            DataOutputStream out = new DataOutputStream(outStream);
-            
+        
+        try (FileLock fileLock = destJar.lock();
+                OutputStream outStream = destJar.getOutputStream(fileLock);
+                DataOutputStream out = new DataOutputStream(outStream);
+                DataInputStream in = new DataInputStream(new FileInputStream(new File(srcPath)))) {
             byte[] bytes = new byte[1024];
             int byteCount = in.read(bytes);
-            
             while (byteCount > -1) {
                 out.write(bytes, 0, byteCount);
                 byteCount = in.read(bytes);
             }
             out.flush();
-            out.close();
-            outStream.close();
-            in.close();
-        } finally {
-            fileLock.releaseLock();
         }
     }
 

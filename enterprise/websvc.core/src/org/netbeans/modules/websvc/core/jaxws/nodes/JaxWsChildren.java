@@ -713,11 +713,8 @@ public class JaxWsChildren extends Children.Keys<Object>/* implements MDRChangeL
         FileObject globalWsdlFolder = support.getWsdlFolder(true);
         FileObject oldWsdlFolder = globalWsdlFolder.getFileObject(name);
         if (oldWsdlFolder!=null) {
-            FileLock lock = oldWsdlFolder.lock();
-            try {
+            try (FileLock lock = oldWsdlFolder.lock()) {
                 oldWsdlFolder.delete(lock);
-            } finally {
-                lock.releaseLock();
             }
         }
         return globalWsdlFolder.createFolder(name);

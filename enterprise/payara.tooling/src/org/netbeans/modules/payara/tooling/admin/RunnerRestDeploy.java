@@ -84,38 +84,37 @@ public class RunnerRestDeploy extends RunnerRest {
             throw new PayaraIdeException("The path attribute of deploy command"
                     + " has to be non-empty!");
         }
-        OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream());
-        if (!command.dirDeploy) {
-            writeParam(wr, "path", command.path.getAbsolutePath());
-            if (command.name != null) {
-                writeParam(wr, "name", command.name);
-            }
-            if (command.contextRoot != null) {
-                writeParam(wr, "contextroot", command.contextRoot);
-            }
-            if (command.target != null) {
-                writeParam(wr, "target", command.target);
-            }
-
-            writeBinaryFile(wr, hconn.getOutputStream(), command.path);
-            wr.append("--" + multipartBoundary + "--").append(NEWLINE);
-        } else {
-            wr.write("path=" + command.path.toString());
-            if (command.name != null) {
-                wr.write("&");
-                wr.write("name=" + command.name);
-            }
-            if (command.contextRoot != null) {
-                wr.write("&");
-                wr.write("contextroot=" + command.name);
-            }
-            if (command.target != null) {
-                wr.write("&");
-                wr.write("target=" + command.target);
+        try (OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream())) {
+            if (!command.dirDeploy) {
+                writeParam(wr, "path", command.path.getAbsolutePath());
+                if (command.name != null) {
+                    writeParam(wr, "name", command.name);
+                }
+                if (command.contextRoot != null) {
+                    writeParam(wr, "contextroot", command.contextRoot);
+                }
+                if (command.target != null) {
+                    writeParam(wr, "target", command.target);
+                }
+                
+                writeBinaryFile(wr, hconn.getOutputStream(), command.path);
+                wr.append("--" + multipartBoundary + "--").append(NEWLINE);
+            } else {
+                wr.write("path=" + command.path.toString());
+                if (command.name != null) {
+                    wr.write("&");
+                    wr.write("name=" + command.name);
+                }
+                if (command.contextRoot != null) {
+                    wr.write("&");
+                    wr.write("contextroot=" + command.name);
+                }
+                if (command.target != null) {
+                    wr.write("&");
+                    wr.write("target=" + command.target);
+                }
             }
         }
-
-        wr.close();
     }
 
     private void writeParam(OutputStreamWriter writer, String paramName,
@@ -136,21 +135,12 @@ public class RunnerRestDeploy extends RunnerRest {
         writer.append("Content-Transfer-Encoding: binary").append(NEWLINE);
         writer.append(NEWLINE).flush();
         
-        InputStream input = null;
-        try {
-            input = new FileInputStream(file);
+        try (InputStream input = new FileInputStream(file)) {
             byte[] buffer = new byte[1024*1024];
             for (int length ; (length = input.read(buffer)) > 0 ;) {
                 output.write(buffer, 0, length);
             }
             output.flush(); // Important! Output cannot be closed. Close of writer will close output as well.
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException ex) {
-                }
-            }
         }
         writer.append(NEWLINE).flush();
     }

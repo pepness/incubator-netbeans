@@ -58,12 +58,11 @@ public class TokenReplacer {
     }
 
     public void replaceTokens(FileObject fo, Map<String, String> tokenMap) throws IOException {
-        FileLock lock = fo.lock();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader( new InputStreamReader( 
-                    new FileInputStream((FileUtil.toFile(fo))), 
-                    Charset.forName("UTF-8")));         // NOI18N
+        try (FileLock lock = fo.lock();
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(new FileInputStream((FileUtil.toFile(fo))), Charset.forName("UTF-8")));
+                OutputStreamWriter writer = new OutputStreamWriter(
+                        fo.getOutputStream(lock), clientStubsGenerator.getBaseEncoding())) {    // NOI18N
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = reader.readLine()) != null) {
@@ -71,18 +70,7 @@ public class TokenReplacer {
                 sb.append(line);
                 sb.append("\n");
             }
-            OutputStreamWriter writer = new OutputStreamWriter(fo.getOutputStream(lock), 
-                    clientStubsGenerator.getBaseEncoding());
-            try {
-                writer.write(sb.toString());
-            } finally {
-                writer.close();
-            }
-        } finally {
-            lock.releaseLock();
-            if ( reader!= null ){
-                reader.close();
-            }
+            writer.write(sb.toString());
         }
     }
     

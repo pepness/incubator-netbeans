@@ -38,6 +38,7 @@ import org.netbeans.core.spi.multiview.text.MultiViewEditorElement;
 import org.netbeans.modules.xml.api.XmlFileEncodingQueryImpl;
 import org.netbeans.spi.queries.FileEncodingQueryImplementation;
 import org.netbeans.spi.xml.cookies.*;
+import org.openide.filesystems.FileLock;
 import org.openide.filesystems.MIMEResolver;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
@@ -205,19 +206,9 @@ public class StrutsConfigDataObject extends MultiDataObject
     public void write(StrutsConfig config) throws java.io.IOException {
         java.io.File file = org.openide.filesystems.FileUtil.toFile(getPrimaryFile());
         org.openide.filesystems.FileObject configFO = getPrimaryFile();
-        try {
-            org.openide.filesystems.FileLock lock = configFO.lock();
-            try {
-                java.io.OutputStream os =configFO.getOutputStream(lock);
-                try {
-                    config.write(os);
-                } finally {
-                    os.close();
-                }
-            }
-            finally {
-                lock.releaseLock();
-            }
+        try (FileLock lock = configFO.lock();
+                java.io.OutputStream os = configFO.getOutputStream(lock)) {
+                config.write(os);
         } catch (org.openide.filesystems.FileAlreadyLockedException ex) {
             // PENDING should write a message
         }

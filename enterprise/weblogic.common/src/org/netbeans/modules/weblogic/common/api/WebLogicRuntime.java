@@ -594,20 +594,15 @@ public final class WebLogicRuntime {
 
     private boolean ping(String host, int port, int timeout, String path, boolean remote, boolean secured) {
         // checking whether a socket can be created is not reliable enough, see #47048
-        try {
-            Socket socket = createSocket(host, port, path, remote, secured);
-            try {
-                socket.connect(new InetSocketAddress(host, port), timeout); // NOI18N
-                socket.setSoTimeout(timeout);
-                try (PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true); // NOI18N
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"))) { // NOI18N
-                    out.println("GET " + path + " HTTP/1.1\nHost:\n"); // NOI18N
-                    String line = in.readLine();
-                    return "HTTP/1.1 200 OK".equals(line) // NOI18N
-                            || "HTTP/1.1 302 Moved Temporarily".equals(line); // NOI18N
-                }
-            } finally {
-                socket.close();
+        try (Socket socket = createSocket(host, port, path, remote, secured)) {
+            socket.connect(new InetSocketAddress(host, port), timeout); // NOI18N
+            socket.setSoTimeout(timeout);
+            try (PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true); // NOI18N
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"))) { // NOI18N
+                out.println("GET " + path + " HTTP/1.1\nHost:\n"); // NOI18N
+                String line = in.readLine();
+                return "HTTP/1.1 200 OK".equals(line) // NOI18N
+                        || "HTTP/1.1 302 Moved Temporarily".equals(line); // NOI18N
             }
         } catch (IOException ioe) {
             if (secured) {

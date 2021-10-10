@@ -67,14 +67,12 @@ public class JSFEditorUtilitiesTest extends NbTestCase {
     private BaseDocument createBaseDocument(File file){
         BaseDocument doc = new BaseDocument(false, "text/xml");
         StringBuilder buffer = new StringBuilder();
-        try {
-            FileReader reader = new FileReader (file);
+        try (FileReader reader = new FileReader (file)) {
             char[] buf = new char [100];
             int count = -1;
             while ((count = reader.read(buf)) != -1){
                 buffer.append(buf, 0, count);
-            } 
-            reader.close();
+            }
             doc.insertString(0, buffer.toString(), null); 
             return doc;
         } catch (IOException ex) {

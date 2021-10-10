@@ -91,19 +91,13 @@ public abstract class DDMultiViewDataObject extends XmlMultiViewDataObject
     }
 
     public void writeModel(RootInterface model) throws IOException {
-        if (transactionReference != null && transactionReference.get() != null) {
-            return;
-        }
-        FileLock dataLock = waitForLock();
-        if (dataLock == null) {
-            return;
-        }
-        try {
-            if (((ModelSynchronizer) getModelSynchronizer()).mayUpdateData(true)) {
-                writeModel(model, dataLock);
+        if (transactionReference == null && transactionReference.get() == null
+                && null != waitForLock()) {
+            try (FileLock dataLock = waitForLock()) {
+                if (((ModelSynchronizer) getModelSynchronizer()).mayUpdateData(true)) {
+                    writeModel(model, dataLock);
+                }
             }
-        } finally {
-            dataLock.releaseLock();
         }
     }
 

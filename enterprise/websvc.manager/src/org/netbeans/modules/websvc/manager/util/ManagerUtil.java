@@ -494,11 +494,8 @@ public class ManagerUtil {
         // classpath="${java.home}/../lib/tools.jar:${libs.jaxrpc16.classpath}:${libs.jsf12-support.classpath}"
         ArrayList<URL> urls = new ArrayList<URL>();
         Properties properties = new Properties();
-        FileInputStream is = new FileInputStream(System.getProperty("netbeans.user") + "/build.properties");
-        try {
+        try (FileInputStream is = new FileInputStream(System.getProperty("netbeans.user") + "/build.properties")) {
             properties.load(is);
-        } finally {
-            is.close();
         }
         
         if (srcPath != null) {

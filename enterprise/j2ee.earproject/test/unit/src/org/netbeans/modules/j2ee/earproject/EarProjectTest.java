@@ -258,16 +258,9 @@ public class EarProjectTest extends EarTestCase {
             }
         } else {
             assert from.isFile();
-            InputStream is = new FileInputStream(from);
-            try {
-                OutputStream os = new FileOutputStream(to);
-                try {
-                    FileUtil.copy(is, os);
-                } finally {
-                    os.close();
-                }
-            } finally {
-                is.close();
+            try (InputStream is = new FileInputStream(from);
+                    OutputStream os = new FileOutputStream(to)) {
+                FileUtil.copy(is, os);
             }
         }
     }

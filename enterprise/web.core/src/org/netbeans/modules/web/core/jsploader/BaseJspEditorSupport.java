@@ -441,14 +441,11 @@ class BaseJspEditorSupport extends DataEditorSupport implements EditCookie, Edit
          * We need to use writer because encode methods in Charset don't work.
          */
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Writer writer = new OutputStreamWriter(out, charset);
-        try {
+        try (Writer writer = new OutputStreamWriter(out, charset)) {
             writer.write('\uFFFD'); // NOI18N
         } catch (IOException ex) {
             LOGGER.log(Level.INFO, null, ex);
             return;
-        } finally {
-            writer.close();
         }
 
         byte[] buffer = out.toByteArray();

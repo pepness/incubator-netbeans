@@ -105,13 +105,10 @@ public class EarDataNodeTest extends NbTestCase {
     
     public static void dump(File f, String contents) throws IOException {
         f.getParentFile().mkdirs();
-        OutputStream os = new FileOutputStream(f);
-        try {
-            Writer w = new OutputStreamWriter(os, "UTF-8");
+        try (OutputStream os = new FileOutputStream(f);
+                Writer w = new OutputStreamWriter(os, "UTF-8")) {
             w.write(contents);
             w.flush();
-        } finally {
-            os.close();
         }
     }
     

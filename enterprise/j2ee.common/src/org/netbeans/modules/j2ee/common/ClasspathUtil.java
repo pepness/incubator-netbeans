@@ -123,17 +123,14 @@ public class ClasspathUtil {
         String classFilePath = className.replace('.', '/') + ".class"; // NOI18N
         for (File file : classpath) {
             if (file.isFile()) {
-                JarInputStream is = new JarInputStream(new BufferedInputStream(
-                        new FileInputStream(file)), false);
-                try {
+                try (JarInputStream is = new JarInputStream(new BufferedInputStream(
+                        new FileInputStream(file)), false)) {
                     JarEntry entry;
                     while ((entry = is.getNextJarEntry()) != null) {
                         if (classFilePath.equals(entry.getName())) {
                             return true;
                         }
                     }
-                } finally {
-                    is.close();
                 }
             } else {
                 if (new File(file, classFilePath).exists()) {
@@ -246,8 +243,7 @@ public class ClasspathUtil {
 
         for (File file : classpath) {
             if (file.isFile()) {
-                JarFile jf = new JarFile(file);
-                try {
+                try (JarFile jf = new JarFile(file)) {
                     Enumeration entries = jf.entries();
                     while (entries.hasMoreElements()) {
                         JarEntry entry = (JarEntry) entries.nextElement();
@@ -265,8 +261,6 @@ public class ClasspathUtil {
                             i++;
                         }
                     }
-                } finally {
-                    jf.close();
                 }
             } else {
                 if (new File(file, classFilePathFirst).exists()) {

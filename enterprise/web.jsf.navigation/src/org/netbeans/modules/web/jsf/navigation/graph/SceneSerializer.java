@@ -187,18 +187,11 @@ public class SceneSerializer {
             FileSystem fs = file.getFileSystem();
             fs.runAtomicAction(new FileSystem.AtomicAction() {
 
-                @Override
-                public void run() throws IOException {
-                    final FileLock lock = file.lock();
-                    try {
-                        OutputStream fos = file.getOutputStream(lock);
-                        try {
-                            XMLUtil.write(document, fos, "UTF-8"); // NOI18N
-                        } finally {
-                            fos.close();
-                        }
-                    } finally {
-                        lock.releaseLock();
+            @Override
+            public void run() throws IOException {
+                try (final FileLock lock = file.lock();
+                        OutputStream fos = file.getOutputStream(lock)) {
+                        XMLUtil.write(document, fos, "UTF-8"); // NOI18N
                     }
                 }
             });

@@ -24,6 +24,7 @@ import java.util.List;
 import java.math.BigDecimal;
 
 import org.netbeans.modules.j2ee.dd.api.application.Application;
+import org.openide.filesystems.FileLock;
 
 import java.beans.PropertyChangeListener;
 
@@ -390,28 +391,20 @@ public class ApplicationProxy implements Application {
         return app==null?0:app.sizeSecurityRole();
     }
 
-    public void write(org.openide.filesystems.FileObject fo) throws java.io.IOException {
+    public void write(org.openide.filesystems.FileObject fo) throws IOException {
         if (app != null) {
-            try {
-                org.openide.filesystems.FileLock lock = fo.lock();
-                try {
-                    java.io.OutputStream os = fo.getOutputStream(lock);
-                    try {
-                        writing=true;
-                        write(os);
-                    } finally {
-                        os.close();
-                    }
-                } 
-                finally {
-                    lock.releaseLock();
-                }
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
+                writing=true;
+                write(os);
             } catch (org.openide.filesystems.FileAlreadyLockedException ex) {
                 // trying to use OutputProvider for writing changes
                 org.openide.loaders.DataObject dobj = org.openide.loaders.DataObject.find(fo);
-                if (dobj!=null && dobj instanceof ApplicationProxy.OutputProvider)
+                if (dobj!=null && dobj instanceof ApplicationProxy.OutputProvider) {
                     ((ApplicationProxy.OutputProvider)dobj).write(this);
-                else throw ex;
+                } else {
+                    throw ex;
+                }
             }
         }
     }

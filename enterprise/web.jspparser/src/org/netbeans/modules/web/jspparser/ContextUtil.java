@@ -46,9 +46,9 @@ public final class ContextUtil {
             boolean includeStackTrace) {
         if (includeStackTrace) {
             StringWriter swriter = new StringWriter();
-            PrintWriter pw = new PrintWriter(swriter);
-            throwable.printStackTrace(pw);
-            pw.close();
+            try (PrintWriter pw = new PrintWriter(swriter)) {
+                throwable.printStackTrace(pw);
+            }
             return swriter.toString();
         }
         return throwable.getMessage();

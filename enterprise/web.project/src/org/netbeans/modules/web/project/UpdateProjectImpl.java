@@ -236,28 +236,12 @@ public class UpdateProjectImpl implements UpdateImplementation {
             
             
             FileObject manifest = FileUtil.createData(confDirFO, "MANIFEST"); //NOI18N
-            FileLock lock = manifest.lock();
-            InputStream bufIn = UpdateProjectImpl.class.getResourceAsStream("/org/netbeans/modules/web/project/ui/resources/MANIFEST.MF"); //NOI18N;
-            OutputStream bufOut = null;
 
-            try {
-                lock = manifest.lock();
-
-                bufOut = manifest.getOutputStream(lock);
-
+            try (FileLock lock = manifest.lock();
+                    OutputStream bufOut = manifest.getOutputStream(lock);
+                    InputStream bufIn = UpdateProjectImpl.class.
+                            getResourceAsStream("/org/netbeans/modules/web/project/ui/resources/MANIFEST.MF")) {    //NOI18N
                 FileUtil.copy(bufIn, bufOut);
-            } finally {
-                if (bufIn != null) {
-                    bufIn.close();
-                }
-
-                if (bufOut != null) {
-                    bufOut.close();
-                }
-
-                if (lock != null) {
-                    lock.releaseLock();
-                }
             }
         }catch(IOException e) {
             //just ignore

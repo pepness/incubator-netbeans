@@ -23,6 +23,7 @@ import org.netbeans.junit.NbTestCase;
 import org.netbeans.modules.j2ee.deployment.impl.*;
 import org.openide.filesystems.*;
 import java.io.*;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -59,26 +60,18 @@ public class ServerExecutorTest extends NbTestCase {
     }
             
     public static boolean writeTargetModule(String destFile, TargetModule.List tml) {
-        FileLock lock = null;
-        Writer writer = null;
-        try {
-            if (tml == null)
-                return true;
-            
-            FileObject fo = FileUtil.createData(getWorkFileSystem().getRoot(), destFile+".xml");
-            lock = fo.lock();
-            writer = new OutputStreamWriter(fo.getOutputStream(lock));
-            TargetModuleConverter.create().write(writer, tml);
+        if (tml == null) {
             return true;
-            
-        } catch(Exception ioe) {
-            throw new RuntimeException(ioe);
         }
-        finally {
-            try {
-            if (lock != null) lock.releaseLock();
-            if (writer != null) writer.close();
-            } catch (Exception e) {}
+        try {
+            FileObject fo = FileUtil.createData(getWorkFileSystem().getRoot(), destFile+".xml");
+            try (FileLock lock = fo.lock();
+                    Writer writer = new OutputStreamWriter(fo.getOutputStream(lock))) {
+                TargetModuleConverter.create().write(writer, tml);
+                return true;
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

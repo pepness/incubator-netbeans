@@ -791,14 +791,13 @@ public class JspCompletionItem implements CompletionItem {
         if (url == null) {
             return null;
         }
-        try {
-            InputStream is = getInputStreamForUrl(url);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                InputStream is = getInputStreamForUrl(url)) {
             if (is == null) {
                 logger.log(Level.INFO, "Cannot read: {0}", url.toString());
                 return null;
             }
             byte buffer[] = new byte[1000];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             int count = 0;
             do {
                 count = is.read(buffer);
@@ -806,10 +805,7 @@ public class JspCompletionItem implements CompletionItem {
                     baos.write(buffer, 0, count);
                 }
             } while (count > 0);
-
-            is.close();
             String text = baos.toString();
-            baos.close();
             return text;
         } catch (java.io.IOException e) {
             logger.log(Level.INFO, url.toString(), e);

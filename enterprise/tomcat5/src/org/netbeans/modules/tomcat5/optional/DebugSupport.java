@@ -60,11 +60,8 @@ public class DebugSupport {
         }
         boolean needsSave = setMappedProperty(webApp);
         if (needsSave) {
-            OutputStream os = new FileOutputStream(webXML);
-            try {
+            try (OutputStream os = new FileOutputStream(webXML)) {
                 webApp.write(os);
-            } finally {
-                os.close();
             }
         }
     }

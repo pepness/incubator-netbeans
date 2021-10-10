@@ -142,9 +142,9 @@ public class ParseTest extends NbTestCase {
     private static int fileNr = 1;
 
     private void writeOutResult(JspParserAPI.ParseResult result, File outFile) throws IOException {
-        PrintWriter pw = new PrintWriter(new FileWriter(outFile));
-        pw.write(result.toString());
-        pw.close();
+        try (PrintWriter pw = new PrintWriter(new FileWriter(outFile))) {
+            pw.write(result.toString());
+        }
     }
 
     private String getBrotherFile(File f, String ext) {

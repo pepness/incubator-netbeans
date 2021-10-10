@@ -113,16 +113,12 @@ public class SetupUtil {
     public static void copy(File src, File target) throws Exception {        
         if (src.isFile()) {
             File targetFile = new File(target, src.getName());
-            
-            FileInputStream is = new FileInputStream(src);
-            FileOutputStream os = new FileOutputStream(targetFile);
-            
-            FileChannel inputChannel = is.getChannel();
-            FileChannel outputChannel = os.getChannel();
-            
-            inputChannel.transferTo(0, inputChannel.size(), outputChannel);
-            inputChannel.close();
-            outputChannel.close();
+            try (FileInputStream is = new FileInputStream(src);
+                    FileOutputStream os = new FileOutputStream(targetFile);
+                    FileChannel inputChannel = is.getChannel();
+                    FileChannel outputChannel = os.getChannel()) {
+                inputChannel.transferTo(0, inputChannel.size(), outputChannel);
+            }
         }else {
             File newDir = new File(target, src.getName());
             newDir.mkdirs();
@@ -138,17 +134,15 @@ public class SetupUtil {
     
     public static void retrieveURL(File targetFile, URL url) throws IOException {
         targetFile.getParentFile().mkdirs();
-        FileOutputStream fos = new FileOutputStream(targetFile);
-        byte[] readBuffer = new byte[1024];
-        
-        InputStream is = url.openStream();
-        int bytesRead = 0;
-        while ( (bytesRead = is.read(readBuffer, 0, 1024)) > 0) {
-            fos.write(readBuffer, 0, bytesRead);
+        try (FileOutputStream fos = new FileOutputStream(targetFile);
+                InputStream is = url.openStream()) {
+            byte[] readBuffer = new byte[1024];
+            int bytesRead = 0;
+            while ( (bytesRead = is.read(readBuffer, 0, 1024)) > 0) {
+                fos.write(readBuffer, 0, bytesRead);
+            }
+            fos.flush();
         }
-        fos.flush();
-        fos.close();
-        is.close();
     }
     
     private static void generatePropertiesFile(File target) throws IOException {
@@ -215,8 +209,7 @@ public class SetupUtil {
             ClassLoader l = Thread.currentThread().getContextClassLoader();
             try {
                 for (URL manifest : NbCollections.iterable(l.getResources("META-INF/MANIFEST.MF"))) { // NOI18N
-                    InputStream is = manifest.openStream();
-                    try {
+                    try (InputStream is = manifest.openStream()) {
                         Manifest mani = new Manifest(is);
                         String layerLoc = mani.getMainAttributes().getValue("OpenIDE-Module-Layer"); // NOI18N
                         if (layerLoc != null) {
@@ -225,8 +218,6 @@ public class SetupUtil {
                                 layerUrls.add(layer);
                             }
                         }
-                    } finally {
-                        is.close();
                     }
                 }
                 layers.setXmlUrls(layerUrls.toArray(new URL[layerUrls.size()]));

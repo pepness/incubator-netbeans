@@ -155,16 +155,9 @@ public class CopyOnSaveSupportTest extends NbTestCase {
         // change file
         File index = new File(new File(projectFile, webPrefix), "index.jsp");
         FileObject indexFileObject = FileUtil.toFileObject(index);
-        InputStream is = new BufferedInputStream(new FileInputStream(sampleJsp));
-        try {
-            OutputStream os = new BufferedOutputStream(indexFileObject.getOutputStream());
-            try {
-                FileUtil.copy(is, os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            is.close();
+        try (InputStream is = new BufferedInputStream(new FileInputStream(sampleJsp));
+                OutputStream os = new BufferedOutputStream(indexFileObject.getOutputStream())) {
+            FileUtil.copy(is, os);
         }
 
         toCheck = projectFileObject.getFileObject("build/web/index.jsp");
@@ -178,16 +171,9 @@ public class CopyOnSaveSupportTest extends NbTestCase {
 
         File webXml = new File(new File(new File(projectFile, "web"), "WEB-INF"), "web.xml");
         FileObject webXmlFileObject = FileUtil.toFileObject(webXml);
-        is = new BufferedInputStream(new FileInputStream(sampleWebXml));
-        try {
-            OutputStream os = new BufferedOutputStream(webXmlFileObject.getOutputStream());
-            try {
-                FileUtil.copy(is, os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            is.close();
+        try (InputStream is = new BufferedInputStream(new FileInputStream(sampleWebXml));
+                OutputStream os = new BufferedOutputStream(webXmlFileObject.getOutputStream())) {
+            FileUtil.copy(is, os);
         }
 
         toCheck = projectFileObject.getFileObject("build/web/WEB-INF/web.xml");

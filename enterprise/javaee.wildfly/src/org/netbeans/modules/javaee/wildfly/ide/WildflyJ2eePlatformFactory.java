@@ -349,8 +349,7 @@ public class WildflyJ2eePlatformFactory extends J2eePlatformFactory {
 
         private static boolean containsService(FileObject serviceFO, String serviceName, String serviceImplName) {
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(serviceFO.getInputStream()));
-                try {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(serviceFO.getInputStream()))) {
                     String line;
                     while ((line = br.readLine()) != null) {
                         int ci = line.indexOf('#');
@@ -361,8 +360,6 @@ public class WildflyJ2eePlatformFactory extends J2eePlatformFactory {
                             return true;
                         }
                     }
-                } finally {
-                    br.close();
                 }
             } catch (Exception ex) {
                 Exceptions.attachLocalizedMessage(ex, serviceFO.toURL().toString());

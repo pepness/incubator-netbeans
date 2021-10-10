@@ -285,13 +285,8 @@ public class WildFlyProperties {
             return;
         }
         Properties usersProps = new Properties();
-        try {
-            InputStream is = new BufferedInputStream(new FileInputStream(usersPropFile));
-            try {
-                usersProps.load(is);
-            } finally {
-                is.close();
-            }
+        try (InputStream is = new BufferedInputStream(new FileInputStream(usersPropFile))) {
+            usersProps.load(is);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.WARNING, usersPropFile + " not found.", e);
             return;

@@ -46,20 +46,21 @@ public class XmlStaxUtils {
         }
 }
     boolean isTarget(FileObject antScript, String targetName) throws IOException, javax.xml.stream.XMLStreamException {
-        InputStream is = antScript.getInputStream();
-        XMLStreamReader parser = xmlif.createXMLStreamReader(is);
-        boolean found = false;
-        int inHeader = 0;
-        for (int event = parser.next(); event != XMLStreamConstants.END_DOCUMENT; event = parser.next()) {
-            if (event == XMLStreamConstants.START_ELEMENT) {
-                if ("target".equals(parser.getLocalName()) && targetName.equals(parser.getAttributeValue(null,"name"))) { //NOI18N
-                    found = true;
-                    break;
+        boolean found;
+        try (InputStream is = antScript.getInputStream()) {
+            XMLStreamReader parser = xmlif.createXMLStreamReader(is);
+            found = false;
+            int inHeader = 0;
+            for (int event = parser.next(); event != XMLStreamConstants.END_DOCUMENT; event = parser.next()) {
+                if (event == XMLStreamConstants.START_ELEMENT) {
+                    if ("target".equals(parser.getLocalName()) && targetName.equals(parser.getAttributeValue(null,"name"))) { //NOI18N
+                        found = true;
+                        break;
+                    }
                 }
-            }
-        } // end while
-        parser.close();
-        is.close();
+            } // end while
+            parser.close();
+        }
         return found;
     }
 }

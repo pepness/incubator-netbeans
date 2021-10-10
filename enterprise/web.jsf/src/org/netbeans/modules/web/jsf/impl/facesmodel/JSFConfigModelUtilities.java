@@ -98,11 +98,8 @@ public class JSFConfigModelUtilities {
                         if (fo == null) {
                             fo = fParentFo.createData(file.getName());
                         }
-                        OutputStream os = fo.getOutputStream();
-                        try {
+                        try (OutputStream os = fo.getOutputStream()) {
                             os.write(text.getBytes(FileEncodingQuery.getEncoding(fo)));
-                        } finally {
-                            os.close();
                         }
                     }
                 });

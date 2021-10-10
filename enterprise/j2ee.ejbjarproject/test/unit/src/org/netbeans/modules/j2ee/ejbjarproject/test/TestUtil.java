@@ -372,23 +372,13 @@ public final class TestUtil extends ProxyLookup {
         }
         assert fo.isData();
         if (content != null || touch) {
-            FileLock lock = fo.lock();
-            try {
-                OutputStream os = fo.getOutputStream(lock);
-                try {
-                    if (content != null) {
-                        InputStream is = content.openStream();
-                        try {
-                            FileUtil.copy(is, os);
-                        } finally {
-                            is.close();
-                        }
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
+                if (content != null) {
+                    try (InputStream is = content.openStream()) {
+                        FileUtil.copy(is, os);
                     }
-                } finally {
-                    os.close();
                 }
-            } finally {
-                lock.releaseLock();
             }
         }
         return fo;

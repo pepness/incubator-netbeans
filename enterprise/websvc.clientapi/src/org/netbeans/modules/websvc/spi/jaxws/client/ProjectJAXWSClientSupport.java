@@ -431,11 +431,8 @@ public abstract class ProjectJAXWSClientSupport implements JAXWSClientSupportImp
         FileObject globalWsdlFolder = getWsdlFolder(true);
         FileObject oldWsdlFolder = globalWsdlFolder.getFileObject("client/"+name); //NOI18N
         if (oldWsdlFolder!=null) {
-            FileLock lock = oldWsdlFolder.lock();
-            try {
+            try (FileLock lock = oldWsdlFolder.lock()) {
                 oldWsdlFolder.delete(lock);
-            } finally {
-                lock.releaseLock();
             }
         }
         FileObject clientWsdlFolder = globalWsdlFolder.getFileObject("client"); //NOI18N

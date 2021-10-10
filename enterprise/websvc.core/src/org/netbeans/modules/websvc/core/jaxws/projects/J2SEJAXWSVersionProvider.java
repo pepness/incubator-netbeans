@@ -68,10 +68,8 @@ public class J2SEJAXWSVersionProvider implements JAXWSVersionProvider{
             ClassPath classpath = ClassPath.getClassPath(srcGroups[0].getRootFolder(), ClassPath.COMPILE);
             FileObject fo = classpath.findResource("com/sun/xml/ws/util/version.properties"); //NOI18N
             if (fo != null) {
-                try {
-                    InputStream is = fo.getInputStream();
-                    BufferedReader r = new BufferedReader(new InputStreamReader(is, 
-                            Charset.forName("UTF-8")));
+                try (InputStream is = fo.getInputStream();
+                        BufferedReader r = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
                     String ln = null;
                     String ver = null;
                     while ((ln=r.readLine()) != null) {
@@ -80,7 +78,6 @@ public class J2SEJAXWSVersionProvider implements JAXWSVersionProvider{
                             ver = line.substring(14);
                         }
                     }
-                    r.close();
                     version = ver;
                 } catch (IOException ex) {
                     Logger.getLogger(J2SEJAXWSVersionProvider.class.getName()).log(Level.INFO, 

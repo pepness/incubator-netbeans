@@ -22,6 +22,7 @@ package org.netbeans.modules.glassfish.spi;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
@@ -120,20 +121,14 @@ public class RegisterDatabase {
 
         @Override
         public void run() throws IOException {
-            FileLock ld = null;
-            java.io.OutputStream outStreamd = null;
-            Writer outd = null;
-            OutputStreamWriter osw = null;
-            try {
-                //  the derby lib driver:
-                FileObject derbyLib =null;
-                derbyLib = libsFolder.getFileObject("JavaDB" ,"xml");//NOI18N
-                if (null == derbyLib) {
-                    derbyLib = libsFolder.createData("JavaDB" ,"xml");//NOI18N
-                    ld = derbyLib.lock();
-                    outStreamd = derbyLib.getOutputStream(ld);
-                    osw = new OutputStreamWriter(outStreamd);
-                    outd = new BufferedWriter(osw);
+            //  the derby lib driver:
+            FileObject derbyLib = libsFolder.getFileObject("JavaDB" ,"xml");//NOI18N
+            if (null == derbyLib) {
+                derbyLib = libsFolder.createData("JavaDB" ,"xml");//NOI18N
+                try (FileLock ld = derbyLib.lock();
+                        OutputStream outStreamd = derbyLib.getOutputStream(ld);
+                        OutputStreamWriter osw = new OutputStreamWriter(outStreamd);
+                        Writer outd = new BufferedWriter(osw)) {
                     outd.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE library PUBLIC \"-//NetBeans//DTD Library Declaration 1.0//EN\" \"http://www.netbeans.org/dtds/library-declaration-1_0.dtd\">\n");//NOI18N
                     outd.write("<library version=\"1.0\">\n<name>JAVADB_DRIVER_LABEL</name>\n");//NOI18N
                     outd.write("<type>j2se</type>\n");//NOI18N
@@ -145,24 +140,6 @@ public class RegisterDatabase {
                     outd.write("</volume>\n<volume>\n<type>src</type>\n</volume>\n"); //NOI18N
                     outd.write("<volume>\n<type>javadoc</type>\n");  //NOI18N
                     outd.write("</volume>\n</library>"); //NOI18N
-                }
-            } finally {
-                if (null != outd) {
-                    try {
-                        outd.close();
-                    } catch (IOException ioe) {
-                        Logger.getLogger("glassfish-eecommon").log(Level.INFO, ioe.getLocalizedMessage(), ioe); //NOI18N
-                    }
-                }
-                if (null != outStreamd) {
-                    try {
-                        outStreamd.close();
-                    } catch (IOException ioe) {
-                        Logger.getLogger("glassfish-eecommon").log(Level.INFO, ioe.getLocalizedMessage(), ioe); //NOI18N
-                    }
-                }
-                if (null != ld) {
-                    ld.releaseLock();
                 }
             }
         } //run

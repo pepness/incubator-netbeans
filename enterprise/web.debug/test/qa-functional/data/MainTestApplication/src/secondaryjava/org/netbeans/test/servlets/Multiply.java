@@ -26,39 +26,39 @@ public class Multiply extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Servlet Multiply</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<h1>Servlet Multiply at " + request.getContextPath () + "</h1>");
-        
-        org.netbeans.test.freeformlib.Multiplier m = new org.netbeans.test.freeformlib.Multiplier();
-        try {
-            String attributeX = request.getParameter("x");
-            if (attributeX == null) {
-                attributeX = "";
+        try (PrintWriter out = response.getWriter()) {
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet Multiply</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet Multiply at " + request.getContextPath () + "</h1>");
+
+            org.netbeans.test.freeformlib.Multiplier m = new org.netbeans.test.freeformlib.Multiplier();
+            try {
+                String attributeX = request.getParameter("x");
+                if (attributeX == null) {
+                    attributeX = "";
+                }
+                m.setX(Double.parseDouble(attributeX));
+            } catch(NumberFormatException e) {
             }
-            m.setX(Double.parseDouble(attributeX));
-        } catch(NumberFormatException e) {
-        }
-        try {
-            String attributeY = request.getParameter("y");
-            if (attributeY == null) {
-                attributeY = "";
+            try {
+                String attributeY = request.getParameter("y");
+                if (attributeY == null) {
+                    attributeY = "";
+                }
+                m.setY(Double.parseDouble(attributeY));
+            } catch(NumberFormatException e) {
             }
-            m.setY(Double.parseDouble(attributeY));
-        } catch(NumberFormatException e) {
+
+            out.println("" + m.getX() + " * " + m.getY() + " = " + m.getMultiplication());
+
+            out.println("<br/>");
+            out.println("<a href=\"index.jsp\">Go back to index.jsp</a>");
+            out.println("</body>");
+            out.println("</html>");
         }
-        
-        out.println("" + m.getX() + " * " + m.getY() + " = " + m.getMultiplication());
-        
-        out.println("<br/>");
-        out.println("<a href=\"index.jsp\">Go back to index.jsp</a>");
-        out.println("</body>");
-        out.println("</html>");
-        out.close();
     }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

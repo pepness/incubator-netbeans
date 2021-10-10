@@ -46,9 +46,9 @@ public class RunnerRestDeleteResource extends RunnerRest {
     @Override
     protected void handleSend(HttpURLConnection hconn) throws IOException {
          CommandDeleteResource cmd = (CommandDeleteResource) command;
-         OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream());
-         wr.write(cmd.cmdPropertyName + "=" + cmd.name);
-         wr.flush();
-         wr.close();
+        try (OutputStreamWriter wr = new OutputStreamWriter(hconn.getOutputStream())) {
+            wr.write(cmd.cmdPropertyName + "=" + cmd.name);
+            wr.flush();
+        }
     }
 }

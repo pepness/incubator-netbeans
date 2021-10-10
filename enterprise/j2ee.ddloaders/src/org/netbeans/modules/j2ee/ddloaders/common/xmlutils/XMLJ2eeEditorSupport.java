@@ -104,10 +104,10 @@ public class XMLJ2eeEditorSupport extends DataEditorSupport
         // kit and kit() are not accessible so we pretend
         // to create the kit; actually this should just return kit.
         EditorKit k = this.createEditorKit();
-        OutputStreamWriter osw = new OutputStreamWriter(stream, "UTF8"); // NOI18N
-        Writer writer = new BufferedWriter(osw);
-        k.write(writer, doc, 0, doc.getLength());
-        writer.close();
+        try (OutputStreamWriter osw = new OutputStreamWriter(stream, "UTF8");
+                Writer writer = new BufferedWriter(osw)) {  // NOI18N
+            k.write(writer, doc, 0, doc.getLength());
+        }
     }
  
     /**
@@ -120,9 +120,9 @@ public class XMLJ2eeEditorSupport extends DataEditorSupport
         // to create the kit; actually this should just return kit.
         EditorKit k = this.createEditorKit();
         InputStreamReader isr = new InputStreamReader(stream, "UTF8"); // NOI18N
-        Reader reader = new BufferedReader(isr);
-        k.read(reader, doc, 0);
-        reader.close();
+        try (Reader reader = new BufferedReader(isr)) {
+            k.read(reader, doc, 0);
+        }
     }
 
     /** Restart the timer which starts the parser after the specified delay.

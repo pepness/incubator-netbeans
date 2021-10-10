@@ -850,21 +850,10 @@ public class Hk2DatasourceManager implements DatasourceManager {
          fs.runAtomicAction(new FileSystem.AtomicAction() {
             @Override
             public void run() throws IOException {
-                FileLock lock = null;
-                OutputStream os = null;
-                try {
-                    FileObject sunResourcesFO = FileUtil.createData(sunResourcesXml);
-                    lock = sunResourcesFO.lock();
-                    os = sunResourcesFO.getOutputStream(lock);
-
+                FileObject sunResourcesFO = FileUtil.createData(sunResourcesXml);
+                try (FileLock lock = sunResourcesFO.lock();
+                        OutputStream os = sunResourcesFO.getOutputStream(lock)) {
                     XMLUtil.write(doc, os, doc.getXmlEncoding());
-                } finally {
-                    if(os !=null ){
-                        os.close();
-                    }
-                    if(lock != null) {
-                        lock.releaseLock();
-                    }
                 }
             }
         });

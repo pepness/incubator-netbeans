@@ -424,17 +424,9 @@ public final class JaxWsModelImpl implements JaxWsModel {
     @Override
     public void write() throws IOException {
         if (fo!=null) {
-            FileLock lock=null;
-            OutputStream os = null;
-            try {
-                lock = fo.lock();
-                os = fo.getOutputStream(lock);
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
                 write(os);
-                os.close();
-            } 
-            finally {
-                if (lock!=null) lock.releaseLock();
-                if (os != null) os.close();
             }
         } 
         else {

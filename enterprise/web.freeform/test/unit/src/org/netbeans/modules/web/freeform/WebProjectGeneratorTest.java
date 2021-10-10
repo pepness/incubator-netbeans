@@ -261,15 +261,11 @@ public class WebProjectGeneratorTest extends NbTestCase {
 
     // create real Jar otherwise FileUtil.isArchiveFile returns false for it
     public void createRealJarFile(File f) throws Exception {
-        OutputStream os = new FileOutputStream(f);
-        try {
-            JarOutputStream jos = new JarOutputStream(os);
+        try (OutputStream os = new FileOutputStream(f);
+                JarOutputStream jos = new JarOutputStream(os)) {
             JarEntry entry = new JarEntry("foo.txt");
             jos.putNextEntry(entry);
             jos.flush();
-            jos.close();
-        } finally {
-            os.close();
         }
     }
     

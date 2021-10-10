@@ -71,12 +71,9 @@ public class AppClientBuildScriptExtensionProvider implements JaxWsBuildScriptEx
         }
         FileObject jaxws_build = project.getProjectDirectory().getFileObject(TransformerUtils.JAXWS_BUILD_XML_PATH);
         if (jaxws_build != null) {
-            FileLock fileLock = jaxws_build.lock();
-            if (fileLock!=null) {
-                try {
+            try (FileLock fileLock = jaxws_build.lock()){
+                if (fileLock != null) {
                     jaxws_build.delete(fileLock);
-                } finally {
-                    fileLock.releaseLock();
                 }
             }
         }

@@ -65,26 +65,17 @@ public class ResourceConfigurationHelper {
             FileSystem fs = folder.getFileSystem();
             fs.runAtomicAction(new FileSystem.AtomicAction() {
                 public void run() throws IOException {
-                    OutputStream os = null;
-                    FileLock lock = null;
-                    try {
-                        String name = file.getName();
-                        FileObject configFO = folder.getFileObject(name);
-                        if (configFO == null) {
-                            configFO = folder.createData(name);
-                        }
-                        lock = configFO.lock();
-                        os = new BufferedOutputStream (configFO.getOutputStream(lock), 4086);
+                    String name = file.getName();
+                    FileObject configFO = folder.getFileObject(name);
+                    if (configFO == null) {
+                        configFO = folder.createData(name);
+                    }
+                    try (FileLock lock = configFO.lock();
+                            OutputStream os = new BufferedOutputStream (configFO.getOutputStream(lock), 4086)) {
                         // TODO notification needed
                         if (bean != null) {
                             bean.write(os);
                         }
-                    } finally {
-                        if (os != null) {
-                            try { os.close(); } catch(IOException ioe) {}
-                        }
-                        if (lock != null)
-                            lock.releaseLock();
                     }
                 }
             });

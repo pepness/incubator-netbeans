@@ -89,54 +89,35 @@ public class PutTransaction extends HttpServlet {
 	    if(debug) log(" Could not create the file, exiting..."); 
 	    return;
 	} 
-	FileLock lock = null;
-	try { 
-	    lock = fo.lock();
-	    if(debug) log(" Got the lock"); //NOI18N
-	} 
-	catch(FileAlreadyLockedException falex) { 
-	    if(debug) log(" Couldn't get a file lock, exiting..."); //NOI18N
-	    return; 
-	} 
 
 	boolean success = false;
-	try {
-	    PrintWriter fout = new PrintWriter(fo.getOutputStream(lock));
-        try {
-            InputStreamReader isr = new InputStreamReader(req.getInputStream());
-            try {
-                char[] charBuf = new char[4096];
-                int numChars;
-
-                while((numChars = isr.read(charBuf, 0, 4096)) != -1) {
-                    fout.write(charBuf, 0, numChars);
-                }
-            } finally {
-                isr.close();
+        try (FileLock lock = fo.lock();
+                PrintWriter fout = new PrintWriter(fo.getOutputStream(lock));
+                InputStreamReader isr = new InputStreamReader(req.getInputStream())) {
+            if(debug) {
+                log(" Got the lock");   //NOI18N
             }
-        } finally {
-            fout.close();
-        }
+            char[] charBuf = new char[4096];
+            int numChars;
+            while((numChars = isr.read(charBuf, 0, 4096)) != -1) {
+                fout.write(charBuf, 0, numChars);
+            }
 	    success = true;
- 	    if(debug) log("...success"); //NOI18N
-	}
-	catch(IOException ioex) {
+ 	    if(debug) {
+                log("...success");      //NOI18N
+            }
+	} catch(IOException ioex) {
 	    if (debug) { 
-		log("Failed to read/write the record:"); 
+		log("Failed to read/write the record:");     //NOI18N
 		log(ioex);
 	    }
 	}
 	finally {
-	    lock.releaseLock(); 
-
-	    try { 
-            res.setContentType("text/plain");  //NOI18N	    
-            PrintWriter out = res.getWriter();
-            try {
-                out.println(Constants.Comm.ACK); 
-            } finally {
-                out.close();
-            }
+	    try {
+                res.setContentType("text/plain");  //NOI18N	    
+                try (PrintWriter out = res.getWriter()) {
+                    out.println(Constants.Comm.ACK); 
+                }
 	    } catch(Exception ex) {
             // It doesn't actually matter if this goes wrong
 	    }
@@ -158,15 +139,13 @@ public class PutTransaction extends HttpServlet {
 
 	if(debug) log("doGet");  //NOI18N
 
-	PrintWriter out = res.getWriter();
-	try { 
+	try (PrintWriter out = res.getWriter()){ 
 	    //out.println(id); 
 	    out.println("Shouldn't use GET for this!");  //NOI18N
 	}
 	catch (Exception e) { 
 	    if(debug) log(e.getMessage());
 	}
-	try { out.close(); } catch(Exception ex) {}
     }
 
 
@@ -194,19 +173,13 @@ public class PutTransaction extends HttpServlet {
 
 	String stackTrace = null;
 	    
-	try {
-	    StringWriter sw = new StringWriter();
-	    PrintWriter pw = new PrintWriter(sw);
+	try (StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw)){
 	    t.printStackTrace(pw);
-	    pw.close();
-	    sw.close();
 	    stackTrace = sw.getBuffer().toString();
 	}
 	catch(Exception ex) {}
 	return stackTrace;
     }
 
-} //PutTransaction.java
-
-
-
+}

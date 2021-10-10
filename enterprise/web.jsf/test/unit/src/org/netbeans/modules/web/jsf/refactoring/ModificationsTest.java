@@ -79,14 +79,13 @@ public class ModificationsTest extends NbTestCase {
                 editor.createPositionRef(549+21, Bias.Backward), 
                 "org.ncl.backing.Login", "org.ncl.forward.Login", "");
         File outFile = new File(getWorkDir(), "faces-modification.xml");
-        FileWriter fWriter = new FileWriter(outFile);
-        modifications.addDifference(fileObject, difference);
-        List<Difference> differences = new LinkedList();
-        differences.add(difference);
-        modifications.commit(fileObject, differences, fWriter);
-        fWriter.close();
+        try (FileWriter fWriter = new FileWriter(outFile)) {
+            modifications.addDifference(fileObject, difference);
+            List<Difference> differences = new LinkedList();
+            differences.add(difference);
+            modifications.commit(fileObject, differences, fWriter);
+        }
         assertFile(outFile, getGoldenFile("gold-modifications.xml"));
-       
         
     }
     

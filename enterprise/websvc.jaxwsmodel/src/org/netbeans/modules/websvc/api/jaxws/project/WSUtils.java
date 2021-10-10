@@ -153,17 +153,10 @@ public class WSUtils {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
                 FileObject jaxWsFo = FileUtil.createData(nbprojFo, "jax-ws.xml");//NOI18N
-                FileLock lock = jaxWsFo.lock();
-                BufferedWriter bw = null;
-                try {
-                    bw = new BufferedWriter(new OutputStreamWriter(
-                            jaxWsFo.getOutputStream(lock), Charset.forName("UTF-8")));  // NOI18N
+                try (FileLock lock = jaxWsFo.lock();
+                        BufferedWriter bw = new BufferedWriter(
+                                new OutputStreamWriter(jaxWsFo.getOutputStream(lock), Charset.forName("UTF-8")))) {  // NOI18N
                     bw.write(jaxWsContent);
-                } finally {
-                    lock.releaseLock();
-                    if( bw!= null ){
-                        bw.close();
-                    }
                 }
             }
         });
@@ -176,22 +169,11 @@ public class WSUtils {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
                 FileObject handlerFo = FileUtil.createData(targetDir, handlerConfigName);//NOI18N
-                FileLock lock = handlerFo.lock();
-                BufferedWriter bw = null;
-                OutputStream os = null;
-                try {
-                    os = handlerFo.getOutputStream(lock);
-                    bw = new BufferedWriter(new OutputStreamWriter(os, 
-                            Charset.forName("UTF-8")));             // NOI18N
+                try (FileLock lock = handlerFo.lock();
+                        OutputStream os = handlerFo.getOutputStream(lock);
+                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")))) {     // NOI18N
                     bw.write(handlerContent);
                     bw.close();
-                } finally {
-                    if(bw != null)
-                        bw.close();
-                    if(os != null)
-                        os.close();
-                    if(lock != null)
-                        lock.releaseLock();
                 }
             }
         });
@@ -218,24 +200,11 @@ public class WSUtils {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
                 FileObject sunJaxwsFo = FileUtil.createData(targetDir, "sun-jaxws.xml");//NOI18N
-                FileLock lock = sunJaxwsFo.lock();
-                BufferedWriter bw = null;
-                OutputStream os = null;
-                OutputStreamWriter osw = null;
-                try {
-                    os = sunJaxwsFo.getOutputStream(lock);
-                    osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));     // NOI18N
-                    bw = new BufferedWriter(osw);
+                try (FileLock lock = sunJaxwsFo.lock();
+                        OutputStream os = sunJaxwsFo.getOutputStream(lock);
+                        OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));  // NOI18N
+                        BufferedWriter bw = new BufferedWriter(osw)) {
                     bw.write(sunJaxwsContent);
-                } finally {
-                    if(bw != null)
-                        bw.close();
-                    if(os != null)
-                        os.close();
-                    if(osw != null)
-                        osw.close();
-                    if(lock != null)
-                        lock.releaseLock();
                 }
             }
         });
@@ -282,24 +251,18 @@ public class WSUtils {
     }
     
     private static void deleteFile(FileObject f) {
-        FileLock lock = null;
-        try {
+        try (FileLock lock = f.lock()) {
             DataObject dObj = DataObject.find(f);
             if (dObj != null) {
                 SaveCookie save = dObj.getLookup().lookup(SaveCookie.class);
                 if (save!=null) save.save();
             }
-            lock = f.lock();
             f.delete(lock);
         } catch(java.io.IOException e) {
             NotifyDescriptor ndd =
                     new NotifyDescriptor.Message(NbBundle.getMessage(WSUtils.class, "MSG_Unable_Delete_File", f.getNameExt()),
                     NotifyDescriptor.ERROR_MESSAGE);
             DialogDisplayer.getDefault().notify(ndd);
-        } finally {
-            if(lock != null) {
-                lock.releaseLock();
-            }
         }
     }
     
@@ -338,22 +301,15 @@ public class WSUtils {
                 new NotifyDescriptor.Message(NbBundle.getMessage(WSUtils.class,"ERR_corruptedJaxWs",oldJaxWs.getPath(),reason.getMessage()),NotifyDescriptor.ERROR_MESSAGE));
         FileObject parent = oldJaxWs.getParent();
         FileObject oldBackup = parent.getFileObject("jax-ws.xml.old"); //NOI18N
-        FileLock lock = null;
         if (oldBackup!=null) {
             // remove old backup
-            try {
-                lock = oldBackup.lock();
+            try (FileLock lock = oldBackup.lock()) {
                 oldBackup.delete(lock);
-            } finally {
-                if (lock!=null) lock.releaseLock();
             }
         }
         // renaming old jax-ws.xml;
-        try {
-            lock = oldJaxWs.lock();
+        try (FileLock lock = oldJaxWs.lock()) {
             oldJaxWs.rename(lock, "jax-ws.xml","old"); //NOI18N
-        } finally {
-            if (lock!=null) lock.releaseLock();
         }
         retrieveJaxWsFromResource(projectDir);
         return projectDir.getFileObject(JAX_WS_XML_PATH);
@@ -593,17 +549,10 @@ public class WSUtils {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
                 FileObject jaxWsCatalog = FileUtil.createData(webInf, "jax-ws-catalog.xml");//NOI18N
-                FileLock lock = jaxWsCatalog.lock();
-                BufferedWriter bw =null;
-                try {
-                    bw = new BufferedWriter(new OutputStreamWriter(
-                            jaxWsCatalog.getOutputStream(lock), Charset.forName("UTF-8"))); // NOI18N
+                try (FileLock lock = jaxWsCatalog.lock();
+                        BufferedWriter bw = new BufferedWriter(
+                                new OutputStreamWriter(jaxWsCatalog.getOutputStream(lock), Charset.forName("UTF-8")))) {// NOI18N
                     bw.write(jaxWsContent);
-                } finally {
-                    lock.releaseLock();
-                    if ( bw!= null) {
-                        bw.close();
-                    }
                 }
             }
         });

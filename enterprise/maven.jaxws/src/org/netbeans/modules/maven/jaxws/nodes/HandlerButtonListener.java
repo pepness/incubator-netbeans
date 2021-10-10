@@ -165,8 +165,6 @@ public class HandlerButtonListener implements ActionListener{
             
             //if handler chain has no handlers, delete the annotation
             // and delete the handler xml file
-            FileLock lock = null;
-            OutputStream out = null;
             if(chain.getHandlers().length == 0) {
                 
                 CancellableTask<WorkingCopy> modificationTask = new CancellableTask<WorkingCopy>() {
@@ -209,34 +207,17 @@ public class HandlerButtonListener implements ActionListener{
                 }
                 
                 //delete the handler xml file
-                try{
-                    lock = handlerFO.lock();
+                try (FileLock lock = handlerFO.lock()) {
                     handlerFO.delete(lock);
-                }catch(Exception e){
+                } catch(Exception e) {
                     ErrorManager.getDefault().notify(e);
-                } finally{
-                    if(lock != null){
-                        lock.releaseLock();
-                    }
                 }
             } else{
-                try{
-                    lock = handlerFO.lock();
-                    out = handlerFO.getOutputStream(lock);
+                try (FileLock lock = handlerFO.lock();
+                        OutputStream out = handlerFO.getOutputStream(lock)) {
                     handlerChains.write(out);
-                }catch(Exception e){
+                } catch(Exception e) {
                     ErrorManager.getDefault().notify(e);
-                }finally{
-                    if(lock != null){
-                        lock.releaseLock();
-                    }
-                    if (out != null){
-                        try{
-                            out.close();
-                        } catch(IOException ioe){
-                            ErrorManager.getDefault().notify(ioe);
-                        }
-                    }
                 }
             }
             

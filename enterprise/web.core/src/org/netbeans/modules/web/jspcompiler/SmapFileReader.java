@@ -48,8 +48,7 @@ public class SmapFileReader implements SmapReader {
         if (file != null) {
             try {
                 FileReader fr = new FileReader(file);
-                LineNumberReader lnr = new LineNumberReader(fr);
-                try {
+                try (LineNumberReader lnr = new LineNumberReader(fr)) {
                     String line = "";
                     String out = "";
                     while ((line = lnr.readLine()) != null) {
@@ -57,8 +56,6 @@ public class SmapFileReader implements SmapReader {
                         out = out.concat("\n");
                     }
                     return out;
-                } finally {
-                    lnr.close();
                 }
             } catch (FileNotFoundException fne) {
                 return null;

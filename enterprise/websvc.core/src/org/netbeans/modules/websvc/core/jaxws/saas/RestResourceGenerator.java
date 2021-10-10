@@ -152,16 +152,10 @@ public class RestResourceGenerator {
                             if (fo != null) {
                                 final NotifyDescriptor d = new NotifyDescriptor.Confirmation(NbBundle.getMessage(RestResourceGenerator.class, "MSG_CONFIRM_DELETE", port.getName()), NbBundle.getMessage(RestResourceGenerator.class, "TITLE_CONFIRM_DELETE"), NotifyDescriptor.YES_NO_OPTION);
                                 if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.YES_OPTION) {
-                                    FileLock lock = null;
-                                    try {
-                                        lock = fo.lock();
+                                    try (FileLock lock = fo.lock()) {
                                         fo.delete(lock);
                                     } catch (IOException ex) {
                                         ErrorManager.getDefault().notify(ex);
-                                    } finally {
-                                        if (lock != null) {
-                                            lock.releaseLock();
-                                        }
                                     }
                                 } else {
                                     continue;

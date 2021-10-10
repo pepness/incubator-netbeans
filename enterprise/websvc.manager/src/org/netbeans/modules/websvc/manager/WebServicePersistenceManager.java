@@ -71,62 +71,58 @@ public class WebServicePersistenceManager implements ExceptionListener {
         if (websvcRefFile.exists()) {
             try {
                 SaasServicesModel model = SaasServicesModel.getInstance();
-                XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(websvcRefFile)));
-                List<WebServiceData> wsDatas = new ArrayList<WebServiceData>();
-
-                List<String> partnerServices = WebServiceListModel.getInstance().getPartnerServices();
-                Object firstObject = decoder.readObject();
-                int wsDataNums;
-
-                if (firstObject instanceof List) {
-                    List<String> loadedServices = (List<String>) firstObject;
-                    for (String url : loadedServices) {
-                        partnerServices.add(url);
-                    }
-                    wsDataNums = ((Integer) decoder.readObject());
-                } else {
-                    wsDataNums = ((Integer) firstObject);
-                }
-
-                for (int i = 0; i < wsDataNums; i++) {
-                    WebServiceData wsData = null;
-                    try {
-                        wsData = (WebServiceData) decoder.readObject();
-                    } catch (Exception exc) {
-                        ErrorManager.getDefault().notify(exc);
-                        decoder.close();
-                    }
-
-                    wsDatas.add(wsData);
-                }
-                int wsGroupSize = ((Integer) decoder.readObject());
-                Map<String, WebServiceGroup> groupByIds = new HashMap<String, WebServiceGroup>();
-                for (int i = 0; i < wsGroupSize; i++) {
-                    try {
-                        WebServiceGroup group = (WebServiceGroup) decoder.readObject();
-                        groupByIds.put(group.getId(), group);
-                        if (group.getName() == null) {
-                            continue;
+                List<WebServiceData> wsDatas;
+                Map<String, WebServiceGroup> groupByIds;
+                try (XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(websvcRefFile)))) {
+                    wsDatas = new ArrayList<WebServiceData>();
+                    List<String> partnerServices = WebServiceListModel.getInstance().getPartnerServices();
+                    Object firstObject = decoder.readObject();
+                    int wsDataNums;
+                    if (firstObject instanceof List) {
+                        List<String> loadedServices = (List<String>) firstObject;
+                        for (String url : loadedServices) {
+                            partnerServices.add(url);
                         }
-
-                        /**
-                         * For import services created from 6.0
-                         * Note: we only need to read old group from imported user dir
-                         * New group information are not managed by this persistence.
-                         */
-                        String trimmed = translateGroupName(group);
-                        if (!imported &&
-                                model.getRootGroup().getChildGroup(group.getName()) == null &&
-                                model.getRootGroup().getChildGroup(trimmed) == null &&
-                                !WebServiceListModel.DEFAULT_GROUP.equals(group.getName())) {
-                            model.createTopGroup(group.getName());
+                        wsDataNums = ((Integer) decoder.readObject());
+                    } else {
+                        wsDataNums = ((Integer) firstObject);
+                    }
+                    for (int i = 0; i < wsDataNums; i++) {
+                        WebServiceData wsData = null;
+                        try {
+                            wsData = (WebServiceData) decoder.readObject();
+                        } catch (Exception exc) {
+                            ErrorManager.getDefault().notify(exc);
                         }
-                    } catch (Exception exc) {
-                        ErrorManager.getDefault().notify(exc);
-                        decoder.close();
+                        wsDatas.add(wsData);
+                    }
+                    int wsGroupSize = ((Integer) decoder.readObject());
+                    groupByIds = new HashMap<String, WebServiceGroup>();
+                    for (int i = 0; i < wsGroupSize; i++) {
+                        try {
+                            WebServiceGroup group = (WebServiceGroup) decoder.readObject();
+                            groupByIds.put(group.getId(), group);
+                            if (group.getName() == null) {
+                                continue;
+                            }
+                            
+                            /**
+                             * For import services created from 6.0
+                             * Note: we only need to read old group from imported user dir
+                             * New group information are not managed by this persistence.
+                             */
+                            String trimmed = translateGroupName(group);
+                            if (!imported &&
+                                    model.getRootGroup().getChildGroup(group.getName()) == null &&
+                                    model.getRootGroup().getChildGroup(trimmed) == null &&
+                                    !WebServiceListModel.DEFAULT_GROUP.equals(group.getName())) {
+                                model.createTopGroup(group.getName());
+                            }
+                        } catch (Exception exc) {
+                            ErrorManager.getDefault().notify(exc);
+                        }
                     }
                 }
-                decoder.close();
 
                 for (WebServiceData wsData : wsDatas) {
                     if (imported) { // we don't need to import generated artifacts
@@ -205,9 +201,7 @@ public class WebServicePersistenceManager implements ExceptionListener {
         if (websvcRefFile.exists()) {
             websvcRefFile.delete();
         }
-        XMLEncoder encoder = null;
-        try {
-            encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(websvcRefFile)));
+        try (XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(websvcRefFile)))) {
             encoder.setExceptionListener(this);
 
             DefaultPersistenceDelegate delegate = new WebServiceDataPersistenceDelegate();
@@ -248,10 +242,6 @@ public class WebServicePersistenceManager implements ExceptionListener {
             }
         } catch (Exception exc) {
             ErrorManager.getDefault().notify(exc);
-        } finally {
-            if (encoder != null) {
-                encoder.close();
-            }
         }
     }
 
@@ -259,17 +249,11 @@ public class WebServicePersistenceManager implements ExceptionListener {
         if (descriptorPath == null || descriptorPath.length() == 0) {
             return null;
         } else {
-            XMLDecoder decoder = null;
-            try {
-                decoder = new java.beans.XMLDecoder(new java.io.BufferedInputStream(new java.io.FileInputStream(descriptorPath)));
+            try (XMLDecoder decoder = new java.beans.XMLDecoder(new java.io.BufferedInputStream(new java.io.FileInputStream(descriptorPath)))) {
                 return (WebServiceDescriptor) decoder.readObject();
             } catch (Exception ex) {
                 exceptionThrown(ex);
                 return null;
-            } finally {
-                if (decoder != null) {
-                    decoder.close();
-                }
             }
         }
 
@@ -393,14 +377,14 @@ public class WebServicePersistenceManager implements ExceptionListener {
     }
 
     public void saveDescriptor(WebServiceDescriptor descriptor) throws IOException {
-        XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(descriptor.getXmlDescriptor())));
-        encoder.setExceptionListener(this);
-        DefaultPersistenceDelegate delegate = new WebServiceDataPersistenceDelegate();
-        encoder.setPersistenceDelegate(WSService.class, delegate);
-        encoder.writeObject(descriptor);
-
-        encoder.flush();
-        encoder.close();
+        try (XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(descriptor.getXmlDescriptor())))) {
+            encoder.setExceptionListener(this);
+            DefaultPersistenceDelegate delegate = new WebServiceDataPersistenceDelegate();
+            encoder.setPersistenceDelegate(WSService.class, delegate);
+            encoder.writeObject(descriptor);
+            
+            encoder.flush();
+        }
     }
 
     public void saveWebServiceDescriptor(WebServiceDescriptor descriptor) {

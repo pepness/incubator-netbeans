@@ -139,33 +139,25 @@ public class InstancePropertiesTest extends ServerRegistryTestBase {
         FileUtil.runAtomicAction(new AtomicAction() {
 
           public void run() throws IOException {
-                    FileObject folder = FileUtil.createFolder(
-                            FileUtil.getConfigFile(ServerRegistry.DIR_JSR88_PLUGINS), "Unknown");
-                    FileObject fo = folder.createData("Descriptor");
-                    InputStream is = new ByteArrayInputStream(
-                            ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                            + "<netbeans-deployment></netbeans-deployment>").getBytes("UTF-8"));
-                    try {
-                        OutputStream os = fo.getOutputStream();
-                        try {
-                            FileUtil.copy(is, os);
-                        } finally {
-                            os.close();
-                        }
-                    } finally {
-                        is.close();
-                    }
+                FileObject folder = FileUtil.createFolder(
+                        FileUtil.getConfigFile(ServerRegistry.DIR_JSR88_PLUGINS), "Unknown");
+                FileObject fo = folder.createData("Descriptor");
+                try (InputStream is = new ByteArrayInputStream(
+                        ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<netbeans-deployment></netbeans-deployment>").getBytes("UTF-8"));
+                        OutputStream os = fo.getOutputStream()) {
+                    FileUtil.copy(is, os);
+                }
 
-                    fo = folder.createData("Factory", "instance");
-                    fo.setAttribute("instanceClass",
-                            "org.netbeans.modules.j2ee.deployment.plugins.api.InstancepropertiesTest.MockDF");
-                    fo.setAttribute("instanceOf",
-                            "import javax.enterprise.deploy.spi.factories.DeploymentFactory");
-                    fo.setAttribute("instanceCreate",
-                            new MockDF());
+                fo = folder.createData("Factory", "instance");
+                fo.setAttribute("instanceClass",
+                        "org.netbeans.modules.j2ee.deployment.plugins.api.InstancepropertiesTest.MockDF");
+                fo.setAttribute("instanceOf",
+                        "import javax.enterprise.deploy.spi.factories.DeploymentFactory");
+                fo.setAttribute("instanceCreate",
+                        new MockDF());
 
-                    InstanceProperties props = InstanceProperties.createInstancePropertiesWithoutUI(
-                            url, TEST_USERNAME, TEST_PASSWORD, TEST_DISPLAY_NAME, expected);
+                InstanceProperties props = InstanceProperties.createInstancePropertiesWithoutUI(
+                        url, TEST_USERNAME, TEST_PASSWORD, TEST_DISPLAY_NAME, expected);
             }
         });
     }

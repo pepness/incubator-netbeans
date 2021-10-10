@@ -166,14 +166,12 @@ public class StrutsEditorUtilitiesTest extends NbTestCase {
         BaseDocument doc = new BaseDocument(false, "text/xml");
         File strutsConfig = new File(testDir, "struts-config.xml");
         StringBuilder buffer = new StringBuilder();
-        try {
-            FileReader reader = new FileReader (strutsConfig);
+        try (FileReader reader = new FileReader (strutsConfig)) {
             char[] buf = new char [100];
             int count = -1;
             while ((count = reader.read(buf)) != -1){
                 buffer.append(buf, 0, count);
-            } 
-            reader.close();
+            }
             doc.insertString(0, buffer.toString(), null); 
             return doc;
         } catch (IOException ex) {

@@ -136,15 +136,12 @@ public class MiscUtilities {
                 return fo;
             }
         }
-        FileLock lock = null;
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
-        try {
-            lock = fo.lock();
-            OutputStream os = fo.getOutputStream(lock);
-            writer = new BufferedWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")));
-            InputStream is = RestSupport.class.getResourceAsStream("resources/" + name);
-            reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")));
+                InputStream is = RestSupport.class.getResourceAsStream("resources/" + name);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
             String line;
             String lineSep = "\n";
             if (File.separatorChar == '\\') {
@@ -164,28 +161,15 @@ public class MiscUtilities {
                 writer.write(line);
                 writer.write(lineSep);
             }
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
-            if (lock != null) {
-                lock.releaseLock();
-            }
-            if (reader != null) {
-                reader.close();
-            }
         }
         return fo;
     }
 
     public static FileObject modifyFile(FileObject fo, Map<String, String> replace) throws IOException {
         StringWriter content = new StringWriter();
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
-        try {
-            writer = new BufferedWriter(content);
-            InputStream is = fo.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+        try (BufferedWriter writer = new BufferedWriter(content);
+                InputStream is = fo.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
             String line;
             String lineSep = "\n";
             if (File.separatorChar == '\\') {
@@ -199,25 +183,11 @@ public class MiscUtilities {
                 writer.write(lineSep);
             }
         } finally {
-            if (reader != null) {
-                reader.close();
-            }
-            if (writer != null) {
-                writer.close();
-            }
             StringBuffer buffer = content.getBuffer();
-            FileLock lock = fo.lock();
-            try {
-                OutputStream outputStream = fo.getOutputStream(lock);
-                writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName("UTF-8")));
+            try (FileLock lock = fo.lock();
+                    OutputStream outputStream = fo.getOutputStream(lock);
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, Charset.forName("UTF-8")))){
                 writer.write(buffer.toString());
-            } finally {
-                if (lock != null) {
-                    lock.releaseLock();
-                }
-                if (writer != null) {
-                    writer.close();
-                }
             }
         }
         return fo;

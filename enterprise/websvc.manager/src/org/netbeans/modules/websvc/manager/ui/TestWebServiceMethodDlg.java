@@ -172,12 +172,10 @@ public class TestWebServiceMethodDlg extends JPanel implements ActionListener, M
     private File createTempCopy(File src) {
         try {
             java.io.File tempFile = java.io.File.createTempFile("proxyjar", "jar");
-            java.nio.channels.FileChannel inChannel = new java.io.FileInputStream(src).getChannel();
-            java.nio.channels.FileChannel outChannel = new java.io.FileOutputStream(tempFile).getChannel();
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-
-            inChannel.close();
-            outChannel.close();
+            try (java.nio.channels.FileChannel inChannel = new java.io.FileInputStream(src).getChannel();
+                    java.nio.channels.FileChannel outChannel = new java.io.FileOutputStream(tempFile).getChannel()) {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            }
             return tempFile;
         } catch (IOException ex) {
             ErrorManager.getDefault().notify(ErrorManager.WARNING, ex);

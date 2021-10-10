@@ -436,14 +436,10 @@ public class EjbJarProxy implements EjbJar {
             if (dataObject instanceof DDProviderDataObject) {
                 ((DDProviderDataObject) dataObject).writeModel(ejbJar);
             } else {
-                FileLock lock = fo.lock();
-                try {
-                    try (OutputStream os = fo.getOutputStream(lock)) {
-                        writing = true;
-                        write(os);
-                    }
-                } finally {
-                    lock.releaseLock();
+                try (FileLock lock = fo.lock();
+                        OutputStream os = fo.getOutputStream(lock)) {
+                    writing = true;
+                    write(os);
                 }
             }
         }

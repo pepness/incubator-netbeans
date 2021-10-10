@@ -170,20 +170,10 @@ public class ResourceModifier {
     private static void writeResourceFile(FileSystem fs, final File sunResourcesXml, final String content) throws IOException {
         fs.runAtomicAction(new FileSystem.AtomicAction() {
             public void run() throws IOException {
-                FileLock lock = null;
-                BufferedWriter writer = null;
-                try {
-                    FileObject sunResourcesFO = FileUtil.createData(sunResourcesXml);
-                    lock = sunResourcesFO.lock();
-                    writer = new BufferedWriter(new OutputStreamWriter(sunResourcesFO.getOutputStream(lock)));
+                FileObject sunResourcesFO = FileUtil.createData(sunResourcesXml);
+                try (FileLock lock = sunResourcesFO.lock();
+                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sunResourcesFO.getOutputStream(lock)))) {
                     writer.write(content);
-                } finally {
-                    if(writer != null) {
-                        try { writer.close(); } catch(IOException ex) { }
-                    }
-                    if(lock != null) {
-                        lock.releaseLock();
-                    }
                 }
             }
         });

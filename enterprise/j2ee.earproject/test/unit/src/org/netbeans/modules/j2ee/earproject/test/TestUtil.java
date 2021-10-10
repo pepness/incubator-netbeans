@@ -118,15 +118,14 @@ public final class TestUtil {
                 }
             }
         }
-        FileOutputStream os = new FileOutputStream(destination.getAbsolutePath() + "/" + zipName);
-        InputStream is = zipFile.getInputStream(e);
-        int n = 0;
-        byte[] buff = new byte[8192];
-        while ((n = is.read(buff)) > 0) {
-            os.write(buff, 0, n);
+        try (FileOutputStream os = new FileOutputStream(destination.getAbsolutePath() + "/" + zipName);
+                InputStream is = zipFile.getInputStream(e)) {
+            int n = 0;
+            byte[] buff = new byte[8192];
+            while ((n = is.read(buff)) > 0) {
+                os.write(buff, 0, n);
+            }
         }
-        is.close();
-        os.close();
     }
     
     private static boolean warned = false;
@@ -267,16 +266,9 @@ public final class TestUtil {
     
     public static void storeProjectProperties(FileObject projectDir, EditableProperties props) throws IOException {
         FileObject propsFO = projectDir.getFileObject(AntProjectHelper.PROJECT_PROPERTIES_PATH);
-        FileLock lock = propsFO.lock();
-        try {
-            OutputStream os = propsFO.getOutputStream(lock);
-            try {
-                props.store(os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = propsFO.lock();
+                OutputStream os = propsFO.getOutputStream(lock)) {
+            props.store(os);
         }
     }
     
@@ -430,23 +422,13 @@ public final class TestUtil {
         }
         assert fo.isData();
         if (content != null || touch) {
-            FileLock lock = fo.lock();
-            try {
-                OutputStream os = fo.getOutputStream(lock);
-                try {
-                    if (content != null) {
-                        InputStream is = content.openStream();
-                        try {
-                            FileUtil.copy(is, os);
-                        } finally {
-                            is.close();
-                        }
+            try (FileLock lock = fo.lock();
+                    OutputStream os = fo.getOutputStream(lock)) {
+                if (content != null) {
+                    try (InputStream is = content.openStream()) {
+                        FileUtil.copy(is, os);
                     }
-                } finally {
-                    os.close();
                 }
-            } finally {
-                lock.releaseLock();
             }
         }
         return fo;

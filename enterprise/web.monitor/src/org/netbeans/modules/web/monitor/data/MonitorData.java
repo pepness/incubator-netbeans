@@ -651,11 +651,10 @@ public class MonitorData extends BaseBean implements DataRecord {
 
 	try {
 	    File file = new File(buf.toString()); 
-	    FileOutputStream fout = new FileOutputStream(file);
-	    PrintWriter pw = new PrintWriter(fout);
-	    this.write(pw);
-	    pw.close();
-	    fout.close();
+            try (FileOutputStream fout = new FileOutputStream(file);
+                    PrintWriter pw = new PrintWriter(fout)) {
+                this.write(pw);
+            }
 	    return file.getAbsolutePath(); 
 	}
 	catch(Throwable throwable) {

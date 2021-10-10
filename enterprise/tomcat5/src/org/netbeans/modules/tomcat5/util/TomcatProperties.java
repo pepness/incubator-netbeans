@@ -236,16 +236,9 @@ public class TomcatProperties {
         antProps.setProperty("tomcat.username", getUsername());         // NOI18N
         file.createNewFile();
         FileObject fo = FileUtil.toFileObject(file);
-        FileLock lock = fo.lock();
-        try {
-            OutputStream os = fo.getOutputStream(lock);
-            try {
-                antProps.store(os);
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = fo.lock();
+                OutputStream os = fo.getOutputStream(lock)) {
+            antProps.store(os);
         }
     }
     

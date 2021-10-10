@@ -348,9 +348,9 @@ public class TomcatManagerImpl implements ProgressObject, Runnable {
         tmpContextXml.deleteOnExit();
         if (!docBase.equals (ctx.getAttributeValue ("docBase"))) { //NOI18N
             ctx.setAttributeValue ("docBase", docBase); //NOI18N
-            FileOutputStream fos = new FileOutputStream (tmpContextXml);
-            ctx.write (fos);
-            fos.close ();
+            try (FileOutputStream fos = new FileOutputStream (tmpContextXml)) {
+                ctx.write (fos);
+            }
         }
         // http://www.netbeans.org/issues/show_bug.cgi?id=167139
         URL url = tmpContextXml.toURI().toURL();
@@ -554,18 +554,17 @@ public class TomcatManagerImpl implements ProgressObject, Runnable {
                 }
                 // Send the request data (if any)
                 if (istream != null) {
-                    BufferedOutputStream ostream =
-                        new BufferedOutputStream(hconn.getOutputStream(), 1024);
-                    byte buffer[] = new byte[1024];
-                    while (true) {
-                        int n = istream.read(buffer);
-                        if (n < 0) {
-                            break;
+                    try (BufferedOutputStream ostream = new BufferedOutputStream(hconn.getOutputStream(), 1024)) {
+                        byte buffer[] = new byte[1024];
+                        while (true) {
+                            int n = istream.read(buffer);
+                            if (n < 0) {
+                                break;
+                            }
+                            ostream.write(buffer, 0, n);
                         }
-                        ostream.write(buffer, 0, n);
+                        ostream.flush();
                     }
-                    ostream.flush();
-                    ostream.close();
                     istream.close();
                 }
 

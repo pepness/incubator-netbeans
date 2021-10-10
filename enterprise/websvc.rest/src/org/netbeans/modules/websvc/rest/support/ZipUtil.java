@@ -66,13 +66,12 @@ public class ZipUtil {
         try {
 
             FileOutputStream dest = new FileOutputStream(zipFile);
-            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-
-            for (int i = 0; i < sources.length; i++) {
-                File f = new File(sources[i]);
-                addEntry(f, paths[i], out);
+            try (ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest))) {
+                for (int i = 0; i < sources.length; i++) {
+                    File f = new File(sources[i]);
+                    addEntry(f, paths[i], out);
+                }
             }
-            out.close();
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
         }
@@ -86,18 +85,17 @@ public class ZipUtil {
                 addEntry(f, path + File.separator + file.getName(), out);
             }
         } else {
-            byte[] data = new byte[WRITE_BUF_SIZE];
-            BufferedInputStream origin = null;
-            //System.out.println("Adding: " + file);
-            FileInputStream fi = new FileInputStream(file);
-            origin = new BufferedInputStream(fi, READ_BUF_SIZE);
-            ZipEntry entry = new ZipEntry(path + File.separator + file.getName());
-            out.putNextEntry(entry);
-            int count;
-            while ((count = origin.read(data, 0, WRITE_BUF_SIZE)) != -1) {
-                out.write(data, 0, count);
+            try (FileInputStream fi = new FileInputStream(file);
+                    BufferedInputStream origin = new BufferedInputStream(fi, READ_BUF_SIZE)) {
+                byte[] data = new byte[WRITE_BUF_SIZE];
+                //System.out.println("Adding: " + file);
+                ZipEntry entry = new ZipEntry(path + File.separator + file.getName());
+                out.putNextEntry(entry);
+                int count;
+                while ((count = origin.read(data, 0, WRITE_BUF_SIZE)) != -1) {
+                    out.write(data, 0, count);
+                }
             }
-            origin.close();
         }
     }
 
@@ -106,11 +104,8 @@ public class ZipUtil {
         boolean result = true;
         FileSystem targetFS = targetFolderFO.getFileSystem();
         File targetFolder = FileUtil.toFile(targetFolderFO);
-        ZipInputStream zip = null;
-        try {
+        try (ZipInputStream zip = new ZipInputStream(new BufferedInputStream(source, READ_BUF_SIZE))) {
             final byte [] buffer = new byte [WRITE_BUF_SIZE];
-            zip = new ZipInputStream(new BufferedInputStream(source, READ_BUF_SIZE));
-            final InputStream in = zip;
             ZipEntry entry;
             while((entry = zip.getNextEntry()) != null) {
                 if(!allow(entry)) {
@@ -144,36 +139,18 @@ public class ZipUtil {
                     }
                     targetFS.runAtomicAction(new FileSystem.AtomicAction() {
                         public void run() throws IOException {
-                            FileOutputStream os = null;
-                            try {
-                                os = new FileOutputStream(entryFile);
+                            try (final InputStream in = zip;
+                                    FileOutputStream os = new FileOutputStream(entryFile)) {
                                 int len;
                                 while((len = in.read(buffer)) >= 0) {
                                     os.write(buffer, 0, len);
-                                }
-                            } finally {
-                                if(os != null) {
-                                    try {
-                                        os.close();
-                                    } catch(IOException ex) {
-                                        Exceptions.printStackTrace(ex);
-                                    }
                                 }
                             }
                         }
                     });
                 }
             }
-        } finally {
-            if(zip != null) {
-                try {
-                    zip.close();
-                } catch(IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
         }
-        
         return result;
     }
     

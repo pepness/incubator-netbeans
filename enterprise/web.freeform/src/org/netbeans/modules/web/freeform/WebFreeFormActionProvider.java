@@ -203,11 +203,8 @@ public class WebFreeFormActionProvider implements ActionProvider {
         Document script = null;
         FileObject scriptFile = helper.getProjectDirectory().getFileObject(scriptPath);
         if (scriptFile != null) {
-            InputStream is = scriptFile.getInputStream();
-            try {
+            try (InputStream is = scriptFile.getInputStream()) {
                 script = XMLUtil.parse(new InputSource(is), false, true, null, null);
-            } finally {
-                is.close();
             }
         }
         
@@ -409,16 +406,9 @@ public class WebFreeFormActionProvider implements ActionProvider {
         if (scriptFile == null) {
             scriptFile = FileUtil.createData(helper.getProjectDirectory(), scriptPath);
         }
-        FileLock lock = scriptFile.lock();
-        try {
-            OutputStream os = scriptFile.getOutputStream(lock);
-            try {
-                XMLUtil.write(script, os, "UTF-8"); // NOI18N
-            } finally {
-                os.close();
-            }
-        } finally {
-            lock.releaseLock();
+        try (FileLock lock = scriptFile.lock();
+                OutputStream os = scriptFile.getOutputStream(lock)) {
+            XMLUtil.write(script, os, "UTF-8"); // NOI18N
         }
     }
 
@@ -508,25 +498,15 @@ public class WebFreeFormActionProvider implements ActionProvider {
             i++;
         } while (helper.resolveFileObject(file) != null);
         FileObject fo = FileUtil.createData(project.getProjectDirectory(), file);
-        FileLock lock = fo.lock();
-        OutputStream out = null;
-        InputStream in = null;
-        try {
-            out = new BufferedOutputStream(fo.getOutputStream(lock));
-            in = getClass().getResourceAsStream(DEBUG_PROPERTIES_TEMPLATE);
+        try (FileLock lock = fo.lock();
+                OutputStream out = new BufferedOutputStream(fo.getOutputStream(lock));
+                InputStream in = getClass().getResourceAsStream(DEBUG_PROPERTIES_TEMPLATE)) {
             byte[] buffer = new byte[4096];
             int read;
             do {
                 read = in.read(buffer);
                 out.write(buffer, 0, read);
             } while (read == buffer.length);
-        }
-        finally {
-            if (in != null)
-                in.close();
-            if (out != null)
-                out.close();
-            lock.releaseLock();
         }
         
         // set the generated properties

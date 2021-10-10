@@ -155,40 +155,19 @@ public class ClientHandlerButtonListener implements ActionListener {
             final FileObject bindingHandlerFO = FileUtil.createData(bindingsFolder, bindingsHandlerFile);
             //if bindingsModel is null, create it
             if (bindingsModel == null) {
-                InputStream is = FileUtil.getConfigFile("jax-ws/default-binding-handler.xml").getInputStream();
-                final String bindingsContent = readResource(is); //NOI18N
-                is.close();
+                final String bindingsContent;
+                try (InputStream is = FileUtil.getConfigFile("jax-ws/default-binding-handler.xml").getInputStream()) {
+                    bindingsContent = readResource(is); //NOI18N
+                } //NOI18N
 
                 bindingsFolder.getFileSystem().runAtomicAction(new FileSystem.AtomicAction() {
 
                     public void run() throws IOException {
-                        BufferedWriter bw = null;
-                        OutputStream os = null;
-                        OutputStreamWriter osw = null;
-                        FileLock lock = bindingHandlerFO.lock();
-                        try {
-                            os = bindingHandlerFO.getOutputStream(lock);
-                            osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));// NOI18N
-                            bw = new BufferedWriter(osw);
+                        try (FileLock lock = bindingHandlerFO.lock();
+                                OutputStream os = bindingHandlerFO.getOutputStream(lock);
+                                OutputStreamWriter osw = new OutputStreamWriter(os, Charset.forName("UTF-8"));
+                                BufferedWriter bw = new BufferedWriter(osw)) {      // NOI18N
                             bw.write(bindingsContent);
-                        } finally {
-                            try {
-                                if (bw != null) {
-                                    bw.close();
-                                }
-                                if (os != null) {
-                                    os.close();
-                                }
-                                if (osw != null) {
-                                    osw.close();
-                                }
-                            } catch (IOException e) {
-                                ErrorManager.getDefault().notify(e);
-                            }
-
-                            if (lock != null) {
-                                lock.releaseLock();
-                            }
                         }
                     }
                 });
@@ -436,14 +415,10 @@ public class ClientHandlerButtonListener implements ActionListener {
 //TODO: close all streams properly
     private static String readResource(InputStream is) throws IOException {
         // read the config from resource first
-        BufferedReader br = null;
-        InputStreamReader isr = null;
         StringBuilder sb = new StringBuilder();
-        try {
+        try (InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));   //NOI18N
+                BufferedReader br = new BufferedReader(isr)) {
             String lineSep = System.getProperty("line.separator");      //NOI18N
-            isr = new InputStreamReader(is, Charset.forName("UTF-8"));  //NOI18N
-            br = new BufferedReader(isr);
-
             String line = br.readLine();
             while (line != null) {
                 sb.append(line);
@@ -451,14 +426,8 @@ public class ClientHandlerButtonListener implements ActionListener {
                 line = br.readLine();
             }
         } finally {
-            if ( isr!= null ){
-                isr.close();
-            }
-            else {
+            if(null != is) {
                 is.close();
-            }
-            if ( br!= null ){
-                br.close();
             }
         }
         return sb.toString();

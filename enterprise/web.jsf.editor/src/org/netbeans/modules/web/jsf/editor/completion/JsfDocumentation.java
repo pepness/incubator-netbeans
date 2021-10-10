@@ -179,14 +179,15 @@ public class JsfDocumentation implements HelpResolver {
         try {
             URLConnection con = url.openConnection();
             con.connect();
-            Reader r = new InputStreamReader(new BufferedInputStream(con.getInputStream()), charset);
-            char[] buf = new char[2048];
-            int read;
-            StringBuilder content = new StringBuilder();
-            while ((read = r.read(buf)) != -1) {
-                content.append(buf, 0, read);
+            StringBuilder content;
+            try (Reader r = new InputStreamReader(new BufferedInputStream(con.getInputStream()), charset)) {
+                char[] buf = new char[2048];
+                int read;
+                content = new StringBuilder();
+                while ((read = r.read(buf)) != -1) {
+                    content.append(buf, 0, read);
+                }
             }
-            r.close();
             String strContent = content.toString();
             HELP_FILES_CACHE.put(filePath, strContent);
             return strContent;

@@ -203,29 +203,16 @@ public final class WildflyDatasourceManager implements DatasourceManager {
             FileSystem fs = deployDir.getFileSystem();
             fs.runAtomicAction(new FileSystem.AtomicAction() {
                 public void run() throws IOException {
-                    OutputStream os = null;
-                    FileLock lock = null;
-                    try {
-                        String name = file.getName();
-                        FileObject configFO = deployDir.getFileObject(name);
-                        if (configFO == null) {
-                            configFO = deployDir.createData(name);
-                        }
-                        lock = configFO.lock();
-                        os = new BufferedOutputStream(configFO.getOutputStream(lock), 4096);
+                    String name = file.getName();
+                    FileObject configFO = deployDir.getFileObject(name);
+                    if (configFO == null) {
+                        configFO = deployDir.createData(name);
+                    }
+                    try (FileLock lock = configFO.lock();
+                            OutputStream os = new BufferedOutputStream(configFO.getOutputStream(lock), 4096)){
                         // TODO notification needed
                         if (bean != null) {
                             bean.write(os);
-                        }
-                    } finally {
-                        if (os != null) {
-                            try {
-                                os.close();
-                            } catch (IOException ioe) {
-                            }
-                        }
-                        if (lock != null) {
-                            lock.releaseLock();
                         }
                     }
                 }

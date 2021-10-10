@@ -66,24 +66,10 @@ public class CopyOnSave implements AdditionalDestination, J2eeModuleProvider.Dep
 
     protected void copySrcToDest( FileObject srcFile, FileObject destFile) throws IOException {
         if (destFile != null && !srcFile.isFolder()) {
-            InputStream is = null;
-            OutputStream os = null;
-            FileLock fl = null;
-            try {
-                is = srcFile.getInputStream();
-                fl = destFile.lock();
-                os = destFile.getOutputStream(fl);
+            try (InputStream is = srcFile.getInputStream();
+                    FileLock fl = destFile.lock();
+                    OutputStream os = destFile.getOutputStream(fl);) {
                 FileUtil.copy(is, os);
-            } finally {
-                if (is != null) {
-                    is.close();
-                }
-                if (os != null) {
-                    os.close();
-                }
-                if (fl != null) {
-                    fl.releaseLock();
-                }
             }
         }
     }

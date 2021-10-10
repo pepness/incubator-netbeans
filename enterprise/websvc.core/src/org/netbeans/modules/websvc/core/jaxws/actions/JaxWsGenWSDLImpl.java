@@ -97,14 +97,8 @@ public class JaxWsGenWSDLImpl implements JaxWsGenWSDLCookie {
                                         selectedFolder.getName()), NotifyDescriptor.YES_NO_OPTION);   //NOI18N
                                 DialogDisplayer.getDefault().notify(notifyDescriptor);
                                 if (notifyDescriptor.getValue() == NotifyDescriptor.YES_OPTION) {
-                                    FileLock lock = null;
-                                    try {
-                                        lock = testFO.lock();
+                                    try (FileLock lock = testFO.lock()) {
                                         testFO.delete(lock);
-                                    } finally {
-                                        if (lock != null) {
-                                            lock.releaseLock();
-                                        }
                                     }
                                 } else {
                                     overwrite = false;

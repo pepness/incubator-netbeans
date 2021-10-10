@@ -70,12 +70,9 @@ public class DOMHelper {
                 Logger.getLogger(DOMHelper.class.getName()).log(Level.INFO, "Cannot get XML parser for "+fobj);
                 return null;
             }
-            FileLock lock = null;
-            InputStream is = null;
 
-            try {
-                lock = fobj.lock();
-                is = fobj.getInputStream();
+            try (FileLock lock = fobj.lock();
+                    InputStream is = fobj.getInputStream()) {
                 document = builder.parse(is);
             } catch (SAXParseException ex) {
                 Logger.getLogger(DOMHelper.class.getName()).log(Level.INFO, "Cannot parse "+fobj, ex);
@@ -83,18 +80,6 @@ public class DOMHelper {
                 Logger.getLogger(DOMHelper.class.getName()).log(Level.INFO, "Cannot parse "+fobj, ex);
             } catch (IOException ex) {
                 Logger.getLogger(DOMHelper.class.getName()).log(Level.INFO, "Cannot parse "+fobj, ex);
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }
-
-                if (lock != null) {
-                    lock.releaseLock();
-                }
             }
         }
         return document;
@@ -213,17 +198,14 @@ public class DOMHelper {
         RequestProcessor.getDefault().post(new Runnable() {
 
             public void run() {
-                FileLock lock = null;
-                OutputStream os = null;
 
-                try {
+                try (FileLock lock = fobj.lock();
+                        OutputStream os = fobj.getOutputStream(lock)) {
                     DocumentType docType = document.getDoctype();
                     TransformerFactory factory = TransformerFactory.newInstance();
                     Transformer transformer = factory.newTransformer();
                     DOMSource source = new DOMSource(document);
 
-                    lock = fobj.lock();
-                    os = fobj.getOutputStream(lock);
                     StreamResult result = new StreamResult(os);
 
                     //transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, docType.getPublicId());
@@ -235,18 +217,6 @@ public class DOMHelper {
                     transformer.transform(source, result);
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
-                } finally {
-                    if (os != null) {
-                        try {
-                            os.close();
-                        } catch (IOException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-
-                    if (lock != null) {
-                        lock.releaseLock();
-                    }
                 }
             }
         }, TIME_TO_WAIT);

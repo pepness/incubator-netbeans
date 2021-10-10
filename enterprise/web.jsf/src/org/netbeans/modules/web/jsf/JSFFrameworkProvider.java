@@ -268,14 +268,14 @@ public class JSFFrameworkProvider extends WebFrameworkProvider {
         // read the config from resource first
         StringBuilder sbuffer = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NOI18N
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
-        String line = br.readLine();
-        while (line != null) {
-            sbuffer.append(line);
-            sbuffer.append(lineSep);
-            line = br.readLine();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding))) {
+            String line = br.readLine();
+            while (line != null) {
+                sbuffer.append(line);
+                sbuffer.append(lineSep);
+                line = br.readLine();
+            }
         }
-        br.close();
         return sbuffer.toString();
     }
 
@@ -384,14 +384,9 @@ public class JSFFrameworkProvider extends WebFrameworkProvider {
     }
 
     public static void createFile(FileObject target, String content, String encoding) throws IOException{
-        FileLock lock = target.lock();
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(target.getOutputStream(lock), encoding));
+        try (FileLock lock = target.lock();
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(target.getOutputStream(lock), encoding))) {
             bw.write(content);
-            bw.close();
-
-        } finally {
-            lock.releaseLock();
         }
     }
 

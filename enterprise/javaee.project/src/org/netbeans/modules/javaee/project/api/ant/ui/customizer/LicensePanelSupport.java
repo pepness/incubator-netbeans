@@ -105,11 +105,8 @@ public final class LicensePanelSupport implements CustomizerUtilities.LicensePan
             } else {
                 fo = FileUtil.toFileObject(file);
             }
-            OutputStream out = fo.getOutputStream();
-            try {
+            try (OutputStream out = fo.getOutputStream()) {
                 FileUtil.copy(new ByteArrayInputStream(licenseContent.getBytes()), out);
-            } finally {
-                out.close();
             }
         }
     }

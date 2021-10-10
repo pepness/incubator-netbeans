@@ -36,13 +36,10 @@ public class TestUtilities {
     }
     
     public static final FileObject copyStringToFileObject(FileObject fo, String content) throws IOException {
-        OutputStream os = fo.getOutputStream();
-        try {
+        try (OutputStream os = fo.getOutputStream()) {
             InputStream is = new ByteArrayInputStream(content.getBytes("UTF-8"));
             FileUtil.copy(is, os);
             return fo;
-        } finally {
-            os.close();
         }
     }
 }

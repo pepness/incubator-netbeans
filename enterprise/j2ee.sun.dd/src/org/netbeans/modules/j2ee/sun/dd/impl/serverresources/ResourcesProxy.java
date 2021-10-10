@@ -560,16 +560,9 @@ public class ResourcesProxy implements Resources, RootInterfaceImpl {
             if(dataObject instanceof DDProviderDataObject) {
                 ((DDProviderDataObject) dataObject).writeModel(resourcesRoot);
             } else {
-                FileLock lock = fo.lock();
-                try {
-                    OutputStream os = fo.getOutputStream(lock);
-                    try {
-                        write(os);
-                    } finally {
-                        os.close(); 
-                    }
-                } finally {
-                    lock.releaseLock();
+                try (FileLock lock = fo.lock();
+                        OutputStream os = fo.getOutputStream(lock);){
+                    write(os);
                 }
             }
         }
