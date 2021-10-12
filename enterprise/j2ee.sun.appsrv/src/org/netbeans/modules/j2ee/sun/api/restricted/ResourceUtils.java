@@ -1039,8 +1039,7 @@ public class ResourceUtils implements WizardConstants{
     private static List getConnectionPools(File primaryFile, List projectCP){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile)) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify JDBC Connection Pool xml
@@ -1048,8 +1047,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<pools.length; i++){
                         projectCP.add(pools[i].getName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1062,8 +1059,7 @@ public class ResourceUtils implements WizardConstants{
     private static List getDataSources(File primaryFile, List projectDS){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile);) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify JDBC Resources xml
@@ -1071,8 +1067,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<dataSources.length; i++){
                         projectDS.add(dataSources[i].getJndiName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1085,8 +1079,7 @@ public class ResourceUtils implements WizardConstants{
     private static List getMailResources(File primaryFile, List projectRes){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile)) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify MailResource xml
@@ -1094,8 +1087,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<res.length; i++){
                         projectRes.add(res[i].getJndiName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1107,8 +1098,7 @@ public class ResourceUtils implements WizardConstants{
     private static List getJMSResources(File primaryFile, List projectRes){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile)) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify AdminObjectResource xml
@@ -1121,8 +1111,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<connRes.length; i++){
                         projectRes.add(connRes[i].getJndiName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1134,8 +1122,7 @@ public class ResourceUtils implements WizardConstants{
     private static List getPersistenceResources(File primaryFile, List projectRes){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile)) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify AdminObjectResource xml
@@ -1143,8 +1130,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<pmfRes.length; i++){
                         projectRes.add(pmfRes[i].getJndiName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1156,8 +1141,7 @@ public class ResourceUtils implements WizardConstants{
     public static List getAllResourceNames(File primaryFile, List projectRes){
         try{
             if(! primaryFile.isDirectory()){
-                FileInputStream in = new FileInputStream(primaryFile);
-                try {
+                try (FileInputStream in = new FileInputStream(primaryFile)) {
                     Resources resources = DDProvider.getDefault().getResourcesGraph(in);
 
                     // identify JDBC Connection Pool xml
@@ -1188,8 +1172,6 @@ public class ResourceUtils implements WizardConstants{
                     for(int i=0; i<connRes.length; i++){
                         projectRes.add(connRes[i].getJndiName());
                     }
-                } finally {
-                    in.close();
                 }
             }
         }catch(Exception ex){
@@ -1802,9 +1784,7 @@ public class ResourceUtils implements WizardConstants{
     public static Resources getResourcesGraph(File sunResource){
         Resources res = null;
         if(sunResource != null){
-            java.io.FileInputStream in = null;
-            try {
-                in = new java.io.FileInputStream(sunResource);
+            try (FileInputStream in = new FileInputStream(sunResource)) {
                 res = DDProvider.getDefault().getResourcesGraph(in);
             } catch (FileNotFoundException ex) {
                 LOGGER.log(Level.SEVERE, "getResourcesGraph failed", ex);
@@ -1812,14 +1792,6 @@ public class ResourceUtils implements WizardConstants{
                 LOGGER.log(Level.SEVERE, "getResourcesGraph failed", ex);
             } catch (SAXException ex) {
                 LOGGER.log(Level.SEVERE, "getResourcesGraph failed", ex);
-            } finally {
-                try {
-                    if (null != in)  {
-                        in.close();
-                    }
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "getResourcesGraph failed", ex);
-                }
             }
         }
         return res;

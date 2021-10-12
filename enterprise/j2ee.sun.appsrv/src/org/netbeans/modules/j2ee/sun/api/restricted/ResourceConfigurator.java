@@ -609,10 +609,8 @@ public class ResourceConfigurator implements ResourceConfiguratorInterface {
 
     private static Wizard getWizardInfo(){
         Wizard wizard = null;
-        try {
-            InputStream in = Wizard.class.getClassLoader().getResourceAsStream(DATAFILE);
+        try (InputStream in = Wizard.class.getClassLoader().getResourceAsStream(DATAFILE)) {
             wizard = Wizard.createGraph(in);
-            in.close();
         } catch(Exception ex) {
             // XXX Report I/O Exception to the user.  We should do a nicely formatted
             // message identifying the problem.
@@ -1022,11 +1020,8 @@ public class ResourceConfigurator implements ResourceConfiguratorInterface {
         Resources resourceGraph = DDProvider.getDefault().getResourcesGraph(Resources.VERSION_1_3);
         try {
             if(! resourceFile.isDirectory()){
-                FileInputStream in = new FileInputStream(resourceFile);
-                try {
+                try (FileInputStream in = new FileInputStream(resourceFile)) {
                     resourceGraph = DDProvider.getDefault().getResourcesGraph(in);
-                } finally {
-                    in.close();
                 }
             }
         } catch (RuntimeException ex) {

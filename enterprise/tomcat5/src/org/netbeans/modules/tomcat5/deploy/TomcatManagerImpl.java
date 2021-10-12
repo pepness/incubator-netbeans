@@ -485,7 +485,6 @@ public class TomcatManagerImpl implements ProgressObject, Runnable {
         
         // similar to Tomcat's Ant task
         URLConnection conn = null;
-        InputStreamReader reader = null;
         
         URL urlToConnectTo = null;
 
@@ -569,52 +568,53 @@ public class TomcatManagerImpl implements ProgressObject, Runnable {
                 }
 
                 // Process the response message
-                reader = new InputStreamReader(hconn.getInputStream(),"UTF-8"); //NOI18N
-                retries = -1;
-                StringBuilder buff = new StringBuilder();
-                String error = null;
-                msg = null;
-                boolean first = !command.startsWith ("jmxproxy");   // NOI18N
-                while (true) {
-                    int ch = reader.read();
-                    if (ch < 0) {
-                        output += buff.toString ()+"\n";    // NOI18N
-                        break;
-                    } else if ((ch == '\r') || (ch == '\n')) {
-                        String line = buff.toString();
-                        buff.setLength(0);
-                        LOGGER.log(Level.FINE, line);
-                        if (first) {
-                            // hard fix to accept the japanese localization of manager app
-                            String japaneseOK="\u6210\u529f"; //NOI18N
-                            msg = line;
-                            // see issue #62529
-                            if (line.indexOf("java.lang.ThreadDeath") != -1) { // NOI18N
-                                String warning = NbBundle.getMessage(TomcatManagerImpl.class, "MSG_ThreadDeathWarning");
-                                pes.fireHandleProgressEvent(
-                                    tmId, 
-                                    new Status(ActionType.EXECUTE, cmdType, warning, StateType.RUNNING)
-                                );
-                            } else if (!(line.startsWith("OK -") || line.startsWith(japaneseOK))) { // NOI18N
-                                error = line;
+                try (InputStreamReader reader = new InputStreamReader(hconn.getInputStream(),"UTF-8")) { //NOI18N
+                    retries = -1;
+                    StringBuilder buff = new StringBuilder();
+                    String error = null;
+                    msg = null;
+                    boolean first = !command.startsWith ("jmxproxy");   // NOI18N
+                    while (true) {
+                        int ch = reader.read();
+                        if (ch < 0) {
+                            output += buff.toString ()+"\n";    // NOI18N
+                            break;
+                        } else if ((ch == '\r') || (ch == '\n')) {
+                            String line = buff.toString();
+                            buff.setLength(0);
+                            LOGGER.log(Level.FINE, line);
+                            if (first) {
+                                // hard fix to accept the japanese localization of manager app
+                                String japaneseOK="\u6210\u529f"; //NOI18N
+                                msg = line;
+                                // see issue #62529
+                                if (line.indexOf("java.lang.ThreadDeath") != -1) { // NOI18N
+                                    String warning = NbBundle.getMessage(TomcatManagerImpl.class, "MSG_ThreadDeathWarning");
+                                    pes.fireHandleProgressEvent(
+                                        tmId, 
+                                        new Status(ActionType.EXECUTE, cmdType, warning, StateType.RUNNING)
+                                    );
+                                } else if (!(line.startsWith("OK -") || line.startsWith(japaneseOK))) { // NOI18N
+                                    error = line;
+                                }
+                                first = false;
                             }
-                            first = false;
+                            output += line+"\n";    // NOI18N
+                        } else {
+                            buff.append((char) ch);
                         }
-                        output += line+"\n";    // NOI18N
-                    } else {
-                        buff.append((char) ch);
                     }
-                }
-                if (buff.length() > 0) {
-                    LOGGER.log(Level.FINE, buff.toString());
-                }
-                if (error != null) {
-                    LOGGER.log (Level.INFO, "TomcatManagerImpl connecting to: " + urlToConnectTo, error); // NOI18N
-                    pes.fireHandleProgressEvent (tmId, new Status (ActionType.EXECUTE, cmdType, error, StateType.FAILED));
-                    failed = true;
-                }
-                if (msg == null) {
-                    msg = buff.toString();
+                    if (buff.length() > 0) {
+                        LOGGER.log(Level.FINE, buff.toString());
+                    }
+                    if (error != null) {
+                        LOGGER.log (Level.INFO, "TomcatManagerImpl connecting to: " + urlToConnectTo, error); // NOI18N
+                        pes.fireHandleProgressEvent (tmId, new Status (ActionType.EXECUTE, cmdType, error, StateType.FAILED));
+                        failed = true;
+                    }
+                    if (msg == null) {
+                        msg = buff.toString();
+                    }
                 }
             } catch (Exception e) {
                 if (e instanceof IOException && e.getMessage() != null
@@ -631,13 +631,6 @@ public class TomcatManagerImpl implements ProgressObject, Runnable {
                 }
                 // throw t;
             } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (java.io.IOException ioe) { // ignore this
-                    }
-                    reader = null;
-                }
                 if (istream != null) {
                     try {
                         istream.close();

@@ -228,12 +228,9 @@ public class RunnerHttpDeploy extends RunnerHttp {
     @Override
     protected void handleSend(HttpURLConnection hconn) throws IOException {
         final String METHOD = "handleSend";
-        InputStream istream = getInputStream();
-        if(istream != null) {
-            ZipOutputStream ostream = null;
-            try {
-                ostream = new ZipOutputStream(new BufferedOutputStream(
-                        hconn.getOutputStream(), 1024*1024));
+        if(getInputStream() != null) {
+            try (InputStream istream = getInputStream();
+                    ZipOutputStream ostream = new ZipOutputStream(new BufferedOutputStream(hconn.getOutputStream(), 1024*1024))) {
                 ZipEntry e = new ZipEntry(command.path.getName());
                 e.setExtra(getExtraProperties());
                 ostream.putNextEntry(e);
@@ -247,19 +244,6 @@ public class RunnerHttpDeploy extends RunnerHttp {
                 }
                 ostream.closeEntry();
                 ostream.flush();
-            } finally {
-                try {
-                    istream.close();
-                } catch(IOException ex) {
-                    LOGGER.log(Level.INFO, METHOD, "ioException", ex);
-                }
-                if(ostream != null) {
-                    try {
-                        ostream.close();
-                    } catch(IOException ex) {
-                        LOGGER.log(Level.INFO, METHOD, "ioException", ex);
-                    }
-                }
             }
         } else if("POST".equalsIgnoreCase(getRequestMethod())) {
             LOGGER.log(Level.INFO, METHOD, "noData");

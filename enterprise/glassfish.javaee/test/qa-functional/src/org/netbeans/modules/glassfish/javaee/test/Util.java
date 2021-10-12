@@ -345,19 +345,9 @@ public class Util {
     public static String readFile(File target) throws IOException {
         char [] buffer = new char[100000];
         int filelength = 0;
-        Reader reader = null;
         
-        try {
-            reader = new BufferedReader(new FileReader(target));
+        try (Reader reader = new BufferedReader(new FileReader(target))) {
             filelength = reader.read(buffer, 0, buffer.length);
-        } finally {
-            if(reader != null) {
-                try {
-                    reader.close();
-                } catch(IOException ex) {
-                    System.out.println("IOException on closing file: " + target.getName());
-                }
-            }
         }
         
         return new String(buffer, 0, filelength);

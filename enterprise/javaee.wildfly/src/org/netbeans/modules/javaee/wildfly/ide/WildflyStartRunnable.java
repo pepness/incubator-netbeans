@@ -493,33 +493,19 @@ class WildflyStartRunnable implements Runnable {
         }
 
         private void writeFile(File file, String content) {
-            BufferedWriter writer = null;
-            try {
-                writer = new BufferedWriter(new FileWriter(file));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 writer.write(content);
             } catch (IOException e) {
                 Exceptions.attachLocalizedMessage(e, NbBundle.getMessage(
                         WildflyStartRunnable.class, "ERR_WriteError"));              // NOI18N
                 Logger.getLogger("global").log(Level.WARNING, null, e);     // NOI18N
-            } finally {
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (IOException e) {
-                    Logger.getLogger("global").log(Level.WARNING, null, e); // NOI18N
-                }
             }
         }
 
         private String readFile(String file) {
             StringBuilder builder = null;
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(
-                        new FileReader(new File(file)));
+            try (BufferedReader reader = new BufferedReader(new FileReader(new File(file)))) {
                 builder = new StringBuilder();
-
                 String line = "";
                 do {
                     builder.append(line);
@@ -531,14 +517,6 @@ class WildflyStartRunnable implements Runnable {
                         WildflyStartRunnable.class, "ERR_ReadError"));       // NOI18N
                 Logger.getLogger("global").log(Level.WARNING, null, e); // NOI18N
                 return null;
-            } finally {
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    Logger.getLogger("global").log(Level.WARNING, null, e);// NOI18N
-                }
             }
             return builder.toString();
         }

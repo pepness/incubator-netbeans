@@ -84,7 +84,6 @@ public final class WildflyPluginProperties {
         } catch (java.io.IOException e) {
             Logger.getLogger("global").log(Level.INFO, null, e);
         }
-
     }
 
     void loadPluginProperties(java.io.InputStream inStream) {

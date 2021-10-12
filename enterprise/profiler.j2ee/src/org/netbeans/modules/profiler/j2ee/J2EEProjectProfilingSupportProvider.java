@@ -316,42 +316,24 @@ public final class J2EEProjectProfilingSupportProvider extends JavaProjectProfil
                 public void run() {
                     // the order is 1. private, 2. project, 3. user to reflect how Ant handles property definitions (immutable, once set property value cannot be changed)
                     if (privatePropsFile != null) {
-                        try {
-                            final InputStream is = privatePropsFile.getInputStream();
-
-                            try {
-                                privateProps.load(is);
-                            } finally {
-                                is.close();
-                            }
+                        try (final InputStream is = privatePropsFile.getInputStream()) {
+                            privateProps.load(is);
                         } catch (IOException e) {
                             err.notify(ErrorManager.INFORMATIONAL, e);
                         } 
                     }
 
                     if (projectPropsFile != null) {
-                        try {
-                            final InputStream is = projectPropsFile.getInputStream();
-
-                            try {
-                                projectProps.load(is);
-                            } finally {
-                                is.close();
-                            }
+                        try (final InputStream is = projectPropsFile.getInputStream()) {
+                            projectProps.load(is);
                         } catch (IOException e) {
                             err.notify(ErrorManager.INFORMATIONAL, e);
                         }
                     }
 
                     if (userPropsFile != null) {
-                        try {
-                            final InputStream is = new BufferedInputStream(new FileInputStream(userPropsFile));
-
-                            try {
-                                userPropsProps.load(is);
-                            } finally {
-                                is.close();
-                            }
+                        try (final InputStream is = new BufferedInputStream(new FileInputStream(userPropsFile))) {
+                            userPropsProps.load(is);
                         } catch (IOException e) {
                             err.notify(ErrorManager.INFORMATIONAL, e);
                         }

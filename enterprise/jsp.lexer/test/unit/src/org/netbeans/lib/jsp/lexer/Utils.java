@@ -46,18 +46,12 @@ public class Utils {
     /** Reads a FileObject's content into a string. */
     public static CharSequence readFileContentToString(File file) throws IOException {
         StringBuffer buff = new StringBuffer();
-        BufferedReader rdr = new BufferedReader(new FileReader(file));
-
         String line;
-
-        try{
+        try (BufferedReader rdr = new BufferedReader(new FileReader(file))) {
             while ((line = rdr.readLine()) != null){
                 buff.append(line).append("\n");
             }
-        } finally{
-            rdr.close();
         }
-        
         return buff;
     }
     

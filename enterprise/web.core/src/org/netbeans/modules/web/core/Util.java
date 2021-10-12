@@ -71,11 +71,8 @@ public class Util {
     }
 
     public static String issueGetRequest(URL url) {
-        BufferedReader in = null;
         StringBuilder input = new StringBuilder();
-        try {
-            in = new BufferedReader(new InputStreamReader(
-                                        url.openStream()));
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 input.append(inputLine);
@@ -85,15 +82,6 @@ public class Util {
         }
         catch (Exception e) {
             return null;
-        }
-        finally {
-            if (in != null)
-                try {
-                    in.close();
-                }
-                catch(IOException e) {
-                    LOG.log(Level.FINE, "error", e);
-                }
         }
     }
 
@@ -121,8 +109,7 @@ public class Util {
                 return;
             }
             while (loop) {
-                try {
-                    Socket socket = new Socket(url.getHost(), url.getPort());
+                try (Socket socket = new Socket(url.getHost(), url.getPort())) {
                     socket.close();
                     status = true;
                     break;

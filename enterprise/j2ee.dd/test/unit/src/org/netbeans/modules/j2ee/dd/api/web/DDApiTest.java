@@ -257,11 +257,10 @@ public class DDApiTest extends NbTestCase {
         java.io.File pass = new File(getDataDir(),"/web.pass");
         File test = FileUtil.toFile(fo);
         try {
-            BufferedReader reader2;
             Set set1;
             Set set2;
-            try (BufferedReader reader1 = new BufferedReader(new FileReader(test))) {
-                reader2 = new BufferedReader(new FileReader(pass));
+            try (BufferedReader reader1 = new BufferedReader(new FileReader(test));
+                    BufferedReader reader2 = new BufferedReader(new FileReader(pass))) {
                 String line1=null;
                 set1 = new HashSet();
                 set2 = new HashSet();
@@ -281,7 +280,6 @@ public class DDApiTest extends NbTestCase {
                     }
                 }
             }
-reader2.close();
             if (!set1.equals(set2)) {
                 assertFile("Problem with descriotion elements", pass, test, test.getParentFile());
             }

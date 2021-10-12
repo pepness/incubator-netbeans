@@ -90,28 +90,14 @@ public final class TreeParser extends DefaultHandler {
             reader.setContentHandler(handler);
 
             if (charset == null) {
-                InputStream is = new BufferedInputStream(new FileInputStream(xmlFile));
-                try {
+                try (InputStream is = new BufferedInputStream(new FileInputStream(xmlFile))) {
                     reader.parse(new InputSource(is));
                     return true;
-                } finally {
-                    try {
-                        is.close();
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.INFO, METHOD, "cantClose", ex);
-                    }
                 }
             } else {
-                Reader r = new InputStreamReader(new BufferedInputStream(new FileInputStream(xmlFile)), charset);
-                try {
+                try (Reader r = new InputStreamReader(new BufferedInputStream(new FileInputStream(xmlFile)), charset)) {
                     reader.parse(new InputSource(r));
                     return true;
-                } finally {
-                    try {
-                        r.close();
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.INFO, METHOD, "cantClose", ex);
-                    }
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException ex) {
@@ -124,8 +110,7 @@ public final class TreeParser extends DefaultHandler {
             throws IllegalStateException {
         final String METHOD = "readXml";
         boolean result = false;
-        InputStream is = null;
-        try {
+        try (InputStream is = new BufferedInputStream(xmlFile.openStream())) {
             // !PW FIXME what to do about entity resolvers?  Timed out when
             // looking up doctype for sun-resources.xml earlier today (Jul 10)
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -135,19 +120,10 @@ public final class TreeParser extends DefaultHandler {
             factory.setNamespaceAware(false);
             SAXParser saxParser = factory.newSAXParser();
             DefaultHandler handler = new TreeParser(pathList);
-            is = new BufferedInputStream(xmlFile.openStream());
             saxParser.parse(new InputSource(is), handler);
             result = true;
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new IllegalStateException(ex);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.INFO, METHOD, "cantClose", ex);
-                }
-            }
         }
         return result;
     }

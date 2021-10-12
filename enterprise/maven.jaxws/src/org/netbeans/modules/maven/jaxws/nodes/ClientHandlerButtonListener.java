@@ -150,9 +150,10 @@ public class ClientHandlerButtonListener implements ActionListener {
             final FileObject bindingHandlerFO = FileUtil.createData(bindingsFolder, bindingsHandlerFile);
             //if bindingsModel is null, create it
             if (bindingsModel == null) {
-                InputStream is = FileUtil.getConfigFile("jax-ws/default-binding-handler.xml").getInputStream();
-                final String bindingsContent = readResource(is); //NOI18N
-                is.close();
+                final String bindingsContent;
+                try (InputStream is = FileUtil.getConfigFile("jax-ws/default-binding-handler.xml").getInputStream()) {  //NOI18N
+                    bindingsContent = readResource(is);
+                }
 
                 bindingsFolder.getFileSystem().runAtomicAction(new FileSystem.AtomicAction() {
 
@@ -365,14 +366,10 @@ public class ClientHandlerButtonListener implements ActionListener {
 //TODO: close all streams properly
     private static String readResource(InputStream is) throws IOException {
         // read the config from resource first
-        BufferedReader br = null;
-        InputStreamReader isr = null;
         StringBuilder sb = new StringBuilder();
-        try {
+        try (InputStreamReader isr = new InputStreamReader(is, Charset.forName("UTF-8"));
+                BufferedReader br = new BufferedReader(isr)) {
             String lineSep = System.getProperty("line.separator");//NOI18N
-            isr = new InputStreamReader(is, Charset.forName("UTF-8"));
-            br = new BufferedReader(isr);
-
             String line = br.readLine();
             while (line != null) {
                 sb.append(line);
@@ -380,13 +377,7 @@ public class ClientHandlerButtonListener implements ActionListener {
                 line = br.readLine();
             }
         } finally {
-            if ( isr!= null ){
-                isr.close();
-            }
-            if ( br!= null ){
-                br.close();
-            }
-            if ( is!= null ){
+            if ( is != null ){
                 is.close();
             }
         }

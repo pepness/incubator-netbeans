@@ -39,18 +39,18 @@ public class TestServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        /* TODO output your page here
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Servlet</title>");
-        out.println("</head>");
-        out.println("<body>");
-         
-        out.println("</body>");
-        out.println("</html>");
-         */
-        out.close();
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+
+            out.println("</body>");
+            out.println("</html>");
+             */
+        }
     }
     
     /** Handles the HTTP <code>GET</code> method.

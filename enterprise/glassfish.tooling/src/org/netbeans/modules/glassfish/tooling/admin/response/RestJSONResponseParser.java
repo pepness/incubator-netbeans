@@ -125,9 +125,8 @@ public class RestJSONResponseParser extends RestResponseParser {
      * @throws IOException when there is a problem with copying data.
      */
     public static void copy(InputStream in, OutputStream out) throws IOException {
-        try {
-            ReadableByteChannel inChannel = Channels.newChannel(in);
-            WritableByteChannel outChannel = Channels.newChannel(out);
+        try (ReadableByteChannel inChannel = Channels.newChannel(in);
+                WritableByteChannel outChannel = Channels.newChannel(out)) {
             ByteBuffer byteBuffer = ByteBuffer.allocate(10240);
             int read;
             do {

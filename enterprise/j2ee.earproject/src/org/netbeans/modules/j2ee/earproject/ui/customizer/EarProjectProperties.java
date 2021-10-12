@@ -617,10 +617,8 @@ public final class EarProjectProperties {
     }
     
     private static Module getModFromFile(File f, Application dd, String path) {
-            JarFile jar = null;
             Module mod = null;
-            try {
-                jar= new JarFile(f);
+            try (JarFile jar= new JarFile(f)) {
                 JarEntry ddf = jar.getJarEntry("META-INF/ejb-jar.xml"); // NOI18N
                 if (null != ddf) {
                     mod = (Module) dd.createBean(Application.MODULE);
@@ -662,14 +660,6 @@ public final class EarProjectProperties {
                 Logger.getLogger("global").log(Level.INFO, cnfe.getLocalizedMessage());
             } catch (IOException ioe) {
                 Logger.getLogger("global").log(Level.INFO, ioe.getLocalizedMessage());
-            } finally {
-                try {
-                    if (null != jar) {
-                        jar.close();
-                    }
-                } catch (IOException ioe) {
-                    // there is little that we can do about this.
-                }
             }
             return mod;
         }

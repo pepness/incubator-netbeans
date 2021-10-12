@@ -237,20 +237,11 @@ public class WildflyPluginUtils {
      * Return true if the specified port is free, false otherwise.
      */
     public static boolean isPortFree(int port) {
-        ServerSocket soc = null;
-        try {
-            soc = new ServerSocket(port);
+        try (ServerSocket soc = new ServerSocket(port)) {
+            // port is free
         } catch (IOException ioe) {
             return false;
-        } finally {
-            if (soc != null) {
-                try {
-                    soc.close();
-                } catch (IOException ex) {
-                } // noop
-            }
         }
-
         return true;
     }
 

@@ -287,27 +287,12 @@ public class HttpMonitorHelper {
     }
     
     private static void copy(File file1, File file2)  throws FileNotFoundException, IOException {
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-        try {
-             bis = new BufferedInputStream(new FileInputStream(file1));
-             bos = new BufferedOutputStream(new FileOutputStream(file2));
+        
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file1));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file2))) {
             int b;
-            while((b=bis.read())!=-1)bos.write(b);
-        } finally {
-            if (null != bis) {
-                try { 
-                    bis.close(); 
-                } catch (IOException ioe) {
-                    Logger.getLogger("payara-eecommon").log(Level.FINEST,"bis", ioe);
-                }
-            }
-            if (null != bos) {
-                try { 
-                    bos.close(); 
-                } catch (IOException ioe) {
-                    Logger.getLogger("payara-eecommon").log(Level.FINEST,"bos", ioe);
-                }
+            while((b=bis.read())!=-1) {
+                bos.write(b);
             }
         }
     }

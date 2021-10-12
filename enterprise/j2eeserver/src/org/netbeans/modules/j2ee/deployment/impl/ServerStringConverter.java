@@ -62,25 +62,20 @@ public class ServerStringConverter extends org.netbeans.spi.settings.DOMConverto
     }
 
     public static ServerString readServerInstance(String fromDir, String fromFile) {
-        Reader reader = null;
-        try {
-            FileObject dir = FileUtil.getConfigFile(fromDir);
-            if (dir == null) {
-                return null;
-            }
-            FileObject fo = dir.getFileObject (fromFile);
-            if (fo == null)
-                return null;
-            
-            reader = new InputStreamReader(fo.getInputStream(), "UTF-8"); // NOI18N
+        FileObject dir = FileUtil.getConfigFile(fromDir);
+        if (dir == null) {
+            return null;
+        }
+        FileObject fo = dir.getFileObject (fromFile);
+        if (fo == null) {
+            return null;
+        }
+        
+        try (Reader reader = new InputStreamReader(fo.getInputStream(), "UTF-8")) { // NOI18N
             return (ServerString) create().read(reader);
         } catch(Exception ioe) {
             Logger.getLogger("global").log(Level.WARNING, null, ioe);
             return null;
-        } finally {
-            try {  if (reader != null) reader.close(); } catch(Exception e) {
-                Logger.getLogger("global").log(Level.WARNING, null, e);
-            }
         }
     }
     

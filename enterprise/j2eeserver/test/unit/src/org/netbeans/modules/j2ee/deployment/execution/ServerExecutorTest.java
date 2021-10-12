@@ -76,22 +76,16 @@ public class ServerExecutorTest extends NbTestCase {
     }
 
     public static TargetModule.List readTargetModule(String fromFile) {
-        Reader reader = null;
-        try {
-            FileObject dir = getWorkFileSystem().getRoot();
-            FileObject fo = dir.getFileObject (fromFile, "xml");
-            if (fo == null) {
-                System.out.println(Thread.currentThread()+ " readTargetModule: Can't get FO for "+fromFile+".xml from "+dir.getPath());
-                return null;
-            }
-            reader = new InputStreamReader(fo.getInputStream());
+        FileObject dir = getWorkFileSystem().getRoot();
+        FileObject fo = dir.getFileObject (fromFile, "xml");
+        if (fo == null) {
+            System.out.println(Thread.currentThread()+ " readTargetModule: Can't get FO for "+fromFile+".xml from "+dir.getPath());
+            return null;
+        }
+        try (Reader reader = new InputStreamReader(fo.getInputStream())) {
             return (TargetModule.List) TargetModuleConverter.create().read(reader);
         } catch(Exception ioe) {
             throw new RuntimeException(ioe);
-        } finally {
-            try {
-            if (reader != null) reader.close();
-            } catch (Exception e) {}
         }
     }
 }

@@ -108,42 +108,41 @@ public class FetchLogTest extends CommandHttpTest {
                             + logFile.getAbsolutePath());
                 }
                 FetchLog log = FetchLogPiped.create(server);
-                FileWriter out = new FileWriter(logFile);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(log.getInputStream()));
-                int i, j;
-                for (i = 0 ; i < 4 ; i++) {
-                    out.write(testLog[i]);
-                    out.write(OsUtils.LINES_SEPARATOR);
+                try (FileWriter out = new FileWriter(logFile);
+                        BufferedReader in = new BufferedReader(
+                            new InputStreamReader(log.getInputStream()))) {
+                    int i, j;
+                    for (i = 0 ; i < 4 ; i++) {
+                        out.write(testLog[i]);
+                        out.write(OsUtils.LINES_SEPARATOR);
+                    }
+                    // We need at least 2 sec delay.
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        fail("Caught InterruptedException: " + ex.getMessage());
+                    }
+                    if (!logFile.renameTo(logFileTs)) {
+                        fail("Cannot rename log file to: "
+                                + logFileTs.getAbsoluteFile());
+                    }
+                    if (!logFile.createNewFile()) {
+                        fail("Cannot create empty log file:  "
+                                + logFile.getAbsolutePath());
+                    }
+                    for (j = 0 ; j < 4 ; j++) {
+                        linesIn.add(in.readLine());
+                    }
+                    try (FileWriter out2 = new FileWriter(logFile)) {
+                        for (; i < testLog.length ; i++) {
+                            out2.write(testLog[i]);
+                            out2.write(OsUtils.LINES_SEPARATOR);
+                        }
+                        for (; j < testLog.length ; j++) {
+                            linesIn.add(in.readLine());
+                        }
+                    }
                 }
-                out.close();
-                // We need at least 2 sec delay.
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ex) {
-                    fail("Caught InterruptedException: " + ex.getMessage());
-                }
-                if (!logFile.renameTo(logFileTs)) {
-                    fail("Cannot rename log file to: "
-                            + logFileTs.getAbsoluteFile());
-                }
-                if (!logFile.createNewFile()) {
-                    fail("Cannot create empty log file:  "
-                            + logFile.getAbsolutePath());
-                }
-                for (j = 0 ; j < 4 ; j++) {
-                    linesIn.add(in.readLine());
-                }
-                out = new FileWriter(logFile);
-                for (; i < testLog.length ; i++) {
-                    out.write(testLog[i]);
-                    out.write(OsUtils.LINES_SEPARATOR);
-                }
-                out.close();
-                for (; j < testLog.length ; j++) {
-                    linesIn.add(in.readLine());
-                }
-
             } catch (IOException ex) {
                 fail("Caught IOException: " + ex.getMessage());
             }

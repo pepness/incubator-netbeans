@@ -38,6 +38,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import org.openide.util.Exceptions;
 
 /**
  * Utilities.
@@ -74,22 +75,14 @@ public class Utils {
                     }
                 }
             } else {
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(f, true);
-                }
-                catch (FileNotFoundException ex) {
+                try (FileOutputStream fos = new FileOutputStream(f, true)) {
+                    // Will return true
+                } catch (FileNotFoundException ex) {
                     // I hate using exceptions for flow of control
                     retVal = false;
-                } finally {
-                    if (null != fos) {
-                        try {
-                            fos.close();
-                        } catch (java.io.IOException ioe) {
-                            Logger.getLogger(Utils.class.getName()).log(Level.FINEST,
-                                    null, ioe);
-                        }
-                    }
+                } catch (IOException ex) {
+                    // I hate using exceptions for flow of control
+                    retVal = false;
                 }
             }
             return retVal;

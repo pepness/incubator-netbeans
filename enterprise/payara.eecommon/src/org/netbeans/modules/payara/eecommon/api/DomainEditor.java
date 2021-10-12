@@ -314,13 +314,12 @@ public class DomainEditor {
      * @param domainScriptFilePath Path to domain.xml
      */
     private Document loadDomainScriptFile(String domainScriptFilePath) {
-        InputStreamReader reader = null;
-        try {
+        
+        try (InputStreamReader reader = new FileReader(new File(domainScriptFilePath))) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setValidating(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             dBuilder.setEntityResolver(new InnerResolver());
-            reader = new FileReader(new File(domainScriptFilePath));
             InputSource source = new InputSource(reader);
             return dBuilder.parse(source);
         } catch (Exception e) {
@@ -328,15 +327,6 @@ public class DomainEditor {
                     "Unable to parse domain config file {0}",
                     domainScriptFilePath);
             return null;
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.INFO, "Cannot close reader for {0}: {1}",
-                            new String[] {domainScriptFilePath, ex.getLocalizedMessage()});
-                }
-            }
         }
     }
 
@@ -365,10 +355,8 @@ public class DomainEditor {
      */
     private boolean saveDomainScriptFile(Document domainScriptDocument, String domainScriptFilePath, boolean indent) {
         boolean result = false;
-        OutputStreamWriter domainXmlWriter = null;
         final Charset charset = Charset.defaultCharset();
-        try {
-            domainXmlWriter = new OutputStreamWriter(new FileOutputStream(domainScriptFilePath), charset.name());
+        try (OutputStreamWriter domainXmlWriter = new OutputStreamWriter(new FileOutputStream(domainScriptFilePath), charset.name())) {
             try {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
@@ -400,16 +388,6 @@ public class DomainEditor {
                     "Cannot create output stream for domain config file {0}",
                     domainScriptFilePath);
             result = false;
-        } finally {
-            try { 
-                if (domainXmlWriter != null)  {
-                    domainXmlWriter.close(); 
-                }
-            } catch (IOException ioex2) {
-                LOGGER.log(Level.INFO,
-                        "Cannot close output stream for {0}",
-                        domainScriptFilePath);
-            }
         }
         
         return result;

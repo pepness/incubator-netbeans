@@ -77,23 +77,12 @@ public class Utils {
                     }
                 }
             } else {
-                java.io.FileOutputStream fos = null;
-                try {
-                    fos = new java.io.FileOutputStream(f, true);
+                try (FileOutputStream fos = new FileOutputStream(f, true)) {
                 }
                 catch (Exception ex) {
                     // I hate using exceptions for flow of control
                     Logger.getLogger(Utils.class.getName()).log(Level.FINEST,null, ex);
                     retVal = false;
-                } finally {
-                    if (null != fos) {
-                        try {
-                            fos.close();
-                        } catch (java.io.IOException ioe) {
-                            Logger.getLogger(Utils.class.getName()).log(Level.FINEST,
-                                    null, ioe);
-                }
-            }
                 }
             }
             return retVal;

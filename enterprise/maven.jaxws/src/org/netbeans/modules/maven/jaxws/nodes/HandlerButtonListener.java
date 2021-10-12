@@ -250,15 +250,14 @@ public class HandlerButtonListener implements ActionListener{
         // read the config from resource first
         StringBuilder sb = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NOI18N
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, 
-                Charset.forName("UTF-8")));         // NOI18N
-        String line = br.readLine();
-        while (line != null) {
-            sb.append(line);
-            sb.append(lineSep);
-            line = br.readLine();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) { // NOI18N
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                sb.append(lineSep);
+                line = br.readLine();
+            }
         }
-        br.close();
         return sb.toString();
     }
 }

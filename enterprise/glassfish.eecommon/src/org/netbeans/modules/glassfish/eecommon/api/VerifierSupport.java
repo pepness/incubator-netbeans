@@ -259,10 +259,8 @@ public class VerifierSupport extends TopComponent {
             verifierSupport.updateDisplay();
             return;
         }
-        FileInputStream in = null;
         StaticVerification sv = null;
-        try {
-            in = new FileInputStream(ff);
+        try (FileInputStream in = new FileInputStream(ff)) {
             
             sv = StaticVerification.createGraph(in);  // this can throw a RT exception
             err = sv.getError();
@@ -441,15 +439,6 @@ public class VerifierSupport extends TopComponent {
             err.setErrorName(NbBundle.getMessage(VerifierSupport.class,"ERR_PARSING_OUTPUT"));  // NOI18N
             err.setErrorDescription(ioe.getMessage());
             verifierSupport.saveErrorResultsForDisplay( err);
-        } finally {
-            if (null != in) {
-                try {
-                    in.close();
-                } catch (IOException ioe) {
-                    // I cannot do anything here...
-                    ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ioe);
-                }
-            }
         }
         verifierSupport.verifierIsStillRunning = false;// we are done
         verifierSupport.updateDisplay();

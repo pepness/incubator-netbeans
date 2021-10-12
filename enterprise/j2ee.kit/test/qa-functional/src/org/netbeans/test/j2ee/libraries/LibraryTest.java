@@ -202,10 +202,8 @@ public class LibraryTest extends J2eeTestCase {
     }
     
     private File getManifest(JarFile jf, File f) throws IOException {
-        OutputStream os = new BufferedOutputStream(new FileOutputStream(f));
-        jf.getManifest().write(os);
-        if (os != null) {
-            os.close();
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(f))) {
+            jf.getManifest().write(os);
         }
         return f;
     }

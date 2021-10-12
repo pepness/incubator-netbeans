@@ -192,31 +192,14 @@ public final class TestUtil extends ProxyLookup {
                         new File(tgt, dirList[i]));
             }
         } else {
-            InputStream is = new FileInputStream(src);
-            OutputStream os = new FileOutputStream(tgt);
             byte[] buffer = new byte[3 * 1024]; // 3 KB buffer
             int len = -1;
-            try {
+            try (InputStream is = new FileInputStream(src);
+                    OutputStream os = new FileOutputStream(tgt)) {
                 len = is.read(buffer) ;
                 while (len  > 0) {
                     os.write(buffer, 0, len);
                     len = is.read(buffer) ;
-                }
-            }finally {
-                if (is != null){
-                    try {
-                        is.close();
-                    } catch (Exception ex){
-                        // log
-                    }
-                }
-                
-                if (os != null){
-                    try {
-                        os.close();
-                    } catch (Exception ex){
-                        // log
-                    }
                 }
             }
         }

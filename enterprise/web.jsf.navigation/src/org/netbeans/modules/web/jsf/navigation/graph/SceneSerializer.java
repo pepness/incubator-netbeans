@@ -280,9 +280,7 @@ public class SceneSerializer {
     }
 
     private static synchronized Node getRootNode(FileObject file) {
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()) {
             Document doc = XMLUtil.parse(new InputSource(is), false, false, new ErrorHandler() {
                 public void error(SAXParseException e) throws SAXException {
                     throw new SAXException(e);
@@ -299,14 +297,6 @@ public class SceneSerializer {
             return doc.getFirstChild();
         } catch (Exception e) {
             Exceptions.printStackTrace(e);
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException e) {
-                Exceptions.printStackTrace(e);
-            }
         }
         return null;
     }

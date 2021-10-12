@@ -111,22 +111,21 @@ public final class Modifications {
                 return;
             }
         }
-        InputStream ins = null;
-        ByteArrayOutputStream baos = null;
-        Reader inputReader = null;
-        try {
+        
+        try ( InputStream ins = fileObject.getInputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                Reader inputReader = new InputStreamReader(
+                                new ByteArrayInputStream( baos.toByteArray(), 
+                                        0, 
+                                        convertToLF(baos.toByteArray()) ), 
+                                FileEncodingQuery.getEncoding(fileObject)) ) {
+            
             Charset encoding = FileEncodingQuery.getEncoding(fileObject);
-            ins = fileObject.getInputStream();
-            baos = new ByteArrayOutputStream();
             FileUtil.copy(ins, baos);
-
+            
             ins.close();
-            ins = null;
-            byte[] arr = baos.toByteArray();
-            int arrLength = convertToLF(arr);
             baos.close();
-            baos = null;
-            inputReader = new InputStreamReader(new ByteArrayInputStream(arr, 0, arrLength), encoding);
+            
             // initialize standard commit output stream, if user
             // does not provide his own writer
             if (outWriter == null) {
@@ -189,15 +188,6 @@ public final class Modifications {
                 outWriter.write(buff, 0, count);
             }
         } finally {
-            if (ins != null) {
-                ins.close();
-            }
-            if (baos != null) {
-                baos.close();
-            }
-            if (inputReader != null) {
-                inputReader.close();
-            }
             if (outWriter != null) {
                 outWriter.close();
             }

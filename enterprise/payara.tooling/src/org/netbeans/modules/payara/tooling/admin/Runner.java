@@ -709,15 +709,8 @@ public abstract class Runner implements Callable<Result> {
             throws IOException {
         final String METHOD = "handleReceive";
         boolean receiveResult = false;
-        InputStream httpInputStream = hconn.getInputStream();
-        try {
+        try (InputStream httpInputStream = hconn.getInputStream()) {
             receiveResult = readResponse(httpInputStream, hconn);
-        } finally {
-            try {
-                httpInputStream.close();
-            } catch (IOException ioe) {
-                LOGGER.log(Level.WARNING, METHOD, "exception", ioe);
-            }
         }
         return receiveResult;
     }

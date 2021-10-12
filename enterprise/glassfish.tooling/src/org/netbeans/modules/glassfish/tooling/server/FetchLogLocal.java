@@ -25,6 +25,7 @@ import org.netbeans.modules.glassfish.tooling.TaskState;
 import org.netbeans.modules.glassfish.tooling.data.GlassFishServer;
 import org.netbeans.modules.glassfish.tooling.logging.Logger;
 import org.netbeans.modules.glassfish.tooling.utils.ServerUtils;
+import org.openide.util.Exceptions;
 
 /**
  * Fetch GlassFish log from local server.
@@ -142,16 +143,15 @@ public class FetchLogLocal extends FetchLogPiped {
     public TaskState call() {
         final String METHOD = "call";
         notifyListeners(TaskState.RUNNING);
-        InputStream fIn = initInputFile();
         byte[] buff = new byte[PIPE_BUFFER_SIZE];
         File logFile = ServerUtils.getServerLogFile(server);
         int inCount;
         long lastModified;
-        if (fIn == null) {
+        if (initInputFile() == null) {
             return notifyListeners(TaskState.FAILED);
         }
         while (taksExecute) {
-            try {
+            try (InputStream fIn = initInputFile()) {
                 inCount = fIn.available();
                 lastModified = logFile.lastModified();
                 // Nothing to read. Check log rotation after delay.
@@ -161,10 +161,9 @@ public class FetchLogLocal extends FetchLogPiped {
                     if (inCount <= 0 && logFile.lastModified() > lastModified) {
                         LOGGER.log(Level.FINER, METHOD, "rotation");
                         fIn.close();
-                        fIn = initInputFile();
                     }
                 }
-                if (inCount > 0) {
+                else if (inCount > 0) {
                     while (inCount > 0) {
                         int count = fIn.read(buff);
                         LOGGER.log(Level.FINEST, METHOD, "read",

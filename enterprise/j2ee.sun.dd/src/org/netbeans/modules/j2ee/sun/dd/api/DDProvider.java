@@ -229,9 +229,7 @@ public final class DDProvider {
         // XXX Where should this listener be removed?  Isn't removed anywhere presently.
         fo.addFileChangeListener(new SunDDFileChangeListener());
 
-        InputStream is = null;
-        try {
-            is = fo.getInputStream();
+        try (InputStream is = fo.getInputStream()) {
             DDParse parse = new DDParse(is);
             RootInterface tmpRootProxy = parse.createProxy();
             
@@ -250,10 +248,6 @@ public final class DDProvider {
             ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
         } catch(IOException ex) {
             ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ex);
-        } finally {
-            if(is != null) {
-                try { is.close(); } catch(IOException ex) {}
-            }
         }
         
         return rootProxy;
@@ -644,19 +638,13 @@ public final class DDProvider {
                 synchronized (ddMap) {
                     RootInterface rootProxy = ddMap.get(fo);
                     if(rootProxy != null) {
-                        InputStream inputStream = null;
-                        try {
-                            inputStream = fo.getInputStream();
+                        try (InputStream inputStream = fo.getInputStream()) {
                             String encoding = EncodingUtil.detectEncoding(new BufferedInputStream(inputStream));
                             if (encoding == null) {
                                 encoding = "UTF8";
                             }
                             merge(rootProxy, new InputStreamReader(inputStream, encoding));
 //                            merge(rootProxy, fo);
-                        } finally {
-                            if(inputStream != null) {
-                                try { inputStream.close(); } catch(IOException ex) {}
-                            }
                         }
                     }
                 }

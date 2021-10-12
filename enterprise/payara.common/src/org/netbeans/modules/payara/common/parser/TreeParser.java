@@ -52,8 +52,7 @@ public final class TreeParser extends DefaultHandler {
 
     public static boolean readXml(File xmlFile, List<Path> pathList) throws IllegalStateException {
         boolean result = false;
-        InputStreamReader reader = null;
-        try {
+        try (InputStreamReader reader = new FileReader(xmlFile)) {
             // !PW FIXME what to do about entity resolvers?  Timed out when
             // looking up doctype for sun-resources.xml earlier today (Jul 10)
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -63,20 +62,11 @@ public final class TreeParser extends DefaultHandler {
             factory.setNamespaceAware(false);
             SAXParser saxParser = factory.newSAXParser();            
             DefaultHandler handler = new TreeParser(pathList);
-            reader = new FileReader(xmlFile);
             InputSource source = new InputSource(reader);
             saxParser.parse(source, handler);
             result = true;
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new IllegalStateException(ex);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.INFO, ex.getLocalizedMessage(), ex);
-                }
-            }
         }
         return result;
     }

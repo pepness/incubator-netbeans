@@ -60,16 +60,13 @@ public class AntDeploymentProviderImpl implements AntDeploymentProvider {
                 name = "resources/tomcat-ant-deploy.xml";
         }
         
-        InputStream is = AntDeploymentProviderImpl.class.getResourceAsStream(name); // NOI18N
-        if (is == null) {
+        if (AntDeploymentProviderImpl.class.getResourceAsStream(name) == null) {
             // this should never happen, but better make sure
             LOGGER.log(Level.SEVERE, "Missing resource {0}.", name); // NOI18N
             return;
         }
-        try {
+        try (InputStream is = AntDeploymentProviderImpl.class.getResourceAsStream(name)) {  // NOI18N
             FileUtil.copy(is, os);
-        } finally {
-            is.close();
         }
     }
 

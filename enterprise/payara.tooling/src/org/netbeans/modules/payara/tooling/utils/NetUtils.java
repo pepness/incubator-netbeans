@@ -113,22 +113,11 @@ public class NetUtils {
         if (null == host) {
             return false;
         }
-        Socket socket = null;
-        try {
-            socket = new Socket();
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), timeout);
             return true;
         } catch (IOException ex) {
             return false;
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, METHOD,
-                            "closeError", ioe.getLocalizedMessage());
-                }
-            }
         }
     }
 
@@ -158,22 +147,10 @@ public class NetUtils {
     public static boolean isPortListeningLocal(final String host,
             final int port) {
         final String METHOD = "isPortListeningLocal";
-        ServerSocket socket = null;
-        try {
-            InetAddress ia = InetAddress.getByName(host);
-            socket = new ServerSocket(port, 1, ia);
+        try (ServerSocket socket = new ServerSocket(port, 1, InetAddress.getByName(host))) {
             return false;
         } catch (IOException ioe) {
             return true;
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.INFO, METHOD,
-                            "closeError", ioe.getLocalizedMessage());
-                }
-            }
         }
     }
 

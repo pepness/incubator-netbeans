@@ -57,17 +57,8 @@ public class DDProviderTest extends NbTestCase {
             return;
         for (File fo : list) {
             if (fo.getName().startsWith("valid-sun-ejb-jar")) {
-                InputStream is = null;
-                try {
-                    is = new FileInputStream(fo);
-
+                try (InputStream is = new FileInputStream(fo)) {
                     DDProvider.getDefault().getEjbDDRoot(new InputSource(is));
-                } finally {
-                    if (null != is) {
-                        try {
-                            is.close();
-                        } catch (IOException ioe) { }
-                    }
                 }
             }
         }
@@ -82,17 +73,8 @@ public class DDProviderTest extends NbTestCase {
             return;
         for (File fo : list) {
             if (fo.getName().startsWith("valid-sun-web")) {
-                InputStream is = null;
-                try {
-                    is = new FileInputStream(fo);
-
+                try (InputStream is = new FileInputStream(fo)) {
                     DDProvider.getDefault().getWebDDRoot(new InputSource(is));
-                } finally {
-                    if (null != is) {
-                        try {
-                            is.close();
-                        } catch (IOException ioe) { }
-                    }
                 }
             }
         }
@@ -106,17 +88,8 @@ public class DDProviderTest extends NbTestCase {
             return;
         for (File fo : list) {
             if (fo.getName().startsWith("valid-sun-application")) {
-                InputStream is = null;
-                try {
-                    is = new FileInputStream(fo);
-
+                try (InputStream is = new FileInputStream(fo)) {
                     DDProvider.getDefault().getAppDDRoot(new InputSource(is));
-                } finally {
-                    if (null != is) {
-                        try {
-                            is.close();
-                        } catch (IOException ioe) { }
-                    }
                 }
             }
         }
@@ -130,17 +103,8 @@ public class DDProviderTest extends NbTestCase {
             return;
         for (File fo : list) {
             if (fo.getName().startsWith("valid-sun-appclient")) {
-                InputStream is = null;
-                try {
-                    is = new FileInputStream(fo);
-
+                try (InputStream is = new FileInputStream(fo)) {
                     DDProvider.getDefault().getAppClientDDRoot(new InputSource(is));
-                } finally {
-                    if (null != is) {
-                        try {
-                            is.close();
-                        } catch (IOException ioe) { }
-                    }
                 }
             }
         }

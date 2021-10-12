@@ -531,25 +531,13 @@ public class AdminKeyFile {
     public boolean read() {
         boolean success = false;
         Parser parser = null;
-        Reader in = null;
-        try {
-            in = new FileReader(adminKeyFile);
+        try (Reader in = new FileReader(adminKeyFile)) {
             parser = new Parser(in);
             success = parser.parse();
         } catch (IOException ioe) {
             success = false;
             LOGGER.log(Level.INFO, "Caught IOException when reading {0}: {1}",
                     new Object[] {adminKeyFile, ioe.getMessage()});
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ioe) {
-                    success = false;
-                    LOGGER.log(Level.INFO,
-                            "Cannot close {0} Reader", adminKeyFile);
-                }
-            }
         }
         if (success && parser != null) {
             user = parser.getUser();
@@ -587,24 +575,12 @@ public class AdminKeyFile {
         // Log admin-keyfile content without EOL.
         LOGGER.log(Level.INFO, "Writting admin-keyfile: {0}", sb.toString());
         sb.append(EOL);
-        Writer out = null;     
-        try {
-            out = new FileWriter(adminKeyFile);
+        try (Writer out = new FileWriter(adminKeyFile)) {
             out.write(sb.toString());
         } catch (IOException ioe) {
             success = false;
             LOGGER.log(Level.INFO, "Caught IOException when writting {0}: {1}",
                     new Object[] {adminKeyFile, ioe.getMessage()});
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ioe) {
-                    success = false;
-                    LOGGER.log(Level.INFO,
-                            "Cannot close {0} Writer", adminKeyFile);
-                }
-            }
         }
         return success;
     }

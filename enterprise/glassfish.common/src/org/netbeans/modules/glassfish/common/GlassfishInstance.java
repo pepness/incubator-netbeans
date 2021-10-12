@@ -1606,19 +1606,13 @@ public class GlassfishInstance implements ServerInstanceImplementation,
         String homeFolder = getGlassfishRoot();
         File asenvConf = new File(homeFolder, "config/asenv.conf"); // NOI18N
         if(asenvConf.exists()) {
-            InputStream is = null;
-            try {
-                is = new BufferedInputStream(new FileInputStream(asenvConf));
+            try (InputStream is = new BufferedInputStream(new FileInputStream(asenvConf))) {
                 asenvProps.load(is);
             } catch(FileNotFoundException ex) {
                 LOGGER.log(Level.WARNING, null, ex); // NOI18N
             } catch(IOException ex) {
                 LOGGER.log(Level.WARNING, null, ex); // NOI18N
                 asenvProps.clear();
-            } finally {
-                if(is != null) {
-                    try { is.close(); } catch (IOException ex) { }
-                }
             }
         } else {
             LOGGER.log(Level.WARNING, "{0} does not exist", asenvConf.getAbsolutePath()); // NOI18N

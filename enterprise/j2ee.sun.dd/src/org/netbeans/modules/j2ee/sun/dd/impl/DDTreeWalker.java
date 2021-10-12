@@ -250,10 +250,8 @@ public class DDTreeWalker {
     }
     
      public Transform getTransformInfo(){
-        try{
-            java.io.InputStream in = Transform.class.getClassLoader().getResourceAsStream(DATAFILE);
+        try (java.io.InputStream in = Transform.class.getClassLoader().getResourceAsStream(DATAFILE);) {
             this.transInfo = Transform.createGraph(in);
-            in.close();
         }catch(Exception ex){
             //System.out.println("Unable to get transInfo");
         }

@@ -53,13 +53,11 @@ public class ConfigureProfilerHelper {
             return false;
         }
         String lineBreak = System.getProperty("line.separator");
-        BufferedReader br = null;
-        FileWriter fw = null;
-        try {
+        try (FileReader fr = new FileReader(asEnvScriptFile);
+                BufferedReader br = new BufferedReader(fr);
+                FileWriter fw = new FileWriter(asEnvScriptFile)) {
             
             String line;
-            FileReader fr = new FileReader(asEnvScriptFile);
-            br = new BufferedReader(fr);
             StringBuilder buffer = new StringBuilder(Math.min(asEnvScriptFilePath.length(), 60000));
             
             String asJavaString = (isUnix() ? ASENV_INSERTION_POINT_NOWIN_STRING : ASENV_INSERTION_POINT_WIN_STRING);
@@ -78,7 +76,6 @@ public class ConfigureProfilerHelper {
             //br.close();
             
             // flush modified config file from memory buffer back to disk
-            fw = new FileWriter(asEnvScriptFile);
             fw.write(buffer.toString());
             fw.flush();
             //fw.close();
@@ -95,21 +92,6 @@ public class ConfigureProfilerHelper {
         } catch (Exception ex) {
             Logger.getLogger(ConfigureProfilerHelper.class.getName()).log(Level.FINER,"",ex);
             return false;
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger(ConfigureProfilerHelper.class.getName()).log(Level.FINEST,"",ioe);
-                }
-            }
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger(ConfigureProfilerHelper.class.getName()).log(Level.FINEST,"",ioe);
-                }
-            }
         }
         
     }

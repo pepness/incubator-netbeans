@@ -149,9 +149,7 @@ public class WildflyKiller {
     }
 
     public static String readString(InputStream file) {
-        BufferedInputStream stream = null;
-        try {
-            stream = new BufferedInputStream(file);
+        try (BufferedInputStream stream = new BufferedInputStream(file)) {
             byte[] buff = new byte[1024];
             StringBuilder builder = new StringBuilder();
             int read = -1;
@@ -161,14 +159,6 @@ public class WildflyKiller {
             return builder.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    //ignore
-                }
-            }
         }
     }
 }

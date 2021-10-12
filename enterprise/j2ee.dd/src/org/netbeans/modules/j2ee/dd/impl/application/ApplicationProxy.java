@@ -391,10 +391,10 @@ public class ApplicationProxy implements Application {
         return app==null?0:app.sizeSecurityRole();
     }
 
-    public void write(org.openide.filesystems.FileObject fo) throws IOException {
+    public void write(org.openide.filesystems.FileObject fo) throws java.io.IOException {
         if (app != null) {
             try (FileLock lock = fo.lock();
-                    OutputStream os = fo.getOutputStream(lock)) {
+                    java.io.OutputStream os = fo.getOutputStream(lock)) {
                 writing=true;
                 write(os);
             } catch (org.openide.filesystems.FileAlreadyLockedException ex) {

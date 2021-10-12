@@ -48,9 +48,7 @@ public class ConfigurationParser {
     public static final ConfigurationParser INSTANCE = new ConfigurationParser();
 
     public Set<Datasource> listDatasources(FileObject xmlFile) {
-        InputStream data = null;
-        try {
-            data = xmlFile.getInputStream();
+        try (InputStream data = xmlFile.getInputStream()) {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXParser sp = spf.newSAXParser();
             sp.getXMLReader().setFeature(LOAD_EXTERNAL_DTD_FEATURE, false);
@@ -63,14 +61,6 @@ public class ConfigurationParser {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        } finally {
-            if (data != null) {
-                try {
-                    data.close();
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
         }
         return null;
     }

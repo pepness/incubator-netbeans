@@ -226,12 +226,16 @@ public class VerifierSupport extends TopComponent {
             // Attach to the process's stdout, and ignore what comes back.
             //
             final Thread[] copyMakers = new Thread[2];
-            OutputStreamWriter oss = null;
+            
             if (outs != null) {
-                oss = new OutputStreamWriter(outs);
+                try (OutputStreamWriter oss = new OutputStreamWriter(outs)) {
+                    (copyMakers[0] = new ExecSupport.OutputCopier(new InputStreamReader(process.getInputStream()), oss, true)).start();
+                    (copyMakers[1] = new ExecSupport.OutputCopier(new InputStreamReader(process.getErrorStream()), oss, true)).start();
+                }
+            } else {
+                (copyMakers[0] = new ExecSupport.OutputCopier(new InputStreamReader(process.getInputStream()), null, true)).start();
+                (copyMakers[1] = new ExecSupport.OutputCopier(new InputStreamReader(process.getErrorStream()), null, true)).start();
             }
-            (copyMakers[0] = new ExecSupport.OutputCopier(new InputStreamReader(process.getInputStream()), oss, true)).start();
-            (copyMakers[1] = new ExecSupport.OutputCopier(new InputStreamReader(process.getErrorStream()), oss, true)).start();
             try {
                 process.waitFor();
                 Thread.sleep(1000);  // time for copymakers
@@ -259,19 +263,16 @@ public class VerifierSupport extends TopComponent {
             verifierSupport.updateDisplay();
             return;
         }
-        FileInputStream in = null;
         StaticVerification sv = null;
-        try {
-            in = new FileInputStream(ff);
+        try (FileInputStream in = new FileInputStream(ff)) {
             
             sv = StaticVerification.createGraph(in);  // this can throw a RT exception
             err = sv.getError();
             if (err!=null){
                 verifierSupport.saveErrorResultsForDisplay( err);
-                
             }
             Ejb e = sv.getEjb();
-            if (e!=null){
+            if (e!=null) {
                 Failed fail= e.getFailed();
                 if (fail!=null){
                     Test t[] =fail.getTest();
@@ -302,7 +303,7 @@ public class VerifierSupport extends TopComponent {
                 }
             }
             Web we = sv.getWeb();
-            if (we!=null){
+            if (we!=null) {
                 Failed fail= we.getFailed();
                 if (fail!=null){
                     Test t[] =fail.getTest();
@@ -311,21 +312,21 @@ public class VerifierSupport extends TopComponent {
                     }
                 }
                 Warning w= we.getWarning();
-                if (w!=null){
+                if (w!=null) {
                     Test t[] =w.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.saveWarnResultsForDisplay(t[i]);
                     }
                 }
                 Passed p= we.getPassed();
-                if (p!=null){
+                if (p!=null) {
                     Test t[] =p.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.savePassResultsForDisplay(t[i]);
                     }
                 }
                 NotApplicable na= we.getNotApplicable();
-                if (na!=null){
+                if (na!=null) {
                     Test t[] =na.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.saveNaResultsForDisplay(t[i]);
@@ -333,7 +334,7 @@ public class VerifierSupport extends TopComponent {
                 }
             }
             Appclient ac = sv.getAppclient();
-            if (ac!=null){
+            if (ac!=null) {
                 Failed fail= ac.getFailed();
                 if (fail!=null){
                     Test t[] =fail.getTest();
@@ -342,21 +343,21 @@ public class VerifierSupport extends TopComponent {
                     }
                 }
                 Warning w= ac.getWarning();
-                if (w!=null){
+                if (w!=null) {
                     Test t[] =w.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.saveWarnResultsForDisplay(t[i]);
                     }
                 }
                 Passed p= ac.getPassed();
-                if (p!=null){
+                if (p!=null) {
                     Test t[] =p.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.savePassResultsForDisplay(t[i]);
                     }
                 }
                 NotApplicable na= ac.getNotApplicable();
-                if (na!=null){
+                if (na!=null) {
                     Test t[] =na.getTest();
                     for (int i=0;i<t.length ;i++){
                         verifierSupport.saveNaResultsForDisplay(t[i]);
@@ -364,7 +365,7 @@ public class VerifierSupport extends TopComponent {
                 }
             }
             Application  app = sv.getApplication();
-            if (app!=null){
+            if (app!=null) {
                 Failed fail= app.getFailed();
                 if (fail!=null){
                     Test t[] =fail.getTest();
@@ -441,15 +442,6 @@ public class VerifierSupport extends TopComponent {
             err.setErrorName(NbBundle.getMessage(VerifierSupport.class,"ERR_PARSING_OUTPUT"));  // NOI18N
             err.setErrorDescription(ioe.getMessage());
             verifierSupport.saveErrorResultsForDisplay( err);
-        } finally {
-            if (null != in) {
-                try {
-                    in.close();
-                } catch (IOException ioe) {
-                    // I cannot do anything here...
-                    ErrorManager.getDefault().notify(ErrorManager.INFORMATIONAL, ioe);
-                }
-            }
         }
         verifierSupport.verifierIsStillRunning = false;// we are done
         verifierSupport.updateDisplay();

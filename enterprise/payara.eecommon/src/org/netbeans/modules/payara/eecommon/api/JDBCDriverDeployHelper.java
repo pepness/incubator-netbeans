@@ -169,28 +169,12 @@ public class JDBCDriverDeployHelper {
                     try {
                         File toJar = new File(libsDir, new File(jarUrl.toURI()).getName());
                         try {
-                            BufferedInputStream is = new BufferedInputStream(jarUrl.openStream());
-                            try {
+                            try (BufferedInputStream is = new BufferedInputStream(jarUrl.openStream())) {
                                 msg = NbBundle.getMessage(JDBCDriverDeployHelper.class, "MSG_DeployDriver", toJar.getPath());
                                 eventSupport.fireHandleProgressEvent(null, ProgressEventSupport.createStatus(ActionType.EXECUTE, CommandType.DISTRIBUTE, msg, StateType.RUNNING));
-                                BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar));
-                                try {
+                                try (BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar));) {
                                     FileUtil.copy(is, os);
-                                } finally {
-                                    if (null != os)
-                                        try {
-                                            os.close();
-                                        } catch (IOException ioe) {
-
-                                        }
                                 }
-                            } finally {
-                                if (null != is)
-                                    try {
-                                        is.close();
-                                    } catch (IOException ioe) {
-                                        
-                                    }
                             }
                         } catch (IOException e) {
                             Logger.getLogger(this.getClass().getName()).log(Level.FINER,"",e);

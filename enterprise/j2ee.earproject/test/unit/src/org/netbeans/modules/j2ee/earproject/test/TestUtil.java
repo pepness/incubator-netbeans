@@ -254,12 +254,9 @@ public final class TestUtil {
     public static EditableProperties loadProjectProperties(
             final FileObject projectDir) throws IOException {
         FileObject propsFO = projectDir.getFileObject(AntProjectHelper.PROJECT_PROPERTIES_PATH);
-        InputStream propsIS = propsFO.getInputStream();
         EditableProperties props = new EditableProperties(true);
-        try {
+        try (InputStream propsIS = propsFO.getInputStream()) {
             props.load(propsIS);
-        } finally {
-            propsIS.close();
         }
         return props;
     }

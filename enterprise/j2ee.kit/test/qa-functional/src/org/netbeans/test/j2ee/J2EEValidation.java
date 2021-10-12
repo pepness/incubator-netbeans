@@ -220,31 +220,22 @@ public class J2EEValidation extends J2eeTestCase {
         Waitable waitable = new Waitable() {
             @Override
             public Object actionProduced(Object obj) {
-                InputStream is = null;
                 try {
                     URLConnection connection = new URI("http://localhost:8080/" + urlSuffix).toURL().openConnection();
                     connection.setReadTimeout(Long.valueOf(timeout).intValue());
-                    is = connection.getInputStream();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    String line = br.readLine();
-                    while (line != null) {
-                        if (line.indexOf(text) > -1) {
-                            return Boolean.TRUE;
+                    try (InputStream is = connection.getInputStream();
+                            BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+                        String line = br.readLine();
+                        while (line != null) {
+                            if (line.indexOf(text) > -1) {
+                                return Boolean.TRUE;
+                            }
+                            line = br.readLine();
                         }
-                        line = br.readLine();
                     }
-                    is.close();
                 } catch (Exception e) {
                     //e.printStackTrace();
                     return null;
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
                 }
                 return null;
             }

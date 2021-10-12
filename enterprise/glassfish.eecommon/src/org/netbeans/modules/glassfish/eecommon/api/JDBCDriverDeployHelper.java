@@ -172,30 +172,11 @@ public class JDBCDriverDeployHelper {
                     File libsDir = driverLoc;
                     try {
                         File toJar = new File(libsDir, new File(jarUrl.toURI()).getName());
-                        try {
-                            BufferedInputStream is = new BufferedInputStream(jarUrl.openStream());
-                            try {
-                                msg = NbBundle.getMessage(JDBCDriverDeployHelper.class, "MSG_DeployDriver", toJar.getPath());
-                                eventSupport.fireHandleProgressEvent(null, ProgressEventSupport.createStatus(ActionType.EXECUTE, CommandType.DISTRIBUTE, msg, StateType.RUNNING));
-                                BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar));
-                                try {
-                                    FileUtil.copy(is, os);
-                                } finally {
-                                    if (null != os)
-                                        try {
-                                            os.close();
-                                        } catch (IOException ioe) {
-
-                                        }
-                                }
-                            } finally {
-                                if (null != is)
-                                    try {
-                                        is.close();
-                                    } catch (IOException ioe) {
-                                        
-                                    }
-                            }
+                        try (BufferedInputStream is = new BufferedInputStream(jarUrl.openStream());
+                                BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(toJar))) {
+                            msg = NbBundle.getMessage(JDBCDriverDeployHelper.class, "MSG_DeployDriver", toJar.getPath());
+                            eventSupport.fireHandleProgressEvent(null, ProgressEventSupport.createStatus(ActionType.EXECUTE, CommandType.DISTRIBUTE, msg, StateType.RUNNING));
+                            FileUtil.copy(is, os);
                         } catch (IOException e) {
                             Logger.getLogger(this.getClass().getName()).log(Level.FINER,"",e);
                             msg = NbBundle.getMessage(JDBCDriverDeployHelper.class, "ERR_DeployDriver", toJar.getPath(), libsDir.getPath());

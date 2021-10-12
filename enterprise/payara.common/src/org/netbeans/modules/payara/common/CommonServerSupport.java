@@ -869,20 +869,13 @@ public class CommonServerSupport
         if(null == host)
             return false;
 
-        try {
+        try (Socket socket = new Socket()) {
             InetSocketAddress isa = new InetSocketAddress(host, port);
-            Socket socket = new Socket();
             Logger.getLogger("payara-socket-connect-diagnostic").log(
                     Level.FINE, "Using socket.connect", new Exception());
             socket.connect(isa, timeout);
             socket.setSoTimeout(timeout);
-            try {
-                socket.close();
-            } catch (IOException ioe) {
-                LOGGER.log(
-                        Level.INFO, "Socket closing failed: {0}",
-                        ioe.getMessage());
-            }
+
             return true;
         } catch (java.net.ConnectException | java.net.SocketTimeoutException ex) {
             return false;

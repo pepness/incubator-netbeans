@@ -143,9 +143,7 @@ public class ConfigUtils {
     static List<GlassFishLibrary.Maven> processClassPath(List<File> classpath) {
         List<GlassFishLibrary.Maven> mvnList = new LinkedList<>();
         for (File jar : classpath) {
-            ZipFile zip = null;
-            try {
-                zip = new ZipFile(jar);
+            try (ZipFile zip = new ZipFile(jar)) {
                 Enumeration<? extends ZipEntry> entries = zip.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
@@ -170,15 +168,7 @@ public class ConfigUtils {
             } catch (IllegalStateException ise) {
                  Logger.log(Level.WARNING, "Cannot process JAR file "
                          + jar.getAbsolutePath() + ":", ise);
-            } finally {
-                if (zip != null) try {
-                    zip.close();
-                } catch (IOException ioe) {
-                    Logger.log(Level.WARNING, "Cannot close JAR file "
-                         + jar.getAbsolutePath() + ":", ioe);
-                }
             }
-            
         }
         return mvnList;
     }

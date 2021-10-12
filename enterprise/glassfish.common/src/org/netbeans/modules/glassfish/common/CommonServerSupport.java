@@ -852,9 +852,9 @@ public class CommonServerSupport
         if(null == host)
             return false;
 
-        try {
+        try (Socket socket = new Socket()) {
             InetSocketAddress isa = new InetSocketAddress(host, port);
-            Socket socket = new Socket();
+            
             Logger.getLogger("glassfish-socket-connect-diagnostic").log(
                     Level.FINE, "Using socket.connect", new Exception());
             socket.connect(isa, timeout);

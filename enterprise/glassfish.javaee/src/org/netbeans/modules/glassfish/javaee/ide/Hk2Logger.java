@@ -157,10 +157,8 @@ public class Hk2Logger {
          * performed
          */
         public void run() {
-            try {
-                // create a reader from the input stream
-                InputStreamReader reader = new InputStreamReader(inputStream);
-                
+            // create a reader from the input stream
+            try (InputStreamReader reader = new InputStreamReader(inputStream)) {
                 // read from the input stream and put all the changes to the
                 // I/O window
                 char[] chars = new char[1024];

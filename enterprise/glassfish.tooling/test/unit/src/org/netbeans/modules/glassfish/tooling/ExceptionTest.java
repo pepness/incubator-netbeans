@@ -19,12 +19,14 @@
 package org.netbeans.modules.glassfish.tooling;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 import org.netbeans.modules.glassfish.tooling.logging.Logger;
+import org.openide.util.Exceptions;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
@@ -51,23 +53,26 @@ public class ExceptionTest {
         String gfieMsg = "Caught GlassFishIdeException.";
         java.util.logging.Logger logger = Logger.getLogger();
         Level logLevel = logger.getLevel();
-        OutputStream logOut = new ByteArrayOutputStream(256);
-        Handler handler = new StreamHandler(logOut, new SimpleFormatter());
-        handler.setLevel(Level.WARNING);
-        logger.addHandler(handler);       
-        logger.setLevel(Level.WARNING);
-        try {
-            throw new GlassFishIdeException();
-        } catch (GlassFishIdeException gfie) {
-            handler.flush();
-        } finally {
-            logger.removeHandler(handler);
-            handler.close();
-            logger.setLevel(logLevel);
+        try (OutputStream logOut = new ByteArrayOutputStream(256)) {
+            Handler handler = new StreamHandler(logOut, new SimpleFormatter());
+            handler.setLevel(Level.WARNING);
+            logger.addHandler(handler);       
+            logger.setLevel(Level.WARNING);
+            try {
+                throw new GlassFishIdeException();
+            } catch (GlassFishIdeException gfie) {
+                handler.flush();
+            } finally {
+                logger.removeHandler(handler);
+                handler.close();
+                logger.setLevel(logLevel);
+            }
+            String logMsg = logOut.toString();
+            int contains = logMsg.indexOf(gfieMsg);
+            assertTrue(contains > -1);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        String logMsg = logOut.toString();
-        int contains = logMsg.indexOf(gfieMsg);
-        assertTrue(contains > -1);
     }
 
     /**
@@ -78,23 +83,26 @@ public class ExceptionTest {
         String gfieMsg = "Test exception";
         java.util.logging.Logger logger = Logger.getLogger();
         Level logLevel = logger.getLevel();
-        OutputStream logOut = new ByteArrayOutputStream(256);
-        Handler handler = new StreamHandler(logOut, new SimpleFormatter());
-        handler.setLevel(Level.WARNING);
-        logger.addHandler(handler);       
-        logger.setLevel(Level.WARNING);
-        try {
-            throw new GlassFishIdeException(gfieMsg);
-        } catch (GlassFishIdeException gfie) {
-            handler.flush();
-        } finally {
-            logger.removeHandler(handler);
-            handler.close();
-            logger.setLevel(logLevel);
+        try (OutputStream logOut = new ByteArrayOutputStream(256)) {
+            Handler handler = new StreamHandler(logOut, new SimpleFormatter());
+            handler.setLevel(Level.WARNING);
+            logger.addHandler(handler);       
+            logger.setLevel(Level.WARNING);
+            try {
+                throw new GlassFishIdeException(gfieMsg);
+            } catch (GlassFishIdeException gfie) {
+                handler.flush();
+            } finally {
+                logger.removeHandler(handler);
+                handler.close();
+                logger.setLevel(logLevel);
+            }
+            String logMsg = logOut.toString();
+            int contains = logMsg.indexOf(gfieMsg);
+            assertTrue(contains > -1);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        String logMsg = logOut.toString();
-        int contains = logMsg.indexOf(gfieMsg);
-        assertTrue(contains > -1);
     }
 
     /**
@@ -107,28 +115,31 @@ public class ExceptionTest {
         String causeMsg = "Cause exception";
         java.util.logging.Logger logger = Logger.getLogger();
         Level logLevel = logger.getLevel();
-        OutputStream logOut = new ByteArrayOutputStream(256);
-        Handler handler = new StreamHandler(logOut, new SimpleFormatter());
-        handler.setLevel(Level.WARNING);
-        logger.addHandler(handler);       
-        logger.setLevel(Level.WARNING);
-        try {
+        try (OutputStream logOut = new ByteArrayOutputStream(256)) {
+            Handler handler = new StreamHandler(logOut, new SimpleFormatter());
+            handler.setLevel(Level.WARNING);
+            logger.addHandler(handler);       
+            logger.setLevel(Level.WARNING);
             try {
-                throw new Exception(causeMsg);
-            } catch (Exception e) {
-                throw new GlassFishIdeException(gfieMsg, e);
+                try {
+                    throw new Exception(causeMsg);
+                } catch (Exception e) {
+                    throw new GlassFishIdeException(gfieMsg, e);
+                }
+            } catch (GlassFishIdeException gfie) {
+                handler.flush();
+            } finally {
+                logger.removeHandler(handler);
+                handler.close();
+                logger.setLevel(logLevel);
             }
-        } catch (GlassFishIdeException gfie) {
-            handler.flush();
-        } finally {
-            logger.removeHandler(handler);
-            handler.close();
-            logger.setLevel(logLevel);
+            String logMsg = logOut.toString();
+            int containsGfieMsg = logMsg.indexOf(gfieMsg);
+            int containsCauseMsg = logMsg.indexOf(causeMsg);
+            assertTrue(containsGfieMsg > -1 && containsCauseMsg > -1);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        String logMsg = logOut.toString();
-        int containsGfieMsg = logMsg.indexOf(gfieMsg);
-        int containsCauseMsg = logMsg.indexOf(causeMsg);
-        assertTrue(containsGfieMsg > -1 && containsCauseMsg > -1);
     }
 
 }

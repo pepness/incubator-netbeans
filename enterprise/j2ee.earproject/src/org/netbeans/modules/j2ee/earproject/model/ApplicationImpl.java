@@ -185,16 +185,14 @@ public class ApplicationImpl implements Application {
     }
     
     private Module getModFromFile(File f, String path) {
-        JarFile jar = null;
         Module mod = null;
-        try {
+        try (JarFile jar = new JarFile(f)) {
             String connector = null;
             String ejb = null;
             String car = null;
             Web web = null;
             boolean found = false;
             
-            jar = new JarFile(f);
             JarEntry ddf = jar.getJarEntry("META-INF/ejb-jar.xml"); // NOI18N
             if (ddf != null) {
                 ejb = path;
@@ -235,14 +233,6 @@ public class ApplicationImpl implements Application {
             
         } catch (IOException ioe) {
             Exceptions.printStackTrace(ioe);
-        } finally {
-            try {
-                if (jar != null) {
-                    jar.close();
-                }
-            } catch (IOException ioe) {
-                // there is little that we can do about this.
-            }
         }
         return mod;
     }

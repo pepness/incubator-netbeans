@@ -383,12 +383,9 @@ public class Retriever implements Runnable {
     private static final int WRITE_BUF_SIZE = 131072; // 128k
     
     private boolean downloadAndInstall(final InputStream in, final File targetFolder, final int filelen) throws IOException {
-        BufferedInputStream bufferedStream = null;
-        JarInputStream jarStream = null;
-        try {
+        try (BufferedInputStream bufferedStream = new BufferedInputStream(in, READ_BUF_SIZE);
+                JarInputStream jarStream = new JarInputStream(bufferedStream)) {
             final byte [] buffer = new byte [WRITE_BUF_SIZE];
-            bufferedStream = new BufferedInputStream(in, READ_BUF_SIZE);
-            jarStream = new JarInputStream(bufferedStream);
             final InputStream entryStream = jarStream;
             int totalBytesRead = 0;
             JarEntry entry;
@@ -415,9 +412,7 @@ public class Retriever implements Runnable {
                     }
                     
                     int bytesRead = 0;
-                    FileOutputStream os = null;
-                    try {
-                        os = new FileOutputStream(entryFile);
+                    try (FileOutputStream os = new FileOutputStream(entryFile)) {
                         int len;
                         long lastUpdate = 1;
                         while(!shutdown && (len = entryStream.read(buffer)) >= 0) {
@@ -436,20 +431,9 @@ public class Retriever implements Runnable {
                             }
                             os.write(buffer, 0, len);
                         }
-                    } finally {
-                        if(os != null) {
-                            try { os.close(); } catch(IOException ex) { }
-                        }
                     }
                     totalBytesRead += entry.getCompressedSize();
                 }
-            }
-        } finally {
-            if(bufferedStream != null) {
-                try { bufferedStream.close(); } catch(IOException ex) { }
-            }
-            if(jarStream != null) {
-                try { jarStream.close(); } catch(IOException ex) { }
             }
         }
 

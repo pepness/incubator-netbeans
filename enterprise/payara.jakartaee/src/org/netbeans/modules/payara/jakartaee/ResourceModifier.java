@@ -129,29 +129,18 @@ public class ResourceModifier {
             FileObject sunResourcesFO = FileUtil.toFileObject(sunResourcesXml);
 
             if(sunResourcesFO != null) {
-                InputStream is = null;
-                Reader reader = null;
-                try {
+                try (InputStream is = new BufferedInputStream(sunResourcesFO.getInputStream());
+                        Reader reader = new InputStreamReader(is, EncodingUtil.detectEncoding(is))) {
+                    
                     long flen = sunResourcesFO.getSize();
                     if(flen > 1000000) {
                         throw new IOException(sunResourcesXml.getAbsolutePath() + " is too long to update.");
                     }
-
                     int length = (int) (2 * flen + 32);
                     char [] buf = new char[length];
-                    is = new BufferedInputStream(sunResourcesFO.getInputStream());
-                    String encoding = EncodingUtil.detectEncoding(is);
-                    reader = new InputStreamReader(is, encoding);
                     int max = reader.read(buf);
                     if(max > 0) {
                         content = new String(buf, 0, max);
-                    }
-                } finally {
-                    if(is != null) {
-                        try { is.close(); } catch(IOException ex) { }
-                    }
-                    if(reader != null) {
-                        try { reader.close(); } catch(IOException ex) { }
                     }
                 }
             } else {

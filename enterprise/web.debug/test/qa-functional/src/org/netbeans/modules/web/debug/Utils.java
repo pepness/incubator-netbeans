@@ -131,9 +131,7 @@ public class Utils {
         while (notfree) {
             port = 49152 + new Random().nextInt(16383);
             // test whether port is already used
-            ServerSocket socket = null;
-            try {
-                socket = new ServerSocket(port);
+            try (ServerSocket socket = new ServerSocket(port)) {
                 socket.close();
                 // found a free port
                 notfree = false;
@@ -276,31 +274,23 @@ public class Utils {
 
             @Override
             public Object actionProduced(Object obj) {
-                InputStream is = null;
+                
                 try {
                     URLConnection connection = new URI(getDefaultUrl() + urlSuffix).toURL().openConnection();
                     connection.setReadTimeout(Long.valueOf(timeout).intValue());
-                    is = connection.getInputStream();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    String line = br.readLine();
-                    while (line != null) {
-                        if (line.indexOf(text) > -1) {
-                            return Boolean.TRUE;
+                    try (InputStream is = connection.getInputStream();
+                            BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+                        String line = br.readLine();
+                        while (line != null) {
+                            if (line.indexOf(text) > -1) {
+                                return Boolean.TRUE;
+                            }
+                            line = br.readLine();
                         }
-                        line = br.readLine();
                     }
-                    is.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
                 }
                 return null;
             }

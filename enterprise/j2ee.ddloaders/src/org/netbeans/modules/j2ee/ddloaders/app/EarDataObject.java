@@ -247,7 +247,7 @@ public class EarDataObject extends DD2beansDataObject
         try {
             ejbJar.write(out);
             out.close();
-            return out.toString("UTF8"); //NOI18N
+            return out.toString("UTF-8"); //NOI18N
         }
         catch (IOException e) {
             Logger.getLogger("global").log(Level.INFO, null, e);

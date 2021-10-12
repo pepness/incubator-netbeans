@@ -63,12 +63,8 @@ public class Asenv {
         String ext = (Utilities.isWindows() ? "bat" : "conf");          // NOI18N
         File asenv = new File(platformRoot,"config/asenv."+ext);        // NOI18N
         if (!asenv.canRead()) return;
-        FileReader fReader = null;
-        BufferedReader bReader = null;
-        try {
-            fReader = new FileReader(asenv);
-            bReader = new BufferedReader(fReader);
-            
+        try (FileReader fReader = new FileReader(asenv);
+                BufferedReader bReader = new BufferedReader(fReader);) {
             String line = bReader.readLine();
             while (line != null) {
                 StringTokenizer strtok = new StringTokenizer(line,"=");
@@ -90,21 +86,6 @@ public class Asenv {
             Logger.getLogger(Asenv.class.getName()).log(Level.INFO,null,ex);
         } catch (IOException ex) {
             Logger.getLogger(Asenv.class.getName()).log(Level.INFO,null,ex);
-        } finally {
-            if (null != bReader) {
-                try {
-                    bReader.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger(Asenv.class.getName()).log(Level.INFO,null,ioe);
-                }
-            }
-            if (null != fReader) {
-                try {
-                    fReader.close();
-                } catch (IOException ioe) {
-                    Logger.getLogger(Asenv.class.getName()).log(Level.INFO,null,ioe);
-                }
-            }
         }
     }
     

@@ -63,26 +63,24 @@ public class Hk2PluginPropertiesTest {
         //localhost";
         if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
             System.out.println("isRunning");
-            ServerSocket ss = new ServerSocket(0);
-            int port = ss.getLocalPort();
-            boolean expResult = true;
-            boolean result = NetUtils.isPortListeningRemote(
-                    host, port, NetUtils.PORT_CHECK_TIMEOUT);
-            assertEquals(expResult, result);
-            ss.close();
-            result = NetUtils.isPortListeningRemote(
-                    host, port, NetUtils.PORT_CHECK_TIMEOUT);
-            expResult = false;
-            assertEquals(expResult, result);
-            port = 4848;
-            try {
-                ss = new ServerSocket(port);
-            // It looks like there is an app server running, let's pound on it.
-            } catch (IOException ioe) {
-                System.out.println("isRunning " + host + ":4848");
-                poundOnIt(host, port, true);
-            } finally {
+            try (ServerSocket ss = new ServerSocket(0)) {
+                int port = ss.getLocalPort();
+                boolean expResult = true;
+                boolean result = NetUtils.isPortListeningRemote(
+                        host, port, NetUtils.PORT_CHECK_TIMEOUT);
+                assertEquals(expResult, result);
                 ss.close();
+                result = NetUtils.isPortListeningRemote(
+                        host, port, NetUtils.PORT_CHECK_TIMEOUT);
+                expResult = false;
+                assertEquals(expResult, result);
+                port = 4848;
+                try (ServerSocket s = new ServerSocket(port)) {
+                // It looks like there is an app server running, let's pound on it.
+                } catch (IOException ioe) {
+                    System.out.println("isRunning " + host + ":4848");
+                    poundOnIt(host, port, true);
+                }
             }
         } else {
             System.out.println("isRunning "+host+":4848");

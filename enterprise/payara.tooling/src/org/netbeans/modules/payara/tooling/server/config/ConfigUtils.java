@@ -143,9 +143,7 @@ public class ConfigUtils {
     static List<PayaraLibrary.Maven> processClassPath(List<File> classpath) {
         List<PayaraLibrary.Maven> mvnList = new LinkedList<>();
         for (File jar : classpath) {
-            ZipFile zip = null;
-            try {
-                zip = new ZipFile(jar);
+            try (ZipFile zip = new ZipFile(jar)) {
                 Enumeration<? extends ZipEntry> entries = zip.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
@@ -167,13 +165,6 @@ public class ConfigUtils {
             } catch (IOException | IllegalStateException ioe) {
                  Logger.log(Level.WARNING, "Cannot process JAR file "
                          + jar.getAbsolutePath() + ":", ioe);
-            } finally {
-                if (zip != null) try {
-                    zip.close();
-                } catch (IOException ioe) {
-                    Logger.log(Level.WARNING, "Cannot close JAR file "
-                         + jar.getAbsolutePath() + ":", ioe);
-                }
             }
             
         }

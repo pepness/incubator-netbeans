@@ -349,26 +349,15 @@ public class PasswordFile {
             adminPassword = "";
         }
         boolean success = true;
-        Writer out = null;
         createFilePosix();
-        try {
-            out = new OutputStreamWriter(new FileOutputStream(file.toFile()), "UTF-8");
+        try (Writer out = new OutputStreamWriter(new FileOutputStream(file.toFile()), "UTF-8")) {
             out.write(dataToWrite());
         } catch (IOException ioe) {
             success = false;
             LOGGER.log(Level.INFO, METHOD, "writeException",
                     new Object[] {file.toString(), ioe.getMessage()});
         } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ioe) {
-                    success = false;
-                    LOGGER.log(Level.INFO, METHOD,
-                            "closeException", file.toString());
-                }
-                finishFilePosix();
-            }
+            finishFilePosix();
         }
         return success;
     }

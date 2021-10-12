@@ -425,7 +425,6 @@ public class ServerFileDistributor extends ServerProgress {
 
         FileObject destFolder;
         OutputStream destStream = null;
-        InputStream sourceStream = null;
         File dest = FileUtil.toFile(destRoot);
 
         Date ldDate = new Date(lastDeployTime);
@@ -476,9 +475,10 @@ public class ServerFileDistributor extends ServerProgress {
                 if (null == destStream) {
                     FileUtil.copyFile(sourceFO, destFolder, sourceFO.getName());
                 } else {
-                    // this is where we need to push the content into the file....
-                    sourceStream = sourceFO.getInputStream();
-                    FileUtil.copy(sourceStream, destStream);
+                    try (InputStream sourceStream = sourceFO.getInputStream()) {
+                        // this is where we need to push the content into the file....
+                        FileUtil.copy(sourceStream, destStream);
+                    }
                 }
             } catch (FileNotFoundException ex) {
                 // this may happen when the source file disappears
@@ -486,13 +486,6 @@ public class ServerFileDistributor extends ServerProgress {
                 LOGGER.log(Level.INFO, null, ex);
             }
         } finally {
-            if (null != sourceStream) {
-                try {
-                    sourceStream.close();
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.WARNING, null, ioe);
-                }
-            }
             if (null != destStream) {
                 try {
                     destStream.close();

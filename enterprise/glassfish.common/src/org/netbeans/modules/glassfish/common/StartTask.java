@@ -759,35 +759,18 @@ public class StartTask extends BasicTask<TaskState> {
 
     private String selectDebugPort() throws IOException {
         int debugPort = 9009;
-        ServerSocket t = null;
-        try {
+        try (ServerSocket t = new ServerSocket(debugPort)) {
             // try to use the 'standard port'
-            t = new ServerSocket(debugPort);
             return Integer.toString(debugPort);
         } catch (IOException ex) {
             // log this... but don't panic
             Logger.getLogger("glassfish").fine("9009 is in use... going random");
-        } finally {
-            if (null != t) {
-                try {
-                    t.close();
-                } catch (IOException ioe) {
-                }
-            }
         }
-        try {
+        try (ServerSocket t = new ServerSocket(0)) {
             // try to find a different port... if this fails,
             //    it is a great time to panic.
-            t = new ServerSocket(0);
             debugPort = t.getLocalPort();
             return Integer.toString(debugPort);
-        } finally {
-            if (null != t) {
-                try {
-                    t.close();
-                } catch (IOException ioe) {
-                }
-            }
         }
     }
 

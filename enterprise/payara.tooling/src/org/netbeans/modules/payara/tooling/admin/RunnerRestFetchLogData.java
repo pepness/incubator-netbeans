@@ -174,12 +174,9 @@ public class RunnerRestFetchLogData extends RunnerRest {
     public boolean readResponse(InputStream in, HttpURLConnection hconn) {
         lines = new LinkedList<String>();
         String ce = hconn.getContentEncoding();
-        BufferedReader br = null;
         String line = null;
-        try {
-            InputStream cooked = null != ce && ce.contains("gzip")
-                    ? new GZIPInputStream(in) : in;
-            br = new BufferedReader(new java.io.InputStreamReader(cooked));
+        try (InputStream cooked = null != ce && ce.contains("gzip") ? new GZIPInputStream(in) : in;
+                BufferedReader br = new BufferedReader(new java.io.InputStreamReader(cooked))) {
             while ((line = br.readLine()) != null) {
                 if (line != null)
                     lines.add(line);
@@ -187,14 +184,6 @@ public class RunnerRestFetchLogData extends RunnerRest {
         } catch (IOException ioe) {
             throw new CommandException(CommandException.HTTP_RESP_IO_EXCEPTION,
                     ioe);
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException ioe) {
-                Logger.log(Level.WARNING, ioe.getLocalizedMessage(), ioe);
-            }
         }
 
         try {
