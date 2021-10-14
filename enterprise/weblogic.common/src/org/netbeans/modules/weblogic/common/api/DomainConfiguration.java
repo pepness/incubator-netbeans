@@ -184,10 +184,7 @@ public final class DomainConfiguration {
     }
 
     private synchronized void reload() {
-        InputStream inputStream = null;
-
-        try {
-            inputStream = new FileInputStream(domainConfig);
+        try (InputStream inputStream = new FileInputStream(domainConfig)) {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream);
 
             Element root = document.getDocumentElement();
@@ -326,14 +323,6 @@ public final class DomainConfiguration {
             }
         } catch (IOException | ParserConfigurationException | SAXException e) {
             LOGGER.log(Level.INFO, null, e);
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                LOGGER.log(Level.INFO, null, e);
-            }
         }
     }
 

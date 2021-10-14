@@ -173,7 +173,6 @@ public class WSUtils {
                         OutputStream os = handlerFo.getOutputStream(lock);
                         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, Charset.forName("UTF-8")))) {     // NOI18N
                     bw.write(handlerContent);
-                    bw.close();
                 }
             }
         });
@@ -214,14 +213,14 @@ public class WSUtils {
         // read the config from resource first
         StringBuilder sb = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NOI18N
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String line = br.readLine();
-        while (line != null) {
-            sb.append(line);
-            sb.append(lineSep);
-            line = br.readLine();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                sb.append(lineSep);
+                line = br.readLine();
+            }
         }
-        br.close();
         return sb.toString();
     }
     
@@ -425,13 +424,9 @@ public class WSUtils {
                     FileObject propertiesFo = prj.getProjectDirectory().getFileObject(propertiesPath);
                     EditableProperties ep = null;
                     if (propertiesFo!=null) {
-                        InputStream is = null; 
                         ep = new EditableProperties();
-                        try {
-                            is = propertiesFo.getInputStream();
+                        try (InputStream is = propertiesFo.getInputStream()) {
                             ep.load(is);
-                        } finally {
-                            if (is!=null) is.close();
                         }
                     }
                     return ep;
@@ -450,12 +445,8 @@ public class WSUtils {
                 public Void run() throws IOException {                                             
                     FileObject propertiesFo = prj.getProjectDirectory().getFileObject(propertiesPath);
                     if (propertiesFo!=null) {
-                        OutputStream os = null;
-                        try {
-                            os = propertiesFo.getOutputStream();
+                        try (OutputStream os = propertiesFo.getOutputStream()) {
                             ep.store(os);
-                        } finally {
-                            if (os!=null) os.close();
                         }
                     }
                     return null;
@@ -561,12 +552,10 @@ public class WSUtils {
 
 
     public static boolean hasClients(FileObject jaxWsFo) throws IOException {
-        BufferedReader br = null;
         boolean found = false;
-        try {
-            br = new BufferedReader(new InputStreamReader( 
-                    new FileInputStream( FileUtil.toFile(jaxWsFo)), 
-                        Charset.forName("UTF-8")));                 // NOI18N
+        try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                        new FileInputStream(FileUtil.toFile(jaxWsFo)), Charset.forName("UTF-8")))) { // NOI18N
             String line = null;
             while ((line = br.readLine()) != null) {
                 if (line.contains("<client ")) { //NOI18N
@@ -574,31 +563,20 @@ public class WSUtils {
                     break;
                 }
             }
-        } finally {
-            if (br != null) {
-                br.close();
-            }
         }
         return found;
     }
 
     public static boolean hasServiceOrClient(FileObject jaxWsFo) throws IOException {
-        BufferedReader br = null;
         boolean found = false;
-        try {
-            br = new BufferedReader(new InputStreamReader( 
-                    new FileInputStream( FileUtil.toFile(jaxWsFo)), 
-                        Charset.forName("UTF-8")));                 // NOI18N
+        try (BufferedReader br = new BufferedReader(new InputStreamReader( 
+                    new FileInputStream( FileUtil.toFile(jaxWsFo)), Charset.forName("UTF-8")))) { // NOI18N
             String line = null;
             while ((line = br.readLine()) != null) {
                 if (line.contains("<client ") || line.contains("<service ")) { //NOI18N
                     found = true;
                     break;
                 }
-            }
-        } finally {
-            if (br != null) {
-                br.close();
             }
         }
         return found;

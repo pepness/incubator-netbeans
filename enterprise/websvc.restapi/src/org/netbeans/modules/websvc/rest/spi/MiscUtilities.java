@@ -102,22 +102,11 @@ public class MiscUtilities {
         String path = "resources/" + name;
         File df = new File(testdir, name);
         if (!df.exists()) {
-            InputStream is = null;
-            OutputStream os = null;
-            try {
-                is = RestSupport.class.getResourceAsStream(path);
-                os = new FileOutputStream(df);
+            try (InputStream is = RestSupport.class.getResourceAsStream(path);
+                    OutputStream os = new FileOutputStream(df)) {
                 int c;
                 while ((c = is.read()) != -1) {
                     os.write(c);
-                }
-            } finally {
-                if (os != null) {
-                    os.flush();
-                    os.close();
-                }
-                if (is != null) {
-                    is.close();
                 }
             }
         }

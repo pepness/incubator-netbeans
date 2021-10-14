@@ -127,12 +127,10 @@ public class WebJaxWsOpenHook extends ProjectOpenedHook {
                     try {
                         byte[] stylesheetData;
                         boolean needToCallTransformer = false;
-                        InputStream is = stylesheet.openStream();
+                        
                         String crc32 = null;
-                        try {
+                        try (InputStream is = stylesheet.openStream()) {
                             crc32 = TransformerUtils.getCrc32(is);
-                        } finally {
-                            is.close();
                         }
 
                         if (crc32 != null) {
@@ -173,32 +171,30 @@ public class WebJaxWsOpenHook extends ProjectOpenedHook {
                         FileObject project_xml,
                         final AntBuildExtender ext) throws IOException {
 
-        BufferedReader br = new BufferedReader(new InputStreamReader( 
-                new FileInputStream(FileUtil.toFile(project_xml)),
-                    Charset.forName("UTF-8")));                         // NOI18N
-        String line = null;
-        boolean isOldVersion = false;
-        while ((line = br.readLine()) != null) {
-            if (line.contains("wsimport-client-compile") || line.contains("wsimport-service-compile") || line.contains("wsgen-service-compile")) { //NOI18N
-                isOldVersion = true;
-                break;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader( 
+                   new FileInputStream(FileUtil.toFile(project_xml)), Charset.forName("UTF-8")))) {   // NOI18N
+            String line = null;
+            boolean isOldVersion = false;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("wsimport-client-compile") || line.contains("wsimport-service-compile") || line.contains("wsgen-service-compile")) { //NOI18N
+                    isOldVersion = true;
+                    break;
+                }
+            }
+            if (isOldVersion) {
+                TransformerUtils.transformClients(prj.getProjectDirectory(), WebBuildScriptExtensionProvider.JAX_WS_STYLESHEET_RESOURCE);
+                AntBuildExtender.Extension extension = ext.getExtension(JaxWsBuildScriptExtensionProvider.JAXWS_EXTENSION);
+                if (extension!=null) {
+                    extension.removeDependency("-do-compile", "wsimport-client-compile"); //NOI18N
+                    extension.removeDependency("-do-ws-compile", "wsimport-client-compile"); //NOI18N
+                    extension.removeDependency("-do-compile-single", "wsimport-client-compile"); //NOI18N
+                    extension.removeDependency("-do-compile", "wsimport-service-compile"); //NOI18N
+                    extension.removeDependency("-do-compile-single", "wsimport-service-compile"); //NOI18N
+                    extension.removeDependency("-post-compile", "wsgen-service-compile"); //NOI18N
+                    ProjectManager.getDefault().saveProject(prj);
+                }
             }
         }
-        br.close();
-        if (isOldVersion) {
-            TransformerUtils.transformClients(prj.getProjectDirectory(), WebBuildScriptExtensionProvider.JAX_WS_STYLESHEET_RESOURCE);
-            AntBuildExtender.Extension extension = ext.getExtension(JaxWsBuildScriptExtensionProvider.JAXWS_EXTENSION);
-            if (extension!=null) {
-                extension.removeDependency("-do-compile", "wsimport-client-compile"); //NOI18N
-                extension.removeDependency("-do-ws-compile", "wsimport-client-compile"); //NOI18N
-                extension.removeDependency("-do-compile-single", "wsimport-client-compile"); //NOI18N
-                extension.removeDependency("-do-compile", "wsimport-service-compile"); //NOI18N
-                extension.removeDependency("-do-compile-single", "wsimport-service-compile"); //NOI18N
-                extension.removeDependency("-post-compile", "wsgen-service-compile"); //NOI18N
-                ProjectManager.getDefault().saveProject(prj);
-            }
-        }
-
     }
     
 }

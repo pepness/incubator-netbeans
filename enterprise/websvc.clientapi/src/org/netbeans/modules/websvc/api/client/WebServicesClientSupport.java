@@ -271,21 +271,16 @@ public final class WebServicesClientSupport {
         boolean found = false;
         FileObject projectXml = project.getProjectDirectory().getFileObject(AntProjectHelper.PROJECT_XML_PATH);
         if (projectXml != null) {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader( new InputStreamReader( 
-                        new FileInputStream( FileUtil.toFile(projectXml)), 
-                            Charset.forName("UTF-8")));                 // NOI18N
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(
+                                    FileUtil.toFile(projectXml)), Charset.forName("UTF-8")))) { // NOI18N
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("<web-service-client>")) {        //NOI18N
                         found = true;
                         break;
                     }
-                }
-            } finally {
-                if (br != null) {
-                    br.close();
                 }
             }
         }

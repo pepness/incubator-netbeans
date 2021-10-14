@@ -90,10 +90,10 @@ public class WindowsLockingTest extends NbTestCase {
     }
 
     private File createJar(File file) throws IOException {
-        JarOutputStream os = new JarOutputStream(
-                new BufferedOutputStream(new FileOutputStream(file)), new Manifest());
-        os.close();
-
+        try (JarOutputStream os = new JarOutputStream(
+                new BufferedOutputStream(new FileOutputStream(file)), new Manifest())) {
+            os.close();
+        }
         return file;
     }
 }

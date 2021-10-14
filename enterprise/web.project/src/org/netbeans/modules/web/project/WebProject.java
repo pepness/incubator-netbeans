@@ -2124,9 +2124,7 @@ public final class WebProject implements Project {
 
         private boolean containsTLD(File f) {
             if (f.exists() && f.isFile() && f.canRead()) {
-                ZipFile zip = null;
-                try {
-                    zip = new ZipFile(f);
+                try (ZipFile zip = new ZipFile(f)) {
                     for (Enumeration entries = zip.entries(); entries.hasMoreElements();) {
                         String zipEntryName = ((ZipEntry) entries.nextElement()).getName();
                         if (TLD_PATTERN.matcher(zipEntryName).matches()) {
@@ -2136,17 +2134,8 @@ public final class WebProject implements Project {
                     return false;
                 } catch (IOException ex) {
                     LOGGER.log(Level.INFO, null, ex);
-                } finally {
-                    if (zip != null) {
-                        try {
-                            zip.close();
-                        } catch (IOException ex) {
-                            LOGGER.log(Level.INFO, null, ex);
-                        }
-                    }
                 }
             }
-
             return false;
         }
     }

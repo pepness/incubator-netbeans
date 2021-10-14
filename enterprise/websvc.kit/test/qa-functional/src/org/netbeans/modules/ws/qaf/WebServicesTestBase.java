@@ -757,19 +757,11 @@ public abstract class WebServicesTestBase extends J2eeTestCase {
      * @param file file to be created
      */
     private void writeToFile(String text, File file) {
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(file));
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             os.write(text.getBytes());
             os.flush();
         } catch (IOException ioe) {
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException ioe) {
-                }
-            }
+            //noop
         }
     }
 

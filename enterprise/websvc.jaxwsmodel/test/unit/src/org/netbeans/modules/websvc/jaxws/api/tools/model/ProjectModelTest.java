@@ -56,25 +56,27 @@ public class ProjectModelTest extends NbTestCase {
     public void testModel() throws IOException{
         File fo = getFile("jax-ws.xml");
         File fo1 = getFile("jax-ws1.xml");
-        InputStream is = new FileInputStream(fo);
-        InputStream is1 = new FileInputStream(fo1);
-        JaxWsModel jaxws = JaxWsModelProvider.getDefault().getJaxWsModel(is);
-        is.close();
-        assertNotNull("JaxWsModel1 isn't created",jaxws);
-        JaxWsModel jaxws1 = JaxWsModelProvider.getDefault().getJaxWsModel(is1); 
-        is1.close();
-        assertNotNull("JaxWsModel2 isn't created",jaxws1);
-        System.out.println("services.length = "+jaxws.getServices().length);
-        assertEquals(2,jaxws.getServices().length);
-        jaxws.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                System.out.println("propertyChanged:"+evt.getPropertyName()+"   Old Value:"+evt.getOldValue()+"   New Value:"+evt.getNewValue());
-            }
-        });
-        String orgWsdl = jaxws.findServiceByName("A").getWsdlUrl();
-        jaxws.merge(jaxws1);
-        String newWsdl = jaxws.findServiceByName("AA").getWsdlUrl();
-        assertEquals(orgWsdl,newWsdl);
+        
+        try (InputStream is = new FileInputStream(fo);
+                InputStream is1 = new FileInputStream(fo1)) {
+            JaxWsModel jaxws = JaxWsModelProvider.getDefault().getJaxWsModel(is);
+            assertNotNull("JaxWsModel1 isn't created",jaxws);
+       
+            JaxWsModel jaxws1 = JaxWsModelProvider.getDefault().getJaxWsModel(is1);
+            assertNotNull("JaxWsModel2 isn't created",jaxws1);
+            
+            System.out.println("services.length = "+jaxws.getServices().length);
+            assertEquals(2,jaxws.getServices().length);
+            jaxws.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    System.out.println("propertyChanged:"+evt.getPropertyName()+"   Old Value:"+evt.getOldValue()+"   New Value:"+evt.getNewValue());
+                }
+            });
+            String orgWsdl = jaxws.findServiceByName("A").getWsdlUrl();
+            jaxws.merge(jaxws1);
+            String newWsdl = jaxws.findServiceByName("AA").getWsdlUrl();
+            assertEquals(orgWsdl,newWsdl);
+        }
     }
 
     private File getFile(String file) {

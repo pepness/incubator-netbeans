@@ -1236,20 +1236,11 @@ private void saasBrowse(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saasB
             }
             
             // 50103 - could be done via xml api, but this way should be quicker and suffice the need
-            Reader fr = null;
-            LineNumberReader lnReader = null;
             boolean foundWsdlNamespace = false;
-            try {
-                fr = new InputStreamReader( new FileInputStream(f), 
-                        Charset.forName( "UTF-8"));                         // NOI18N
-                lnReader = new LineNumberReader(fr);
+            try (Reader fr = new InputStreamReader( new FileInputStream(f), Charset.forName( "UTF-8"));     // NOI18N
+                    LineNumberReader lnReader = new LineNumberReader(fr)) {
                 if (lnReader != null) {
-                    String line = null;
-                    try {
-                        line = lnReader.readLine();
-                    } catch (IOException ioe) {
-                        //ignore
-                    }
+                    String line = lnReader.readLine();
                     while (line != null) {
                         if (line.indexOf("http://schemas.xmlsoap.org/wsdl/") > 0) { //NOI18N
                             foundWsdlNamespace = true;
@@ -1267,14 +1258,8 @@ private void saasBrowse(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saasB
             } catch (FileNotFoundException fne) {
                 wizardDescriptor.putProperty(PROP_ERROR_MESSAGE, 
                         NbBundle.getMessage(ClientInfo.class, "ERR_WsdlDoesNotExist")); // NOI18N
-            } finally{
-                try{
-                    if(lnReader != null){
-                        lnReader.close();
-                    }
-                }catch(IOException e){
-                    ErrorManager.getDefault().notify(e);
-                }
+            } catch (IOException ioe) {
+               //ignore
             }
             
             if (!foundWsdlNamespace) {

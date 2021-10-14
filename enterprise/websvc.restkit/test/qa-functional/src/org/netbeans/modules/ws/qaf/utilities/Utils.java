@@ -38,13 +38,15 @@ public class Utils {
      * @throws Exception
      */
     public static void copyFile(File in, File out) {
+        
         try {
             out.createNewFile();
-            FileChannel srcChannel = new FileInputStream(in).getChannel();
-            FileChannel dstChannel = new FileOutputStream(out).getChannel();
-            dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-            srcChannel.close();
-            dstChannel.close();
+            try (FileChannel srcChannel = new FileInputStream(in).getChannel();
+                    FileChannel dstChannel = new FileOutputStream(out).getChannel()) {
+                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+                srcChannel.close();
+                dstChannel.close();
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace(System.err);
         }

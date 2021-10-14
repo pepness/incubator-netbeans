@@ -105,28 +105,26 @@ public class J2seJaxWsOpenHook extends ProjectOpenedHook {
                         FileObject project_xml,
                         final AntBuildExtender ext) throws IOException {
 
-        BufferedReader br = new BufferedReader(new InputStreamReader( 
-                new FileInputStream(FileUtil.toFile(project_xml)),
-                    Charset.forName("UTF-8")));                         // NOI18N
-        String line = null;
-        boolean isOldVersion = false;
-        while ((line = br.readLine()) != null) {
-            if (line.contains("wsimport-client-compile")) { //NOI18N
-                isOldVersion = true;
-                break;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader( 
+                    new FileInputStream(FileUtil.toFile(project_xml)), Charset.forName("UTF-8")))) {    // NOI18N
+            String line = null;
+            boolean isOldVersion = false;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("wsimport-client-compile")) { //NOI18N
+                    isOldVersion = true;
+                    break;
+                }
+            }
+            if (isOldVersion) {
+                TransformerUtils.transformClients(prj.getProjectDirectory(), J2seBuildScriptExtensionProvider.JAX_WS_STYLESHEET_RESOURCE);
+                AntBuildExtender.Extension extension = ext.getExtension(JaxWsBuildScriptExtensionProvider.JAXWS_EXTENSION);
+                if (extension!=null) {
+                    extension.removeDependency("-do-compile", "wsimport-client-compile"); //NOI18N
+                    extension.removeDependency("-do-compile-single", "wsimport-client-compile"); //NOI18N
+                    ProjectManager.getDefault().saveProject(prj);
+                }
             }
         }
-        br.close();
-        if (isOldVersion) {
-            TransformerUtils.transformClients(prj.getProjectDirectory(), J2seBuildScriptExtensionProvider.JAX_WS_STYLESHEET_RESOURCE);
-            AntBuildExtender.Extension extension = ext.getExtension(JaxWsBuildScriptExtensionProvider.JAXWS_EXTENSION);
-            if (extension!=null) {
-                extension.removeDependency("-do-compile", "wsimport-client-compile"); //NOI18N
-                extension.removeDependency("-do-compile-single", "wsimport-client-compile"); //NOI18N
-                ProjectManager.getDefault().saveProject(prj);
-            }
-        }
-
     }
 
     private void addJaxWsApiEndorsed(Project prj) throws IOException {

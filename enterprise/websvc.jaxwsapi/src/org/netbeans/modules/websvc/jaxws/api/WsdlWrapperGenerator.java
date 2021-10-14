@@ -69,21 +69,24 @@ public class WsdlWrapperGenerator {
     private static final String TEMPLATE_BASE="/org/netbeans/modules/websvc/jaxws/resources/"; //NOI18N
     
     private static Transformer getTransformer() throws TransformerConfigurationException {
-        InputStream is = new BufferedInputStream(WsdlWrapperGenerator.class.getResourceAsStream(TEMPLATE_BASE+"WsdlServiceGenerator.xsl")); //NOI18N
-        TransformerFactory transFactory = TransformerFactory.newInstance();
-        transFactory.setURIResolver(new URIResolver() {
-            public Source resolve(String href, String base)
-            throws TransformerException {
-                InputStream is = getClass().getResourceAsStream(
-                TEMPLATE_BASE + href.substring(href.lastIndexOf('/')+1));
-                if (is == null) {
-                    return null;
+        Templates t;
+        try (InputStream is = new BufferedInputStream(WsdlWrapperGenerator.class.getResourceAsStream(TEMPLATE_BASE+"WsdlServiceGenerator.xsl"))) { //NOI18N
+            TransformerFactory transFactory = TransformerFactory.newInstance();
+            transFactory.setURIResolver(new URIResolver() {
+                public Source resolve(String href, String base)
+                throws TransformerException {
+                    InputStream is = getClass().getResourceAsStream(
+                    TEMPLATE_BASE + href.substring(href.lastIndexOf('/')+1));
+                    if (is == null) {
+                        return null;
+                    }
+                    return new StreamSource(is);
                 }
-                
-                return new StreamSource(is);
-            }
-        });
-        Templates t = transFactory.newTemplates(new StreamSource(is));
+            });
+            t = transFactory.newTemplates(new StreamSource(is));
+        } catch (IOException ex) {
+            return null;
+        }
         return t.newTransformer();
     }
    
@@ -104,14 +107,11 @@ public class WsdlWrapperGenerator {
             }
         }
         */
-        OutputStream os = null;
-        try {
-            os = new BufferedOutputStream(new FileOutputStream(wrapperWsdlFile));
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(wrapperWsdlFile))){
             Transformer transformer = getTransformer();
             transformer.setParameter("tns_prefix",tnsPrefix);
             transformer.setParameter("wsdl_location",wsdlLocation);
             transformer.transform(wsdlSource, new StreamResult(os));
-            os.close();
         }
         catch(TransformerConfigurationException tce) {
             IOException ioe = new IOException();
@@ -122,11 +122,6 @@ public class WsdlWrapperGenerator {
             IOException ioe = new IOException();
             ioe.initCause(te);
             throw ioe;
-        }
-        finally {
-            if(os != null) {
-                os.close();
-            }
         }
     }
     

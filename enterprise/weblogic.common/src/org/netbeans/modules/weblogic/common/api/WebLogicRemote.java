@@ -93,13 +93,10 @@ public final class WebLogicRemote {
                         new String[]{username, password});
                 env.put("jmx.remote.protocol.provider.class.loader", //NOI18N
                         config.getLayout().getClassLoader());
-
-                JMXConnector jmxConnector = JMXConnectorFactory.newJMXConnector(url, env);
-                jmxConnector.connect();
-                try {
+                
+                try (JMXConnector jmxConnector = JMXConnectorFactory.newJMXConnector(url, env)) {
+                    jmxConnector.connect();
                     return action.execute(jmxConnector.getMBeanServerConnection());
-                } finally {
-                    jmxConnector.close();
                 }
             }
         }, nonProxy);

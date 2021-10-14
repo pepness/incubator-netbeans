@@ -97,11 +97,8 @@ public class TransformerUtils {
         try {
             projectXmlData = ProjectManager.mutex().readAccess(new Mutex.ExceptionAction<byte[]>() {
                 public byte[] run() throws IOException {
-                    InputStream is = jaxws_xml.getInputStream();
-                    try {
+                    try (InputStream is = jaxws_xml.getInputStream()) {
                         return load(is);
-                    } finally {
-                        is.close();
                     }
                 }
             });
@@ -111,11 +108,8 @@ public class TransformerUtils {
         
         URL stylesheet = TransformerUtils.class.getResource(jaxws_stylesheet_resource);
         byte[] stylesheetData;
-        InputStream is = stylesheet.openStream();
-        try {
+        try (InputStream is = stylesheet.openStream()) {
             stylesheetData = load(is);
-        } finally {
-            is.close();
         }
         
         final byte[] resultData;

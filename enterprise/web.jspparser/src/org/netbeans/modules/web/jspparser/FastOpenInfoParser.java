@@ -132,10 +132,10 @@ public class FastOpenInfoParser {
             //#64418 - create a ByteArrayInputStream - we need a an inputstream with marks supported
             if (is == null) {
                 byte[] buffer = new byte[8192*4];
-                InputStream _is = fo.getInputStream();
-                int readed = _is.read(buffer);
-                is = new ByteArrayInputStream(buffer, 0, readed);
-                _is.close();
+                try (InputStream _is = fo.getInputStream()) {
+                    int readed = _is.read(buffer);
+                    is = new ByteArrayInputStream(buffer, 0, readed);
+                }
             }
 
             if (isXMLSyntax(fo)) {
@@ -164,12 +164,13 @@ public class FastOpenInfoParser {
     }
     
     private static String parseEncodingFromFile(InputStream is) throws IOException {
-        InputStreamReader isr = new InputStreamReader(is); //read with default encoding
-        //read only first 8kB of text
-        char[] buffer = new char[8192];
-        int readed = isr.read(buffer);
-        isr.close();
-        
+        char[] buffer;
+        int readed;
+        try (InputStreamReader isr = new InputStreamReader(is)) { //read with default encoding
+            //read only first 8kB of text
+            buffer = new char[8192];
+            readed = isr.read(buffer);
+        }
         return parseJspText(buffer, readed);
     }
     

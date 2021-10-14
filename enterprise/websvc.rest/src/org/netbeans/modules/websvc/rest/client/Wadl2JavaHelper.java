@@ -441,23 +441,14 @@ class Wadl2JavaHelper {
     static String getMethodBody(String templatePath) {
         FileObject templateFo = FileUtil.getConfigFile(templatePath);
         if (templateFo != null) {
-            try {
-                InputStreamReader is = null;
-                StringWriter writer = null;
-                try {
-                    is = new InputStreamReader(templateFo.getInputStream(), 
-                            Charset.forName("UTF-8"));          // NOI18N
-                    writer = new StringWriter();
-                    char[] buffer = new char[1024];
-                    int b;
-                    while((b=is.read(buffer)) != -1) {
-                        writer.write(buffer,0,b);
-                    }
-                    return writer.toString();
-                } finally {
-                    if (is != null) is.close();
-                    if (writer != null) writer.close();
+            try (InputStreamReader is = new InputStreamReader(templateFo.getInputStream(), Charset.forName("UTF-8"));  // NOI18N
+                    StringWriter writer = new StringWriter()) {
+                char[] buffer = new char[1024];
+                int b;
+                while((b=is.read(buffer)) != -1) {
+                    writer.write(buffer,0,b);
                 }
+                return writer.toString();
             } catch(java.io.IOException ex) {
                 return null;
             }

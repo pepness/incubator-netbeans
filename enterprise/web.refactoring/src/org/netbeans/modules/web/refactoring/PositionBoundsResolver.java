@@ -169,9 +169,7 @@ public class PositionBoundsResolver {
     private String readResource(InputStream stream){
         StringBuilder result = new StringBuilder();
         String lineSep = System.getProperty("line.separator");//NO18N
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));//NO18N
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"))) {  //NO18N
             String line = reader.readLine();
             while (line != null) {
                 result.append(line);
@@ -182,14 +180,6 @@ public class PositionBoundsResolver {
             Exceptions.printStackTrace(ex);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        } finally {
-            try {
-                if (reader != null){
-                    reader.close();
-                }
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
-            }
         }
         return result.toString();
     }

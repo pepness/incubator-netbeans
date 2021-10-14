@@ -55,9 +55,7 @@ public class WadlModeler extends ResourceModel {
     }
 
     public State validate() {
-        InputStream is = null;
-        try {
-            is = fileObject.getInputStream();
+        try (InputStream is = fileObject.getInputStream()) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(is);
@@ -83,13 +81,6 @@ public class WadlModeler extends ResourceModel {
                 return State.EMPTY_RESOURCES;
         } catch (Exception ex) {
             return State.INVALID;
-        } finally {
-            if(is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                }
-            }
         }
         return State.VALID;
     }
@@ -101,9 +92,7 @@ public class WadlModeler extends ResourceModel {
                     NbBundle.getMessage(AbstractPanel.class,
                     "MSG_"+state.value()));
         }
-        InputStream is = null;
-        try {
-            is = fileObject.getInputStream();
+        try (InputStream is = fileObject.getInputStream()) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(is);
@@ -127,13 +116,6 @@ public class WadlModeler extends ResourceModel {
 
         } catch (Exception ex) {
             throw new IOException(ex.getMessage());
-        } finally {
-            if(is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                }
-            }
         }
     }
 

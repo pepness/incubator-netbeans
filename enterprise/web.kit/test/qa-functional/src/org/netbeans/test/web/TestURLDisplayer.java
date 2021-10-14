@@ -112,18 +112,12 @@ public final class TestURLDisplayer extends HtmlBrowser.URLDisplayer {
             throw new IllegalStateException("URL is not valid.");
         }
         StringBuilder sb = new StringBuilder();
-        InputStream is = null;
-        try {
-            is = con.getInputStream();
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                    sb.append('\n');
-                }
-            } finally {
-                is.close();
+        try (InputStream is = con.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+                sb.append('\n');
             }
         } catch (Exception ex) {
             ex.printStackTrace();

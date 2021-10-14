@@ -250,16 +250,13 @@ public class CustomizationTest extends TestCase {
     public static Document loadDocument(InputStream in) throws Exception {
 	Document sd = new org.netbeans.editor.BaseDocument(
             org.netbeans.modules.xml.text.syntax.XMLKit.class, false);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
         StringBuilder sbuf = new StringBuilder();
-        try {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
             String line = null;
             while ((line = br.readLine()) != null) {
                 sbuf.append(line);
                 sbuf.append(System.getProperty("line.separator"));
             }
-        } finally {
-            br.close();
         }
         sd.insertString(0,sbuf.toString(),null);
         return sd;
@@ -269,11 +266,10 @@ public class CustomizationTest extends TestCase {
         if (! f.exists()) {
             f.createNewFile();
         }
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-        PrintWriter w = new PrintWriter(out);
-        w.print(doc.getText(0, doc.getLength()));
-        w.close();
-        out.close();
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+                PrintWriter w = new PrintWriter(out)) {
+            w.print(doc.getText(0, doc.getLength()));
+        }
     }
     
     public static File dumpToTempFile(Document doc) throws Exception {

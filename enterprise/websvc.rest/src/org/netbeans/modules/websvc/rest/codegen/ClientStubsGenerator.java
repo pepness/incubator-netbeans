@@ -367,22 +367,12 @@ public class ClientStubsGenerator extends AbstractGenerator {
             } else {
                 fs.runAtomicAction(new FileSystem.AtomicAction() {
                     public void run() throws IOException {
-                        InputStream in = null;
-                        OutputStream out = null;
-                        try {
-                            in = new FileInputStream(src);
-                            out = new FileOutputStream(dst);
+                        try (InputStream in = new FileInputStream(src);
+                                OutputStream out = new FileOutputStream(dst)) {
                             byte[] buf = new byte[1024];
                             int len;
                             while ((len = in.read(buf)) > 0) {
                                 out.write(buf, 0, len);
-                            }
-                        } finally {
-                            if ( in!= null ){
-                                in.close();
-                            }
-                            if ( out!= null ){
-                                out.close();
                             }
                         }
                     }
@@ -445,22 +435,12 @@ public class ClientStubsGenerator extends AbstractGenerator {
     protected void copyFile(String resourceName, File destFile) throws IOException {
         String path = "resources/"+resourceName;
         if(!destFile.exists()) {
-            InputStream is = null;
-            OutputStream os = null;
-            try {
-                is = ClientStubsGenerator.class.getResourceAsStream(path);
-                os = new FileOutputStream(destFile);
+            try (InputStream is = ClientStubsGenerator.class.getResourceAsStream(path);
+                    OutputStream os = new FileOutputStream(destFile)) {
                 int c;
                 while ((c = is.read()) != -1) {
                     os.write(c);
                 }
-            } finally {
-                if(os != null) {
-                    os.flush();
-                    os.close();
-                }
-                if(is != null)
-                    is.close();
             }
         }
     }
