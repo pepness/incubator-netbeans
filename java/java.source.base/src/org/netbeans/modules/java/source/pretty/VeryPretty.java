@@ -1342,7 +1342,7 @@ public final class VeryPretty extends JCTree.Visitor implements DocTreeVisitor<V
                 sep = ", "; //TODO: space or not should be a configuration setting
             }
         }
-        Object caseKind = CasualDiff.getCaseKind(tree);
+        Object caseKind = tree.getCaseKind();
         if (caseKind == null || !String.valueOf(caseKind).equals("RULE")) {
             print(':');
             newline();
@@ -2061,8 +2061,22 @@ public final class VeryPretty extends JCTree.Visitor implements DocTreeVisitor<V
     }
 
     @Override
-    public void visitDefaultCaseLabel(JCDefaultCaseLabel that) {
+    public void visitDefaultCaseLabel(JCDefaultCaseLabel tree) {
         print("default");
+    }
+
+    @Override
+    public void visitConstantCaseLabel(JCConstantCaseLabel tree) {
+        printExpr(tree.expr);
+    }
+
+    @Override
+    public void visitPatternCaseLabel(JCPatternCaseLabel tree) {
+        print(tree.pat);
+        if (tree.guard != null) {
+            print(" when ");
+            printExpr(tree.guard);
+        }
     }
 
     @Override

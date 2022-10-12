@@ -80,7 +80,7 @@ public class GradleDistributionProviderImpl implements GradleDistributionProvide
     public GradleDistributionProviderImpl(Project project) {
         this.project = (NbGradleProjectImpl) project;
         pcl = (evt) -> {
-            if (NbGradleProject.PROP_RESOURCES.endsWith(evt.getPropertyName())) {
+            if (NbGradleProject.PROP_RESOURCES.equals(evt.getPropertyName())) {
                 URI uri = (URI) evt.getNewValue();
                 if ((uri != null) && (uri.getPath() != null) && uri.getPath().endsWith(GradleFiles.WRAPPER_PROPERTIES)) {
                     URI newDistURI = getWrapperDistributionURI();
@@ -99,7 +99,7 @@ public class GradleDistributionProviderImpl implements GradleDistributionProvide
         if (dist == null) {
             GradleSettings settings = GradleSettings.getDefault();
 
-            GradleDistributionManager mgr = GradleDistributionManager.get(settings.getGradleUserHome());
+            GradleDistributionManager mgr = GradleDistributionManager.get();
 
             if (settings.isWrapperPreferred()) {
                 try {

@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicLong;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.openide.util.Exceptions;
 
 /**
@@ -244,7 +244,7 @@ public final class CountingSecurityManager extends SecurityManager {
                     absoluteStacks += value;
                 }
                 int min = absoluteStacks / 50;
-                for (Map.Entry<String, int> entry : stacks.entrySet()) {
+                for (Map.Entry<String, Integer> entry : stacks.entrySet()) {
                     String s = entry.getKey();
                     int value = entry.getValue();
                     if (value > min) {

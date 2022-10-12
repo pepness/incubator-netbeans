@@ -1,5 +1,5 @@
 #Signature file v4.1
-#Version 1.122.0
+#Version 1.125.0
 
 CLSS public abstract interface com.sun.source.tree.TreeVisitor<%0 extends java.lang.Object, %1 extends java.lang.Object>
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitAnnotatedType(com.sun.source.tree.AnnotatedTypeTree,{com.sun.source.tree.TreeVisitor%1})
@@ -27,7 +27,6 @@ meth public abstract {com.sun.source.tree.TreeVisitor%0} visitErroneous(com.sun.
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitExports(com.sun.source.tree.ExportsTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitExpressionStatement(com.sun.source.tree.ExpressionStatementTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitForLoop(com.sun.source.tree.ForLoopTree,{com.sun.source.tree.TreeVisitor%1})
-meth public abstract {com.sun.source.tree.TreeVisitor%0} visitGuardedPattern(com.sun.source.tree.GuardedPatternTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitIdentifier(com.sun.source.tree.IdentifierTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitIf(com.sun.source.tree.IfTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitImport(com.sun.source.tree.ImportTree,{com.sun.source.tree.TreeVisitor%1})
@@ -108,7 +107,6 @@ meth public {com.sun.source.util.TreeScanner%0} visitErroneous(com.sun.source.tr
 meth public {com.sun.source.util.TreeScanner%0} visitExports(com.sun.source.tree.ExportsTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitExpressionStatement(com.sun.source.tree.ExpressionStatementTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitForLoop(com.sun.source.tree.ForLoopTree,{com.sun.source.util.TreeScanner%1})
-meth public {com.sun.source.util.TreeScanner%0} visitGuardedPattern(com.sun.source.tree.GuardedPatternTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitIdentifier(com.sun.source.tree.IdentifierTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitIf(com.sun.source.tree.IfTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitImport(com.sun.source.tree.ImportTree,{com.sun.source.util.TreeScanner%1})
@@ -959,7 +957,7 @@ meth public void removed(com.sun.jdi.request.EventRequest)
 meth public void setIgnoreStepFilters(boolean)
 meth public void setStopHereCheck(org.netbeans.modules.debugger.jpda.JPDAStepImpl$StopHereCheck)
 supr org.netbeans.api.debugger.jpda.JPDAStep
-hfds INIT,boundaryStepRequest,compoundSmartSteppingListener,currentExpInterval,currentOperations,ignoreStepFilters,isInBoxingUnboxingLocation,lastMethodExitBreakpointListener,lastOperation,logger,operationBreakpoints,p,requestsToCancel,session,smartSteppingFilter,stepPatternDepth,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation,stopHereCheck,wasInBoxingUnboxingLocation
+hfds INIT,boundaryStepRequest,currentExpInterval,currentOperations,ignoreStepFilters,isInBoxingUnboxingLocation,lastMethodExitBreakpointListener,lastOperation,logger,operationBreakpoints,p,requestsToCancel,session,smartSteppingFilter,stepPatternDepth,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation,stopHereCheck,wasInBoxingUnboxingLocation
 hcls StepPatternDepth
 
 CLSS public final static org.netbeans.modules.debugger.jpda.JPDAStepImpl$MethodExitBreakpointListener
@@ -1192,7 +1190,18 @@ meth public void addPropertyChangeListener(java.beans.PropertyChangeListener)
 meth public void removeExclusionPatterns(java.util.Set<java.lang.String>)
 meth public void removePropertyChangeListener(java.beans.PropertyChangeListener)
 supr java.lang.Object
-hfds classFiltersProperties,end,exact,exclusionPatternsListener,filter,options,pcs,start
+hfds classFiltersProperties,exclusionPatternsListener,filter,options,pcs
+
+CLSS public final org.netbeans.modules.debugger.jpda.actions.SmartSteppingFilterWrapper
+cons public init(org.netbeans.api.debugger.jpda.SmartSteppingFilter)
+intf org.netbeans.api.debugger.jpda.SmartSteppingFilter
+meth public java.lang.String[] getExclusionPatterns()
+meth public void addExclusionPatterns(java.util.Set<java.lang.String>)
+meth public void addPropertyChangeListener(java.beans.PropertyChangeListener)
+meth public void removeExclusionPatterns(java.util.Set<java.lang.String>)
+meth public void removePropertyChangeListener(java.beans.PropertyChangeListener)
+supr java.lang.Object
+hfds addedPatterns,delegate,removedPatterns
 
 CLSS public org.netbeans.modules.debugger.jpda.actions.StartActionProvider
 cons public init(org.netbeans.spi.debugger.ContextProvider)
@@ -1213,13 +1222,14 @@ intf org.netbeans.modules.debugger.jpda.util.Executor
 meth protected void checkEnabled(int)
 meth public boolean exec(com.sun.jdi.event.Event)
 meth public java.util.Set getActions()
+meth public static boolean stopInClass(java.lang.String,org.netbeans.api.debugger.jpda.SmartSteppingFilter)
 meth public static int setLastOperation(com.sun.jdi.ThreadReference,org.netbeans.modules.debugger.jpda.JPDADebuggerImpl,org.netbeans.api.debugger.jpda.Variable) throws org.netbeans.modules.debugger.jpda.jdi.VMDisconnectedExceptionWrapper
 meth public void doAction(java.lang.Object)
 meth public void postAction(java.lang.Object,java.lang.Runnable)
 meth public void removed(com.sun.jdi.request.EventRequest)
 meth public void runAction(java.lang.Object)
 supr org.netbeans.modules.debugger.jpda.actions.JPDADebuggerActionProvider
-hfds OPERATION_TIMEOUT,className,compoundSmartSteppingListener,depth,lastMethodExitBreakpointListener,logger,loggerStep,lookupProvider,methodName,operationsRP,p,smartSteppingFilterImpl,smartSteppingStepOut,stepIntoActionProvider,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation,syntheticStep
+hfds OPERATION_TIMEOUT,className,compoundSmartSteppingListener,depth,lastMethodExitBreakpointListener,logger,loggerStep,lookupProvider,methodName,operationsRP,p,smartSteppingFilter,smartSteppingStepOut,stepIntoActionProvider,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation,syntheticStep
 
 CLSS public org.netbeans.modules.debugger.jpda.actions.StepIntoActionProvider
 cons public init(org.netbeans.spi.debugger.ContextProvider)
@@ -1243,7 +1253,7 @@ meth public void removed(com.sun.jdi.request.EventRequest)
 meth public void runAction()
 meth public void runAction(boolean)
 supr java.lang.Object
-hfds compoundSmartSteppingListener,contextProvider,debugger,depth,logger,p,position,smartLogger,smartSteppingFilter,smartSteppingStepOut,stepActionProvider,stepIntoRequest,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation
+hfds compoundSmartSteppingListener,contextProvider,debugger,depth,didStepThrough,logger,p,position,smartLogger,smartSteppingFilter,smartSteppingStepOut,stepActionProvider,stepIntoRequest,steppingFromCompoundFilteredLocation,steppingFromFilteredLocation
 
 CLSS public org.netbeans.modules.debugger.jpda.actions.StepIntoNextMethodActionProvider
 cons public init(org.netbeans.spi.debugger.ContextProvider)

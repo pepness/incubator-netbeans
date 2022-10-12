@@ -1,5 +1,5 @@
 #Signature file v4.1
-#Version 1.75.0
+#Version 1.78.0
 
 CLSS public abstract interface com.sun.source.doctree.DocTreeVisitor<%0 extends java.lang.Object, %1 extends java.lang.Object>
 meth public abstract {com.sun.source.doctree.DocTreeVisitor%0} visitAttribute(com.sun.source.doctree.AttributeTree,{com.sun.source.doctree.DocTreeVisitor%1})
@@ -35,6 +35,7 @@ meth public {com.sun.source.doctree.DocTreeVisitor%0} visitDocType(com.sun.sourc
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitHidden(com.sun.source.doctree.HiddenTree,{com.sun.source.doctree.DocTreeVisitor%1})
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitIndex(com.sun.source.doctree.IndexTree,{com.sun.source.doctree.DocTreeVisitor%1})
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitProvides(com.sun.source.doctree.ProvidesTree,{com.sun.source.doctree.DocTreeVisitor%1})
+meth public {com.sun.source.doctree.DocTreeVisitor%0} visitSnippet(com.sun.source.doctree.SnippetTree,{com.sun.source.doctree.DocTreeVisitor%1})
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitSummary(com.sun.source.doctree.SummaryTree,{com.sun.source.doctree.DocTreeVisitor%1})
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitSystemProperty(com.sun.source.doctree.SystemPropertyTree,{com.sun.source.doctree.DocTreeVisitor%1})
 meth public {com.sun.source.doctree.DocTreeVisitor%0} visitUses(com.sun.source.doctree.UsesTree,{com.sun.source.doctree.DocTreeVisitor%1})
@@ -65,7 +66,6 @@ meth public abstract {com.sun.source.tree.TreeVisitor%0} visitErroneous(com.sun.
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitExports(com.sun.source.tree.ExportsTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitExpressionStatement(com.sun.source.tree.ExpressionStatementTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitForLoop(com.sun.source.tree.ForLoopTree,{com.sun.source.tree.TreeVisitor%1})
-meth public abstract {com.sun.source.tree.TreeVisitor%0} visitGuardedPattern(com.sun.source.tree.GuardedPatternTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitIdentifier(com.sun.source.tree.IdentifierTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitIf(com.sun.source.tree.IfTree,{com.sun.source.tree.TreeVisitor%1})
 meth public abstract {com.sun.source.tree.TreeVisitor%0} visitImport(com.sun.source.tree.ImportTree,{com.sun.source.tree.TreeVisitor%1})
@@ -146,7 +146,6 @@ meth public {com.sun.source.util.TreeScanner%0} visitErroneous(com.sun.source.tr
 meth public {com.sun.source.util.TreeScanner%0} visitExports(com.sun.source.tree.ExportsTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitExpressionStatement(com.sun.source.tree.ExpressionStatementTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitForLoop(com.sun.source.tree.ForLoopTree,{com.sun.source.util.TreeScanner%1})
-meth public {com.sun.source.util.TreeScanner%0} visitGuardedPattern(com.sun.source.tree.GuardedPatternTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitIdentifier(com.sun.source.tree.IdentifierTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitIf(com.sun.source.tree.IfTree,{com.sun.source.util.TreeScanner%1})
 meth public {com.sun.source.util.TreeScanner%0} visitImport(com.sun.source.tree.ImportTree,{com.sun.source.util.TreeScanner%1})

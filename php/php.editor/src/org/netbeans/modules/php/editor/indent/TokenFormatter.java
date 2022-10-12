@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
-import org.netbeans.api.annotations.common.NonNull;
 import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.api.editor.document.LineDocumentUtils;
 import org.netbeans.api.lexer.TokenSequence;
@@ -1084,6 +1083,9 @@ public class TokenFormatter {
                                     case WHITESPACE_AROUND_UNARY_OP:
                                         countSpaces = docOptions.spaceAroundUnaryOps ? 1 : countSpaces;
                                         break;
+                                    case WHITESPACE_AROUND_TEXTUAL_OP:
+                                        countSpaces = 1;
+                                        break;
                                     case WHITESPACE_BEFORE_BINARY_OP:
                                         if (docOptions.wrapAfterBinOps) {
                                             countSpaces = docOptions.spaceAroundBinaryOps ? 1 : 0;
@@ -1875,6 +1877,12 @@ public class TokenFormatter {
                                         countSpaces = 0;
                                         break;
                                     case WHITESPACE_AFTER_NAMED_ARGUMENT_SEPARATOR:
+                                        countSpaces = 1;
+                                        break;
+                                    case WHITESPACE_BEFORE_ENUM_BACKING_TYPE_SEPARATOR:
+                                        countSpaces = 0;
+                                        break;
+                                    case WHITESPACE_AFTER_ENUM_BACKING_TYPE_SEPARATOR:
                                         countSpaces = 1;
                                         break;
                                     case WHITESPACE_BEFORE_RETURN_TYPE_SEPARATOR:
