@@ -664,7 +664,7 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>org.apache.commons.io</code-name-base>
+                    <code-name-base>org.apache.commons-io</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                 </dependency>
