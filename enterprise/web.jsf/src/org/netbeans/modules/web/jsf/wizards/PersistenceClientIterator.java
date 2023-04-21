@@ -632,8 +632,18 @@ public class PersistenceClientIterator implements TemplateWizard.Iterator {
     }
 
     private static boolean isCdiEnabled(Project project) {
-        CdiUtil cdiUtil = project.getLookup().lookup(CdiUtil.class);
-        return (cdiUtil == null) ? false : cdiUtil.isCdiEnabled();
+        WebModule wm = WebModule.getWebModule(project.getProjectDirectory());
+        Profile profile = null;
+        if(wm != null) {
+            profile = wm.getJ2eeProfile();
+        }
+        if(profile != null && (profile.isAtLeast(Profile.JAKARTA_EE_9_WEB) || profile.isAtLeast(Profile.JAKARTA_EE_9_FULL))){
+            org.netbeans.modules.jakarta.web.beans.CdiUtil cdiUtil = project.getLookup().lookup(org.netbeans.modules.jakarta.web.beans.CdiUtil.class);
+            return (cdiUtil == null) ? false : cdiUtil.isCdiEnabled();
+        } else {
+            org.netbeans.modules.web.beans.CdiUtil cdiUtil = project.getLookup().lookup(org.netbeans.modules.web.beans.CdiUtil.class);
+            return (cdiUtil == null) ? false : cdiUtil.isCdiEnabled();
+        }
     }
 
     private static ResourceBundle findBundle(JSFConfigModel model, ResourceBundle rb) {

@@ -325,6 +325,23 @@ public class JSFUtils {
         }
         return false;
     }
+    
+    public static boolean isJakartaEE9Plus(TemplateWizard wizard) {
+        Project project = Templates.getProject(wizard);
+        WebModule wm = WebModule.getWebModule(project.getProjectDirectory());
+        if (wm != null) {
+            Profile profile = wm.getJ2eeProfile();
+            if (profile == Profile.JAKARTA_EE_9_WEB ||
+                profile == Profile.JAKARTA_EE_9_FULL ||
+                profile == Profile.JAKARTA_EE_9_1_WEB ||
+                profile == Profile.JAKARTA_EE_9_1_FULL ||
+                profile == Profile.JAKARTA_EE_10_WEB ||
+                profile == Profile.JAKARTA_EE_10_FULL) {
+                return true;
+            }
+        }
+        return false;
+    }
 
      /**
      * Logs usage statistics data.

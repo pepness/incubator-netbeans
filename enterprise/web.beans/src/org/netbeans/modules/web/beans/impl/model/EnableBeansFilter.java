@@ -471,7 +471,7 @@ class EnableBeansFilter {
     private boolean hasModifier ( Element element , Modifier mod){
         Set<Modifier> modifiers = element.getModifiers();
         for (Modifier modifier : modifiers) {
-            if (modifier == mod) {
+            if ( modifier.equals( mod )){
                 return true;
             }
         }
