@@ -1,5 +1,5 @@
 #Signature file v4.1
-#Version 2.37
+#Version 2.38
 
 CLSS public java.beans.FeatureDescriptor
 cons public init()
@@ -86,28 +86,24 @@ meth public void printStackTrace(java.io.PrintWriter)
 meth public void setStackTrace(java.lang.StackTraceElement[])
 supr java.lang.Object
 
-CLSS public abstract interface org.netbeans.modules.javaee.injection.spi.InjectionTargetQueryImplementation
-meth public abstract boolean isInjectionTarget(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
-meth public abstract boolean isStaticReferenceRequired(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
-
-CLSS public org.netbeans.modules.web.beans.BeansDataObject
+CLSS public org.netbeans.modules.jakarta.web.beans.BeansDataObject
 cons public init(org.openide.filesystems.FileObject,org.openide.loaders.MultiFileLoader) throws java.io.IOException
 meth protected int associateLookup()
 supr org.openide.loaders.MultiDataObject
 
-CLSS public org.netbeans.modules.web.beans.CarCdiUtil
+CLSS public org.netbeans.modules.jakarta.web.beans.CarCdiUtil
 cons public init(org.netbeans.api.project.Project)
 meth public java.util.Collection<org.openide.filesystems.FileObject> getBeansTargetFolder(boolean)
-supr org.netbeans.modules.web.beans.CdiUtil
+supr org.netbeans.modules.jakarta.web.beans.CdiUtil
 
-CLSS public org.netbeans.modules.web.beans.CdiProjectOpenHook
+CLSS public org.netbeans.modules.jakarta.web.beans.CdiProjectOpenHook
 cons public init(org.netbeans.api.project.Project)
 meth protected void projectClosed()
 meth protected void projectOpened()
 supr org.netbeans.spi.project.ui.ProjectOpenedHook
 hfds myProject
 
-CLSS public org.netbeans.modules.web.beans.CdiUtil
+CLSS public org.netbeans.modules.jakarta.web.beans.CdiUtil
 cons public init(org.netbeans.api.project.Project)
 fld public final static java.lang.String BEANS = "beans"
 fld public final static java.lang.String BEANS_XML = "beans.xml"
@@ -126,70 +122,70 @@ meth public void log(java.lang.String,java.lang.Class<?>,java.lang.Object[],bool
 supr java.lang.Object
 hfds LOG,META_INF,myMessages,myProject
 
-CLSS public org.netbeans.modules.web.beans.EjbCdiUtil
+CLSS public org.netbeans.modules.jakarta.web.beans.EjbCdiUtil
 cons public init(org.netbeans.api.project.Project)
 meth public java.util.Collection<org.openide.filesystems.FileObject> getBeansTargetFolder(boolean)
-supr org.netbeans.modules.web.beans.CdiUtil
+supr org.netbeans.modules.jakarta.web.beans.CdiUtil
 
-CLSS public org.netbeans.modules.web.beans.MetaModelSupport
+CLSS public org.netbeans.modules.jakarta.web.beans.MetaModelSupport
 cons public init(org.netbeans.api.project.Project)
 meth public org.netbeans.api.java.classpath.ClassPath getClassPath(java.lang.String)
-meth public org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.web.beans.api.model.WebBeansModel> getMetaModel()
+meth public org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> getMetaModel()
 supr java.lang.Object
 hfds MODELS,myProject
 
-CLSS public org.netbeans.modules.web.beans.WebBeanInjectionTargetQueryImplementation
+CLSS public org.netbeans.modules.jakarta.web.beans.WebBeanInjectionTargetQueryImplementation
 cons public init()
 intf org.netbeans.modules.javaee.injection.spi.InjectionTargetQueryImplementation
 meth public boolean isInjectionTarget(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
 meth public boolean isStaticReferenceRequired(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
 supr java.lang.Object
 
-CLSS public org.netbeans.modules.web.beans.WebCdiUtil
+CLSS public org.netbeans.modules.jakarta.web.beans.WebCdiUtil
 cons public init(org.netbeans.api.project.Project)
 meth public java.util.Collection<org.openide.filesystems.FileObject> getBeansTargetFolder(boolean)
-supr org.netbeans.modules.web.beans.CdiUtil
+supr org.netbeans.modules.jakarta.web.beans.CdiUtil
 
-CLSS public abstract org.netbeans.modules.web.beans.api.model.AbstractModelImplementation
-cons protected init(org.netbeans.modules.web.beans.api.model.ModelUnit)
-meth protected org.netbeans.modules.web.beans.api.model.WebBeansModel getModel()
-meth protected org.netbeans.modules.web.beans.model.spi.WebBeansModelProvider getProvider()
-meth public org.netbeans.modules.web.beans.api.model.BeansModel getBeansModel()
-meth public org.netbeans.modules.web.beans.api.model.ModelUnit getModelUnit()
+CLSS public abstract org.netbeans.modules.jakarta.web.beans.api.model.AbstractModelImplementation
+cons protected init(org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit)
+meth protected org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel getModel()
+meth protected org.netbeans.modules.jakarta.web.beans.model.spi.WebBeansModelProvider getProvider()
+meth public org.netbeans.modules.jakarta.web.beans.api.model.BeansModel getBeansModel()
+meth public org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit getModelUnit()
 supr java.lang.Object
 hfds myModel,myProvider,myUnit
 
-CLSS public final !enum org.netbeans.modules.web.beans.api.model.BeanArchiveType
-fld public final static org.netbeans.modules.web.beans.api.model.BeanArchiveType EXPLICIT
-fld public final static org.netbeans.modules.web.beans.api.model.BeanArchiveType IMPLICIT
-fld public final static org.netbeans.modules.web.beans.api.model.BeanArchiveType NONE
-meth public static org.netbeans.modules.web.beans.api.model.BeanArchiveType valueOf(java.lang.String)
-meth public static org.netbeans.modules.web.beans.api.model.BeanArchiveType[] values()
-supr java.lang.Enum<org.netbeans.modules.web.beans.api.model.BeanArchiveType>
+CLSS public final !enum org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType EXPLICIT
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType IMPLICIT
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType NONE
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType valueOf(java.lang.String)
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType[] values()
+supr java.lang.Enum<org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType>
 
-CLSS public abstract interface org.netbeans.modules.web.beans.api.model.BeansModel
+CLSS public abstract interface org.netbeans.modules.jakarta.web.beans.api.model.BeansModel
 meth public abstract boolean isCdi11OrLater()
 meth public abstract java.util.LinkedHashSet<java.lang.String> getDecoratorClasses()
 meth public abstract java.util.LinkedHashSet<java.lang.String> getInterceptorClasses()
 meth public abstract java.util.Set<java.lang.String> getAlternativeClasses()
 meth public abstract java.util.Set<java.lang.String> getAlternativeStereotypes()
-meth public abstract org.netbeans.modules.web.beans.api.model.BeanArchiveType getBeanArchiveType()
+meth public abstract org.netbeans.modules.jakarta.web.beans.api.model.BeanArchiveType getBeanArchiveType()
 
-CLSS public final org.netbeans.modules.web.beans.api.model.BeansModelFactory
-meth public static org.netbeans.modules.web.beans.api.model.BeansModel createModel(org.netbeans.modules.web.beans.api.model.ModelUnit)
-meth public static org.netbeans.modules.web.beans.api.model.BeansModel getModel(org.netbeans.modules.web.beans.api.model.ModelUnit)
+CLSS public final org.netbeans.modules.jakarta.web.beans.api.model.BeansModelFactory
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.BeansModel createModel(org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit)
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.BeansModel getModel(org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit)
 supr java.lang.Object
 hfds MODELS
 
-CLSS public abstract interface org.netbeans.modules.web.beans.api.model.BeansResult
+CLSS public abstract interface org.netbeans.modules.jakarta.web.beans.api.model.BeansResult
 meth public abstract boolean isDisabled(javax.lang.model.element.Element)
 
-CLSS public org.netbeans.modules.web.beans.api.model.CdiException
+CLSS public org.netbeans.modules.jakarta.web.beans.api.model.CdiException
 cons public init(java.lang.String)
 supr java.lang.Exception
 hfds serialVersionUID
 
-CLSS public abstract interface org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
+CLSS public abstract interface org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
 innr public abstract interface static ApplicableResult
 innr public abstract interface static Error
 innr public abstract interface static InjectableResult
@@ -197,57 +193,57 @@ innr public abstract interface static ResolutionResult
 innr public final static !enum ResultKind
 meth public abstract javax.lang.model.element.VariableElement getVariable()
 meth public abstract javax.lang.model.type.TypeMirror getVariableType()
-meth public abstract org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind getKind()
+meth public abstract org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind getKind()
 
-CLSS public abstract interface static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ApplicableResult
- outer org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-intf org.netbeans.modules.web.beans.api.model.BeansResult
-intf org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
+CLSS public abstract interface static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ApplicableResult
+ outer org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.BeansResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
 meth public abstract java.util.Set<javax.lang.model.element.Element> getProductions()
 meth public abstract java.util.Set<javax.lang.model.element.TypeElement> getTypeElements()
 
-CLSS public abstract interface static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$Error
- outer org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-intf org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
+CLSS public abstract interface static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$Error
+ outer org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
 meth public abstract java.lang.String getMessage()
 
-CLSS public abstract interface static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$InjectableResult
- outer org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-intf org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
+CLSS public abstract interface static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$InjectableResult
+ outer org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
 meth public abstract javax.lang.model.element.Element getElement()
 
-CLSS public abstract interface static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResolutionResult
- outer org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-intf org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-intf org.netbeans.modules.web.beans.api.model.Result
+CLSS public abstract interface static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResolutionResult
+ outer org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.Result
 meth public abstract boolean hasAlternative(javax.lang.model.element.Element)
 meth public abstract boolean isAlternative(javax.lang.model.element.Element)
 
-CLSS public final static !enum org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind
- outer org.netbeans.modules.web.beans.api.model.DependencyInjectionResult
-fld public final static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind DEFINITION_ERROR
-fld public final static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind INJECTABLES_RESOLVED
-fld public final static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind INJECTABLE_RESOLVED
-fld public final static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind RESOLUTION_ERROR
-meth public static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind valueOf(java.lang.String)
-meth public static org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind[] values()
-supr java.lang.Enum<org.netbeans.modules.web.beans.api.model.DependencyInjectionResult$ResultKind>
+CLSS public final static !enum org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind
+ outer org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind DEFINITION_ERROR
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind INJECTABLES_RESOLVED
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind INJECTABLE_RESOLVED
+fld public final static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind RESOLUTION_ERROR
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind valueOf(java.lang.String)
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind[] values()
+supr java.lang.Enum<org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult$ResultKind>
 
-CLSS public org.netbeans.modules.web.beans.api.model.InjectionPointDefinitionError
+CLSS public org.netbeans.modules.jakarta.web.beans.api.model.InjectionPointDefinitionError
 cons public init(javax.lang.model.element.Element,java.lang.String)
 meth public javax.lang.model.element.Element getErrorElement()
-supr org.netbeans.modules.web.beans.api.model.CdiException
+supr org.netbeans.modules.jakarta.web.beans.api.model.CdiException
 hfds myElement,serialVersionUID
 
-CLSS public abstract interface org.netbeans.modules.web.beans.api.model.InterceptorsResult
-intf org.netbeans.modules.web.beans.api.model.BeansResult
-intf org.netbeans.modules.web.beans.api.model.Result
+CLSS public abstract interface org.netbeans.modules.jakarta.web.beans.api.model.InterceptorsResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.BeansResult
+intf org.netbeans.modules.jakarta.web.beans.api.model.Result
 meth public abstract java.util.List<javax.lang.model.element.TypeElement> getAllInterceptors()
 meth public abstract java.util.List<javax.lang.model.element.TypeElement> getDeclaredInterceptors()
 meth public abstract java.util.List<javax.lang.model.element.TypeElement> getResolvedInterceptors()
 meth public abstract javax.lang.model.element.Element getElement()
 
-CLSS public org.netbeans.modules.web.beans.api.model.ModelUnit
+CLSS public org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit
 meth public boolean equals(java.lang.Object)
 meth public int hashCode()
 meth public org.netbeans.api.java.classpath.ClassPath getBootPath()
@@ -255,22 +251,22 @@ meth public org.netbeans.api.java.classpath.ClassPath getCompilePath()
 meth public org.netbeans.api.java.classpath.ClassPath getSourcePath()
 meth public org.netbeans.api.java.source.ClasspathInfo getClassPathInfo()
 meth public org.netbeans.api.project.Project getProject()
-meth public static org.netbeans.modules.web.beans.api.model.ModelUnit create(org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.project.Project)
+meth public static org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit create(org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.java.classpath.ClassPath,org.netbeans.api.project.Project)
 supr java.lang.Object
 hfds myBootPath,myClassPathInfo,myCompilePath,myProject,mySourcePath
 
-CLSS public abstract interface org.netbeans.modules.web.beans.api.model.Result
+CLSS public abstract interface org.netbeans.modules.jakarta.web.beans.api.model.Result
 meth public abstract java.util.List<javax.lang.model.element.AnnotationMirror> getAllStereotypes(javax.lang.model.element.Element)
 meth public abstract java.util.List<javax.lang.model.element.AnnotationMirror> getStereotypes(javax.lang.model.element.Element)
 
-CLSS public final org.netbeans.modules.web.beans.api.model.WebBeansModel
+CLSS public final org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel
 meth public boolean hasImplicitDefaultQualifier(javax.lang.model.element.Element)
 meth public boolean isCdi11OrLater()
 meth public boolean isDynamicInjectionPoint(javax.lang.model.element.VariableElement)
 meth public boolean isEventInjectionPoint(javax.lang.model.element.VariableElement)
-meth public boolean isInjectionPoint(javax.lang.model.element.VariableElement) throws org.netbeans.modules.web.beans.api.model.InjectionPointDefinitionError
+meth public boolean isInjectionPoint(javax.lang.model.element.VariableElement) throws org.netbeans.modules.jakarta.web.beans.api.model.InjectionPointDefinitionError
 meth public java.lang.String getName(javax.lang.model.element.Element)
-meth public java.lang.String getScope(javax.lang.model.element.Element) throws org.netbeans.modules.web.beans.api.model.CdiException
+meth public java.lang.String getScope(javax.lang.model.element.Element) throws org.netbeans.modules.jakarta.web.beans.api.model.CdiException
 meth public java.util.Collection<javax.lang.model.element.AnnotationMirror> getInterceptorBindings(javax.lang.model.element.Element)
 meth public java.util.Collection<javax.lang.model.element.TypeElement> getDecorators(javax.lang.model.element.TypeElement)
 meth public java.util.List<javax.lang.model.element.AnnotationMirror> getQualifiers(javax.lang.model.element.Element,boolean)
@@ -280,17 +276,21 @@ meth public java.util.List<javax.lang.model.element.VariableElement> getEventInj
 meth public javax.lang.model.element.VariableElement getObserverParameter(javax.lang.model.element.ExecutableElement)
 meth public javax.lang.model.type.TypeMirror resolveType(java.lang.String)
 meth public org.netbeans.api.java.source.CompilationController getCompilationController()
-meth public org.netbeans.modules.web.beans.api.model.AbstractModelImplementation getModelImplementation()
-meth public org.netbeans.modules.web.beans.api.model.DependencyInjectionResult lookupInjectables(javax.lang.model.element.VariableElement,javax.lang.model.type.DeclaredType,java.util.concurrent.atomic.AtomicBoolean)
-meth public org.netbeans.modules.web.beans.api.model.InterceptorsResult getInterceptors(javax.lang.model.element.Element)
+meth public org.netbeans.modules.jakarta.web.beans.api.model.AbstractModelImplementation getModelImplementation()
+meth public org.netbeans.modules.jakarta.web.beans.api.model.DependencyInjectionResult lookupInjectables(javax.lang.model.element.VariableElement,javax.lang.model.type.DeclaredType,java.util.concurrent.atomic.AtomicBoolean)
+meth public org.netbeans.modules.jakarta.web.beans.api.model.InterceptorsResult getInterceptors(javax.lang.model.element.Element)
 supr java.lang.Object
 hfds myImpl
 
-CLSS public final org.netbeans.modules.web.beans.api.model.WebBeansModelFactory
-meth public static org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.web.beans.api.model.WebBeansModel> createMetaModel(org.netbeans.modules.web.beans.api.model.ModelUnit)
-meth public static org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.web.beans.api.model.WebBeansModel> getMetaModel(org.netbeans.modules.web.beans.api.model.ModelUnit)
+CLSS public final org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModelFactory
+meth public static org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> createMetaModel(org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit)
+meth public static org.netbeans.modules.j2ee.metadata.model.api.MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> getMetaModel(org.netbeans.modules.jakarta.web.beans.api.model.ModelUnit)
 supr java.lang.Object
 hfds MODELS
+
+CLSS public abstract interface org.netbeans.modules.javaee.injection.spi.InjectionTargetQueryImplementation
+meth public abstract boolean isInjectionTarget(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
+meth public abstract boolean isStaticReferenceRequired(org.netbeans.api.java.source.CompilationController,javax.lang.model.element.TypeElement)
 
 CLSS public abstract org.netbeans.spi.project.ui.ProjectOpenedHook
 cons protected init()
