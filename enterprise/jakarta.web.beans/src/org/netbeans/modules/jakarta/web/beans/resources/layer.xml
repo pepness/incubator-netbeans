@@ -23,28 +23,28 @@
 <filesystem>
 	<folder name="Editors">
             <folder name="AnnotationTypes">
-                <file name="org-netbeans-modules-web-beans-annotations-injection-point.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-injection-point.xml"/>
-                <file name="org-netbeans-modules-web-beans-annotations-delegate-point.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-delegate-point.xml"/>
-                <file name="org-netbeans-modules-web-beans-annotations-decorated-bean.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-decorated-bean.xml"/>
-                <file name="org-netbeans-modules-web-beans-annotations-event.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-event.xml"/>
-                <file name="org-netbeans-modules-web-beans-annotations-observer.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-observer.xml" />
-                <file name="org-netbeans-modules-web-beans-annotations-intercepted.xml" 
-                    url="org-netbeans-modules-web-beans-annotations-intercepted.xml" />
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-injection-point.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-injection-point.xml"/>
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-delegate-point.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-delegate-point.xml"/>
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-decorated-bean.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-decorated-bean.xml"/>
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-event.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-event.xml"/>
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-observer.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-observer.xml" />
+                <file name="org-netbeans-modules-jakarta-web-beans-annotations-intercepted.xml" 
+                    url="org-netbeans-modules-jakarta-web-beans-annotations-intercepted.xml" />
             </folder>
         <folder name="text">
             <folder name="x-java">
             	<folder name="CodeGenerators">
-                    <file name="org-netbeans-modules-web-beans-actions-InterceptorFactory.instance">
+                    <file name="org-netbeans-modules-jakarta-web-beans-actions-InterceptorFactory.instance">
                         <attr name="position" intvalue="1000"/>
                     </file>
                 </folder> 
                 <folder name="GlyphGutterActions">
-                    <file name="org-netbeans-modules-web-beans-navigation-actions-CdiGlyphAction.instance">
+                    <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-CdiGlyphAction.instance">
                         <attr name="position" intvalue="200"/>
                     </file>
                 </folder>   
@@ -54,16 +54,16 @@
                             <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
                             <attr name="position" intvalue="3000"/>
                         </file>
-                        <file name="org-netbeans-modules-web-beans-navigation-actions-GoToInjectableAtCaretAction.shadow">
-                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
+                        <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToInjectableAtCaretAction.shadow">
+                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
                             <attr name="position" intvalue="3100"/>
                         </file>
-                        <file name="org-netbeans-modules-web-beans-navigation-actions-GoToDecoratorAtCaretAction.shadow">
-                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
+                        <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToDecoratorAtCaretAction.shadow">
+                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
                             <attr name="position" intvalue="3200"/>
                         </file>
-                        <file name="org-netbeans-modules-web-beans-navigation-actions-InspectCDIAtCaretAction.shadow">
-                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
+                        <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-InspectCDIAtCaretAction.shadow">
+                            <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
                             <attr name="position" intvalue="3300"/>
                         </file>
                     </folder>
@@ -73,20 +73,20 @@
     </folder>
     <folder name="Actions">
         <folder name="Edit">
-            <file name="org-netbeans-modules-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
-            <file name="org-netbeans-modules-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
-            <file name="org-netbeans-modules-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
+            <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
+            <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
+            <file name="org-netbeans-modules-jakarta-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
         </folder>
     </folder>
     <folder name="Shortcuts">
         <file name="DO-J.shadow">
-           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
+           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToInjectableAtCaretAction.instance"/>
         </file>
          <file name="DO-D.shadow">
-           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
+           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-GoToDecoratorAtCaretAction.instance"/>
         </file>
         <file name="DO-C.shadow">
-           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
+           <attr name="originalFile" stringvalue="Actions/Edit/org-netbeans-modules-jakarta-web-beans-navigation-actions-InspectCDIAtCaretAction.instance"/>
         </file>
     </folder>
     <folder name="Templates">
@@ -99,7 +99,7 @@
                 <attr name="templateCategory" stringvalue="web-types,j2ee-types"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/web/beans/resources/BeansXml.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/BeansXml.html"/>
                 <attr name="templateWizardIterator" newvalue="org.netbeans.modules.jakarta.web.beans.wizard.BeansXmlIterator"/>
             </file>
             <file name="Qualifier.java" url="Qualifier.template">
@@ -108,7 +108,7 @@
                 <attr name="templateCategory" stringvalue="web-types,j2ee-types"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/web/beans/resources/Qualifier.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/Qualifier.html"/>
                 <attr name="instantiatingIterator" methodvalue="org.netbeans.spi.java.project.support.ui.templates.JavaTemplates.createJavaTemplateIterator"/>
                 <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/netbeans/modules/java/resources/class.gif"/>
             </file>
@@ -118,7 +118,7 @@
                 <attr name="templateCategory" stringvalue="web-types,j2ee-types"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/web/beans/resources/Stereotype.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/Stereotype.html"/>
                 <attr name="instantiatingIterator" methodvalue="org.netbeans.spi.java.project.support.ui.templates.JavaTemplates.createJavaTemplateIterator"/>
                 <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/netbeans/modules/java/resources/class.gif"/>
             </file>
@@ -128,7 +128,7 @@
                 <attr name="templateCategory" stringvalue="web-types,j2ee-types"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/web/beans/resources/Interceptor.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/Interceptor.html"/>
                 <attr name="instantiatingIterator" methodvalue="org.netbeans.spi.java.project.support.ui.templates.JavaTemplates.createJavaTemplateIterator"/>
                 <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/netbeans/modules/java/resources/class.gif"/>
             </file>
@@ -138,7 +138,7 @@
                 <attr name="templateCategory" stringvalue="web-types,j2ee-types"/>
                 <attr name="template" boolvalue="true"/>
                 <attr name="javax.script.ScriptEngine" stringvalue="freemarker"/>
-                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/web/beans/resources/Scope.html"/>
+                <attr name="templateWizardURL" urlvalue="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/Scope.html"/>
                 <attr name="instantiatingIterator" methodvalue="org.netbeans.spi.java.project.support.ui.templates.JavaTemplates.createJavaTemplateIterator"/>
                 <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/org/netbeans/modules/java/resources/class.gif"/>
             </file>
@@ -147,7 +147,7 @@
     <folder name="org-netbeans-modules-java-hints">
     	<folder name="rules">
     		<folder name="errors">
-    			<file name="org-netbeans-modules-web-beans-hints-CreateQualifier.instance"/>
+    			<file name="org-netbeans-modules-jakarta-web-beans-hints-CreateQualifier.instance"/>
     		</folder>
     	</folder>
     </folder>

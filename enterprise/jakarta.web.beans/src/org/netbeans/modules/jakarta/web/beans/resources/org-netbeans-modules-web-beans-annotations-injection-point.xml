@@ -19,12 +19,12 @@
     under the License.
 
 -->
-       <!DOCTYPE type PUBLIC
-                 "-//NetBeans//DTD annotation type 1.1//EN"
-                 "http://www.netbeans.org/dtds/annotation-type-1_1.dtd">
-       <type name="org-netbeans-modules-web-beans-annotations-injection-point"
-             description_key="DSCR_InjectionPoint"
-             localizing_bundle="org.netbeans.modules.jakarta.web.beans.resources.Bundle"
-             visible="true"
-             glyph="nbresloc:/org/netbeans/modules/web/beans/resources/injection_point.png"
-             priority="5"/>
+<!DOCTYPE type PUBLIC
+          "-//NetBeans//DTD annotation type 1.1//EN"
+          "http://www.netbeans.org/dtds/annotation-type-1_1.dtd">
+<type name="org-netbeans-modules-jakarta-web-beans-annotations-injection-point"
+      description_key="DSCR_InjectionPoint"
+      localizing_bundle="org.netbeans.modules.jakarta.web.beans.resources.Bundle"
+      visible="true"
+      glyph="nbresloc:/org/netbeans/modules/jakarta/web/beans/resources/injection_point.png"
+      priority="5"/>

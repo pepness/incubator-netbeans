@@ -30,11 +30,11 @@ import org.openide.util.NbBundle;
 public class CDIAnnotation extends Annotation {
     
     public enum CDIAnnotaitonType {
-        INJECTION_POINT("org-netbeans-modules-web-beans-annotations-injection-point"),
-        DELEGATE_POINT("org-netbeans-modules-web-beans-annotations-delegate-point"),
-        DECORATED_BEAN("org-netbeans-modules-web-beans-annotations-decorated-bean"),
-        EVENT("org-netbeans-modules-web-beans-annotations-event"),
-        OBSERVER("org-netbeans-modules-web-beans-annotations-observer"),
+        INJECTION_POINT("org-netbeans-modules-jakarta-web-beans-annotations-injection-point"),
+        DELEGATE_POINT("org-netbeans-modules-jakarta-web-beans-annotations-delegate-point"),
+        DECORATED_BEAN("org-netbeans-modules-jakarta-web-beans-annotations-decorated-bean"),
+        EVENT("org-netbeans-modules-jakarta-web-beans-annotations-event"),
+        OBSERVER("org-netbeans-modules-jakarta-web-beans-annotations-observer"),
         INTERCEPTED_ELEMENT("org-netbeans-modules-editor-annotations-intercepted");
         
         private CDIAnnotaitonType( String type ){
