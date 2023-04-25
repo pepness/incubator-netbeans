@@ -172,9 +172,7 @@ public class JsfSupportImpl implements JsfSupport {
         });
 
         if(isJsf30Plus()){
-            System.out.println("WE have JSF4+");
             webBeansModelJakarta = new org.netbeans.modules.jakarta.web.beans.MetaModelSupport(project).getMetaModel();
-            System.out.println("WebBeansModelJakarta: " + webBeansModelJakarta);
         } else {
             webBeansModel = new org.netbeans.modules.web.beans.MetaModelSupport(project).getMetaModel();
         }
@@ -266,7 +264,6 @@ public class JsfSupportImpl implements JsfSupport {
     }
     
     public synchronized MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> getJakartaWebBeansModel() {
-	       System.out.println("getting getJakartaWebBeansModel");
         return webBeansModelJakarta;
     }
 

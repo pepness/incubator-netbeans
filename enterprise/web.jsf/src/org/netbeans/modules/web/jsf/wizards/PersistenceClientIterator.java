@@ -632,18 +632,15 @@ public class PersistenceClientIterator implements TemplateWizard.Iterator {
     }
 
     private static boolean isCdiEnabled(Project project) {
-        WebModule wm = WebModule.getWebModule(project.getProjectDirectory());
-        Profile profile = null;
-        if(wm != null) {
-            profile = wm.getJ2eeProfile();
+        org.netbeans.modules.jakarta.web.beans.CdiUtil jakartaCdiUtil = project.getLookup().lookup(org.netbeans.modules.jakarta.web.beans.CdiUtil.class);
+        if(jakartaCdiUtil != null && jakartaCdiUtil.isCdiEnabled()) {
+            return true;
         }
-        if(profile != null && (profile.isAtLeast(Profile.JAKARTA_EE_9_WEB) || profile.isAtLeast(Profile.JAKARTA_EE_9_FULL))){
-            org.netbeans.modules.jakarta.web.beans.CdiUtil cdiUtil = project.getLookup().lookup(org.netbeans.modules.jakarta.web.beans.CdiUtil.class);
-            return (cdiUtil == null) ? false : cdiUtil.isCdiEnabled();
-        } else {
-            org.netbeans.modules.web.beans.CdiUtil cdiUtil = project.getLookup().lookup(org.netbeans.modules.web.beans.CdiUtil.class);
-            return (cdiUtil == null) ? false : cdiUtil.isCdiEnabled();
+        org.netbeans.modules.web.beans.CdiUtil javaxCdiUtil = project.getLookup().lookup(org.netbeans.modules.web.beans.CdiUtil.class);
+        if(javaxCdiUtil != null && javaxCdiUtil.isCdiEnabled()) {
+            return true;
         }
+        return false;
     }
 
     private static ResourceBundle findBundle(JSFConfigModel model, ResourceBundle rb) {

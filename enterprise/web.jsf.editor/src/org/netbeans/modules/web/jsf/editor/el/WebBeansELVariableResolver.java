@@ -113,21 +113,17 @@ public final class WebBeansELVariableResolver implements ELVariableResolver {
 
     private static List<WebBean> getNamedBeans(MetadataModel<WebBeansModel> webBeansModel) {
         try {
-            return webBeansModel.runReadAction(new MetadataModelAction<WebBeansModel, List<WebBean>>() {
-
-                @Override
-                public List<WebBean> run(WebBeansModel metadata) throws Exception {
-                    List<Element> namedElements = metadata.getNamedElements();
-                    List<WebBean> webBeans = new LinkedList<>();
-                    for (Element e : namedElements) {
-                        //filter out null elements - probably a WebBeansModel bug,
-                        //happens under some circumstances when renaming/deleting beans
-                        if (e != null) {
-                            webBeans.add(new WebBean(e, metadata.getName(e)));
-                        }
+            return webBeansModel.runReadAction((WebBeansModel metadata) -> {
+                List<Element> namedElements = metadata.getNamedElements();
+                List<WebBean> webBeans = new LinkedList<>();
+                for (Element e : namedElements) {
+                    //filter out null elements - probably a WebBeansModel bug,
+                    //happens under some circumstances when renaming/deleting beans
+                    if (e != null) {
+                        webBeans.add(new WebBean(e, metadata.getName(e)));
                     }
-                    return webBeans;
                 }
+                return webBeans;
             });
         } catch (MetadataModelException ex) {
             Exceptions.printStackTrace(ex);
@@ -140,21 +136,17 @@ public final class WebBeansELVariableResolver implements ELVariableResolver {
 
     private static List<WebBean> getJakartaNamedBeans(MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> webBeansModel) {
         try {
-            return webBeansModel.runReadAction(new MetadataModelAction<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel, List<WebBean>>() {
-
-                @Override
-                public List<WebBean> run(org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel metadata) throws Exception {
-                    List<Element> namedElements = metadata.getNamedElements();
-                    List<WebBean> webBeans = new LinkedList<>();
-                    for (Element e : namedElements) {
-                        //filter out null elements - probably a WebBeansModel bug,
-                        //happens under some circumstances when renaming/deleting beans
-                        if (e != null) {
-                            webBeans.add(new WebBean(e, metadata.getName(e)));
-                        }
+            return webBeansModel.runReadAction((org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel metadata) -> {
+                List<Element> namedElements = metadata.getNamedElements();
+                List<WebBean> webBeans = new LinkedList<>();
+                for (Element e : namedElements) {
+                    //filter out null elements - probably a WebBeansModel bug,
+                    //happens under some circumstances when renaming/deleting beans
+                    if (e != null) {
+                        webBeans.add(new WebBean(e, metadata.getName(e)));
                     }
-                    return webBeans;
                 }
+                return webBeans;
             });
         } catch (MetadataModelException ex) {
             Exceptions.printStackTrace(ex);

@@ -113,7 +113,8 @@ public class ManagedBeanCustomizer extends javax.swing.JPanel implements Cancell
             }
         });
         this.project = project;
-        if(JSFVersion.forProject(project) == JSFVersion.JSF_4_0){
+        JSFVersion projectJsfVersion = JSFVersion.forProject(project);
+        if(projectJsfVersion != null && projectJsfVersion.isAtLeast(JSFVersion.JSF_4_0)){
             this.jakartaMetaModelSupport = new org.netbeans.modules.jakarta.web.beans.MetaModelSupport(project);
         } else {
             this.metaModelSupport = new org.netbeans.modules.web.beans.MetaModelSupport(project);

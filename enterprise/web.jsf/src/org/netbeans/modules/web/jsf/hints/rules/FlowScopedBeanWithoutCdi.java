@@ -127,6 +127,10 @@ public class FlowScopedBeanWithoutCdi {
 
         @Override
         public ChangeInfo implement() throws Exception {
+            org.netbeans.modules.jakarta.web.beans.CdiUtil jakartaCdiUtil = project.getLookup().lookup(org.netbeans.modules.jakarta.web.beans.CdiUtil.class);
+            if (jakartaCdiUtil != null) {
+                jakartaCdiUtil.enableCdi();
+            }
             org.netbeans.modules.web.beans.CdiUtil cdiUtil = project.getLookup().lookup(org.netbeans.modules.web.beans.CdiUtil.class);
             if (cdiUtil != null) {
                 cdiUtil.enableCdi();
