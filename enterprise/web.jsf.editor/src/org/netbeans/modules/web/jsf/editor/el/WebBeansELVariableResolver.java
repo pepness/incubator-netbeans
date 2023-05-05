@@ -136,7 +136,7 @@ public final class WebBeansELVariableResolver implements ELVariableResolver {
 
     private static List<WebBean> getJakartaNamedBeans(MetadataModel<org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel> webBeansModel) {
         try {
-            return webBeansModel.runReadAction((org.netbeans.modules.jakarta.web.beans.api.model.WebBeansModel metadata) -> {
+            return webBeansModel.runReadAction(metadata -> {
                 List<Element> namedElements = metadata.getNamedElements();
                 List<WebBean> webBeans = new LinkedList<>();
                 for (Element e : namedElements) {

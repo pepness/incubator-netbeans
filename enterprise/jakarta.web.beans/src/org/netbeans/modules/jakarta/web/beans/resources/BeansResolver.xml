@@ -24,7 +24,7 @@
 <MIME-resolver>
     <file>
         <ext name="xml"/>
-        <resolver mime="text/x-beans+xml">
+        <resolver mime="text/x-beans-jakarta+xml">
             <xml-rule>
                 <element name="beans" ns="http://xmlns.jcp.org/xml/ns/javaee"/>
             </xml-rule>
@@ -32,11 +32,10 @@
     </file>
     <file>
         <ext name="xml"/>
-        <resolver mime="text/x-beans+xml">
+        <resolver mime="text/x-beans-jakarta+xml">
             <xml-rule>
                 <element name="beans" ns="https://jakarta.ee/xml/ns/jakartaee"/>
             </xml-rule>
         </resolver>
     </file>
 </MIME-resolver>
-

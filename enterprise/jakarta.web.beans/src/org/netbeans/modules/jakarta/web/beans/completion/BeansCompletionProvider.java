@@ -54,10 +54,10 @@ import org.openide.filesystems.URLMapper;
 import org.openide.util.Exceptions;
 
 /**
- * 
+ *
  * @author sp153251
  */
-@MimeRegistration(mimeType = "text/x-beans+xml", service = CompletionProvider.class)//NOI18N
+@MimeRegistration(mimeType = "text/x-beans-jakarta+xml", service = CompletionProvider.class)//NOI18N
 public class BeansCompletionProvider implements CompletionProvider {
 
     @Override
@@ -166,7 +166,7 @@ public class BeansCompletionProvider implements CompletionProvider {
         protected boolean canFilter(JTextComponent component) {
             return false;
         }
-        
+
         @Override
         protected void filter(CompletionResultSet resultSet) {
             try {
@@ -411,10 +411,10 @@ public class BeansCompletionProvider implements CompletionProvider {
                     }
                     int tokenOffset = titk.offset(getController().getTokenHierarchy());
                     if(tokenOffset>getCompletionOffset()){
-                        
+
                         break;
                     }
-                    
+
                     if(id == JavaTokenId.STRING_LITERAL){
                         if((tokenOffset + titk.length())>getCompletionOffset()){
                             //we complete this literal
@@ -422,7 +422,7 @@ public class BeansCompletionProvider implements CompletionProvider {
                             break;
                         }
                     }
-                    
+
                     if (!ts.moveNext()) {
                         break;
                     }

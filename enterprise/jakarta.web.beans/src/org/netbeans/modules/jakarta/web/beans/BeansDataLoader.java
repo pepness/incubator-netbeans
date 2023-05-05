@@ -28,23 +28,23 @@
 ///**
 // */
 //public class BeansDataLoader extends DataLoader {
-//    
-//    public static final String REQUIRED_MIME = "text/x-beans+xml";
-//    
+//
+//    public static final String REQUIRED_MIME = "text/x-beans-jakarta+xml";
+//
 //    public BeansDataLoader() {
 //        super(BeansDataObject.class.getName());
 //    }
-//    
+//
 //    @Override
 //    protected void initialize() {
 //        super.initialize();
 //    }
-//    
+//
 //    @Override
 //    protected String defaultDisplayName() {
 //        return NbBundle.getMessage(BeansDataLoader.class, "LBL_loaderName"); // NOI18N
 //    }
-//    
+//
 //    @Override
 //    protected String actionsContext() {
 //        return "Loaders/" + REQUIRED_MIME + "/Actions";
